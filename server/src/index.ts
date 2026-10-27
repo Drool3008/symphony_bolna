@@ -26,6 +26,7 @@ function boot() {
     // Calls left waiting by a run that died with the last server have nobody
     // to answer to; the history gets a result for each saying so.
     operator.abandonAll('the server restarted')
+    rt.waits.releaseAll('server_restarted')
     rt.history.closeInterruptedStep()
     const { agent, selectScenario } = startAgent(rt, env, operator, { databasePath })
     const app = createApp(rt, { operator, ...(selectScenario ? { selectScenario } : {}) })

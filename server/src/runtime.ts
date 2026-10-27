@@ -1,5 +1,6 @@
 import { OnboardingSchema, type AgentEvent, type Onboarding } from '@family-health/shared'
 import { loadFamilyHistory } from './domain/history.js'
+import { Waits } from './domain/waits.js'
 import { EventBus } from './events.js'
 import { Hook, SyncParts } from './hooks.js'
 import { AgentThreads, FamilyChats } from './store/conversations.js'
@@ -24,6 +25,8 @@ export interface Runtime {
   chats: FamilyChats
   /** What the model has been given and has said. */
   history: ModelHistory
+  /** The agent waiting on a person. */
+  waits: Waits
   hooks: {
     /** The sim clock moved: waits and windows past their deadline close. */
     clock: Hook<[now: Date, before: Date]>
@@ -70,6 +73,7 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
   let threads: AgentThreads
   let chats: FamilyChats
   let history: ModelHistory
+  let waits: Waits
 
   const rt: Runtime = {
     db,
@@ -84,6 +88,9 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
     },
     get history() {
       return history
+    },
+    get waits() {
+      return waits
     },
     hooks: { clock: new Hook<[Date, Date]>(), reset: new Hook(), input: new Hook(), sync: new SyncParts() },
     onboarding() {
@@ -120,6 +127,7 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
   threads = new AgentThreads(rt)
   chats = new FamilyChats(rt, groupIds)
   history = new ModelHistory(rt)
+  waits = new Waits(rt)
 
   if (session.get('onboarding') === undefined) {
     const ob = loadOnboarding()

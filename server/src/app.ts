@@ -72,6 +72,12 @@ export function createApp(rt: Runtime, services: Services): Express {
 
     if (message.to_agent) {
       const name = rt.onboarding().family.members.find((m) => m.id === memberId)?.name ?? memberId
+      // If the agent is waiting on this person, or on the group, it is their answer.
+      if (
+        rt.waits.reply(memberId, message.text, null) ||
+        rt.waits.reply(chat_id, `${name}: ${message.text}`, null)
+      )
+        return
       deliverInput(rt, {
         kind: 'message',
         source: `${name}, in the family group, addressed to the agent`,
@@ -109,8 +115,46 @@ export function createApp(rt: Runtime, services: Services): Express {
       })
     const name = rt.onboarding().family.members.find((m) => m.id === memberId)?.name ?? memberId
     rt.threads.post({ thread: memberId, from: memberId, to: 'agent', text })
+    // Typing routes itself: a reply if the agent is waiting on this person,
+    // otherwise a new input (reference README, the member app).
+    if (rt.waits.reply(memberId, text, null)) {
+      res.json({ ok: true, as: 'reply' })
+      return
+    }
     deliverInput(rt, { kind: 'message', source: `${name}, in the chat with the agent`, from: memberId, text })
-    res.json({ ok: true })
+    res.json({ ok: true, as: 'input' })
+  })
+
+  /**
+   * A person answers: a button on a card, or a typed reply. The answer is
+   * locked onto the card so every screen shows the same thing, and it ends
+   * the agent's wait on them, if there is one.
+   */
+  app.post('/api/reply', (req, res) => {
+    const { memberId } = actor(rt, req)
+    const { text, action, message_id } = bodyOf(ReplyBody, req)
+    if (message_id) {
+      const card = rt.threads.find(message_id)
+      if (!card || card.thread !== memberId || !card.card)
+        throw new HttpError(404, 'no card for you with that id')
+      if (!rt.threads.answerCard(message_id, action ?? text ?? ''))
+        throw new HttpError(409, 'that card is already answered')
+    }
+    rt.threads.post({
+      thread: memberId,
+      from: memberId,
+      to: 'agent',
+      text: text ?? action ?? '',
+      kind: 'reply',
+    })
+    res.json({ ok: true, delivered: rt.waits.reply(memberId, text ?? null, action ?? null) })
+  })
+
+  /** Whoever is playing the phone says this person did not pick up. */
+  app.post('/api/no-answer', (req, res) => {
+    const { from } = bodyOf(NoAnswerBody, req)
+    rt.emit('no_answer', { from, source: 'operator' })
+    res.json({ ok: true, delivered: rt.waits.noAnswer(from) })
   })
 
   /** Calls a person or a fixture answers, waiting (replaces the reference's /api/curtain). */
@@ -158,6 +202,18 @@ const InputBody = z.object({
   text: z.string().trim().min(1, 'say something'),
   sample_id: z.string().optional(),
 })
+
+const ReplyBody = z
+  .object({
+    text: z.string().trim().min(1).optional(),
+    action: z.string().trim().min(1).optional(),
+    message_id: z.string().optional(),
+  })
+  .refine((b) => b.text !== undefined || b.action !== undefined, {
+    message: 'say something, or press a button',
+  })
+
+const NoAnswerBody = z.object({ from: z.string().trim().min(1) })
 
 const OperatorAnswerBody = z.object({
   variant: z.string().optional(),

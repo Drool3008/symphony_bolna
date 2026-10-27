@@ -89,6 +89,19 @@ export class AgentThreads {
     return row ? toMessage(row) : null
   }
 
+  /** Marks the person's unanswered cards as timed out. Returns their ids. */
+  markCardsTimedOut(thread: string): string[] {
+    const at = this.rt.clock().toISOString()
+    const ids = this.rt.db
+      .prepare(
+        'SELECT id FROM messages WHERE thread = ? AND card IS NOT NULL AND answer IS NULL AND timed_out_at IS NULL',
+      )
+      .pluck()
+      .all(thread) as string[]
+    for (const id of ids) this.rt.db.prepare('UPDATE messages SET timed_out_at = ? WHERE id = ?').run(at, id)
+    return ids
+  }
+
   /** Locks the answer onto a card, so it survives a reload and every screen shows the same thing. */
   answerCard(id: string, answer: string): ThreadMessage | null {
     const at = this.rt.clock().toISOString()

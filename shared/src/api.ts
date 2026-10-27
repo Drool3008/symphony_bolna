@@ -142,3 +142,17 @@ export interface Decision {
   recipient: string
   connector: string
 }
+
+/** POST /api/reply. The person answering is the member in X-Member-Id. */
+export interface ReplyRequest {
+  text?: string
+  /** The button pressed on a card. */
+  action?: string
+  /** The card being answered. */
+  message_id?: string
+}
+
+/** POST /api/no-answer. Whoever is playing the phone says this person did not pick up. */
+export interface NoAnswerRequest {
+  from: string
+}

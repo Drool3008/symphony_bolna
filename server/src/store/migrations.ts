@@ -138,4 +138,23 @@ export const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    id: 6,
+    name: 'waits',
+    sql: `
+      -- The agent waiting on a person. Ends on a reply, a "nobody answered",
+      -- or the sim clock passing the deadline; never on a wall-clock timer.
+      CREATE TABLE waits (
+        seq        INTEGER PRIMARY KEY AUTOINCREMENT,
+        id         TEXT NOT NULL UNIQUE,
+        member     TEXT NOT NULL,
+        what_for   TEXT NOT NULL,
+        deadline   TEXT NOT NULL,
+        state      TEXT NOT NULL,
+        result     TEXT,
+        opened_at  TEXT NOT NULL,
+        settled_at TEXT
+      );
+    `,
+  },
 ]

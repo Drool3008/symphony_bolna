@@ -22,7 +22,6 @@ async function call(rt: ReturnType<typeof testRuntime>, name: string, args: obje
  * by the end of Stage 7.
  */
 const NOT_BUILT_YET = new Set([
-  'wait_for_reply',
   'next_contact',
   'record_account',
   'record_assessment',

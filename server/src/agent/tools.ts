@@ -137,6 +137,24 @@ export function buildTools(rt: Runtime): ToolSpec[] {
     }),
 
     defineTool({
+      name: 'wait_for_reply',
+      mode: 'LIVE',
+      description:
+        'Pause until this person replies. Use when you genuinely cannot continue without their answer. Returns their ' +
+        'reply, or that nobody answered (they did not pick up, or the wait time passed on the clock) so you can move ' +
+        'down the chain (R3). Nobody answering is never a yes.',
+      schema: z.object({
+        from: recipients(ob).describe('Who you are waiting on'),
+        wait_seconds: z
+          .number()
+          .positive()
+          .describe('How long to wait. Use the tier wait time from onboarding.'),
+        what_for: line('What you asked them'),
+      }),
+      handler: ({ from, wait_seconds, what_for }) => rt.waits.wait(from, wait_seconds, what_for),
+    }),
+
+    defineTool({
       name: 'record_update',
       mode: 'LIVE',
       description:
