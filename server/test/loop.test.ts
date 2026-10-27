@@ -224,4 +224,26 @@ describe('the agent loop', () => {
     })
     expect(rt.history.closeInterruptedStep()).toBe(0)
   })
+
+  it('does not call the model when there is nothing it has not seen, as at a boot with no new input', async () => {
+    const { rt, agent, seen } = setUp([{ text: '', toolCalls: [call('note', { text: 'never' })] }])
+    agent.wake()
+    await agent.settled()
+    expect(seen).toHaveLength(0)
+    expect(rt.history.all()).toEqual([])
+  })
+
+  it('after a restart, shows the model the calls that were cut off, once', async () => {
+    const { rt, agent, seen } = setUp([])
+    rt.history.append({ role: 'user', text: 'refill due' })
+    rt.history.append({ role: 'model', text: '', toolCalls: [{ id: 'c1', name: 'ring', args: { to: 'x' } }] })
+    expect(rt.history.closeInterruptedStep()).toBe(1)
+    agent.resume()
+    await agent.settled()
+    expect(seen).toHaveLength(1)
+    expect(JSON.stringify(seen[0]!.history.at(-1))).toMatch(/interrupted: the server restarted/)
+    agent.resume()
+    await agent.settled()
+    expect(seen).toHaveLength(1)
+  })
 })

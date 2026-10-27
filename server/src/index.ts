@@ -27,12 +27,13 @@ function boot() {
     // to answer to; the history gets a result for each saying so.
     operator.abandonAll('the server restarted')
     rt.waits.releaseAll('server_restarted')
-    rt.history.closeInterruptedStep()
+    const interrupted = rt.history.closeInterruptedStep()
     const { agent, selectScenario } = startAgent(rt, env, operator, { databasePath })
     const app = createApp(rt, { operator, ...(selectScenario ? { selectScenario } : {}) })
-    // A step that was waiting when the server stopped already has its results;
-    // anything that arrived and was never answered gets answered now.
-    agent.wake()
+    // A step cut off by the restart now has its results, and the model reads
+    // them; otherwise, an input that arrived and was never answered is answered now.
+    if (interrupted) agent.resume()
+    else agent.wake()
     app.listen(env.PORT, () => {
       log.info(
         {

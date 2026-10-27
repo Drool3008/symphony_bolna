@@ -73,7 +73,24 @@ export class Agent {
    * came in that the model has not yet seen.
    */
   wake(): void {
-    if (this.running) return
+    // Nothing to answer means no call to the model: an empty history is not a
+    // question, and a provider refuses one.
+    if (this.running || !this.unseenInput()) return
+    this.start()
+  }
+
+  /**
+   * At boot, after a step cut off by a restart has been given its
+   * "interrupted" results: the model has to read them, or a run that was
+   * waiting on somebody would stop with nobody told (R22). Only for that
+   * case; a run that stopped at its step limit stays stopped.
+   */
+  resume(): void {
+    if (this.running || this.rt.history.all().at(-1)?.role !== 'tool') return
+    this.start()
+  }
+
+  private start(): void {
     this.running = (async () => {
       try {
         do await this.run(this.epoch)
