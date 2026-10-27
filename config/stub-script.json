@@ -1,0 +1,84 @@
+[
+  {
+    "_comment": "Turn 1: Agent detects low medicines, triages. Lakshmi's Metoprolol is critical (3 days). Starts with her.",
+    "text": "",
+    "toolCalls": [
+      { "name": "log_decision", "args": { "received": "Refill check: Lakshmi's Metoprolol has 6 pills left (3 days at 2/day), must_not_miss. Arun's inhaler has 20 doses (~10 days). Kavya's Levothyroxine has 15 pills (15 days).", "source": "Clock, refill cycle check", "decided": "Prioritise Lakshmi's Metoprolol first: 3 days of cover and must_not_miss. Then Arun's inhaler. Kavya has headroom.", "rule_id": "R3", "why": "Metoprolol must not be stopped suddenly; 3 days is urgent. The inhaler has 10 days, so it can wait until Lakshmi's is sorted.", "action": "Call Pillar Road Medicals for Metoprolol refill, tell the family group someone is on it", "recipient": "Pillar Road Medicals, family_group", "connector": "Phone, in-app message" } },
+      { "name": "set_stage", "args": { "stage": 2, "why": "refill check triggered: Lakshmi's Metoprolol runs out in 3 days" } },
+      { "name": "send_message", "args": { "to": "family_group", "text": "Amma's tablets are running low. I'm calling the chemist now to arrange a refill.", "language": "en-IN" } },
+      { "name": "place_call", "args": { "to": "Pillar Road Medicals, Hanamkonda", "phone": "+91-80000-20001", "purpose": "refill Metoprolol 25mg, 60 tablets for Lakshmi", "say": "I am calling for Lakshmi, 67 years old, a patient of Dr. S. Rao. She needs a refill of Metoprolol 25 mg, sixty tablets. Prescription ID RX-WGL-2026-0612." } }
+    ]
+  },
+  {
+    "_comment": "Turn 2: Pillar Road is out of stock, offers substitute. Agent refuses (R1/R13), records it, moves to next chemist.",
+    "text": "",
+    "toolCalls": [
+      { "name": "log_decision", "args": { "received": "Pillar Road Medicals: Metoprolol 25mg out of stock. Offered Atenolol 25mg as substitute.", "source": "Pillar Road Medicals, phone call", "decided": "Refuse the substitute. Never accept or offer a substitute medicine (R1, R13). Record the offer and try next chemist.", "rule_id": "R13", "why": "The agent never substitutes and never accepts a substitute. The doctor prescribed Metoprolol, not Atenolol. Moving to Kazipet Pharmacy (rank 2).", "action": "Record out-of-stock and substitute offer, call Kazipet Pharmacy", "recipient": "Kazipet Pharmacy", "connector": "Phone" } },
+      { "name": "record_provider_outcome", "args": { "kind": "chemists", "provider": "Pillar Road Medicals, Hanamkonda", "outcome": "out_of_stock", "why": "Metoprolol 25mg not available. Substitute (Atenolol 25mg) offered and refused per R13." } },
+      { "name": "record_fulfilment", "args": { "prescribed": "Metoprolol 25mg", "supplied": "not supplied", "chemist": "Pillar Road Medicals, Hanamkonda", "substitute_offered": "Atenolol 25mg, same class, 200 rupees", "why": "R13: never substitute, never accept a substitute. Declined and moving to next chemist." } },
+      { "name": "set_stage", "args": { "stage": 6, "why": "acting: trying next chemist for Metoprolol" } },
+      { "name": "place_call", "args": { "to": "Kazipet Pharmacy", "phone": "+91-80000-20002", "purpose": "refill Metoprolol 25mg, 60 tablets for Lakshmi — Pillar Road was out of stock", "say": "I am calling for Lakshmi, 67 years old, a patient of Dr. S. Rao. She needs Metoprolol 25 mg, sixty tablets. Prescription ID RX-WGL-2026-0612. Do you have it in stock?" } }
+    ]
+  },
+  {
+    "_comment": "Turn 3: Kazipet has it. 320 rupees > 200 threshold. Ask Arun.",
+    "text": "",
+    "toolCalls": [
+      { "name": "log_decision", "args": { "received": "Kazipet Pharmacy has Metoprolol 25mg in stock. Price: 320 rupees for 60 tablets.", "source": "Kazipet Pharmacy, phone call", "decided": "Record in-stock. Price 320 rupees is above the 200-rupee threshold. Ask Arun before paying.", "rule_id": "R15", "why": "320 exceeds the 200-rupee ask-first threshold Arun set. Need his approval.", "action": "Approval card to Arun", "recipient": "rp", "connector": "In-app message" } },
+      { "name": "record_provider_outcome", "args": { "kind": "chemists", "provider": "Kazipet Pharmacy", "outcome": "answered", "why": "Metoprolol 25mg available at 320 rupees for 60 tablets." } },
+      { "name": "send_message", "args": { "to": "rp", "text": "Amma's Metoprolol was out of stock at Pillar Road. Kazipet Pharmacy has it. OK to pay?", "language": "en-IN", "card": "{\"kind\":\"spend_above_threshold\",\"amount_inr\":320,\"payee\":\"Kazipet Pharmacy\",\"medicine\":\"Metoprolol\",\"strength\":\"25mg\",\"quantity\":\"60 tablets\",\"for\":\"Lakshmi\",\"wallet_left_inr\":4680,\"why\":\"Above the \\u20b9200 you set for asking first.\",\"on_timeout\":\"hold the order unpaid and call you\"}" } },
+      { "name": "wait_for_reply", "args": { "from": "rp", "wait_seconds": 180, "what_for": "approve the Metoprolol refill from Kazipet Pharmacy" } }
+    ]
+  },
+  {
+    "_comment": "Turn 4: Arun approves. Pay, ask the chemist to deliver, update the group. If Kazipet cannot deliver, R14: pickup and an auto for a family member.",
+    "text": "",
+    "toolCalls": [
+      { "name": "log_decision", "args": { "received": "Arun approved the Metoprolol refill, 320 rupees at Kazipet Pharmacy", "source": "Arun, reply in the app", "decided": "Pay Kazipet Pharmacy and record it on the ledger. Kazipet delivers to Lakshmi; if they cannot, arrange a pickup from the nearest chemist and an auto for a family member (R14).", "rule_id": "R18", "why": "Approval received. Delivery is the chemist's own; the refill date waits for what they actually hand over (R21).", "action": "Pay, tell Arun, Lakshmi and the family group", "recipient": "Kazipet Pharmacy, rp, family_group", "connector": "Wallet ledger, in-app message" } },
+      { "name": "wallet_ledger_append", "args": { "amount_inr": 320, "payee": "Kazipet Pharmacy", "what": "Metoprolol 25mg, 60 tablets for Lakshmi" } },
+      { "name": "send_message", "args": { "to": "rp", "text": "Paid Kazipet Pharmacy for Amma's Metoprolol. They will deliver it to her; if they cannot, I will arrange a pickup and an auto for one of us. I will set her refill date from what they actually hand over.", "language": "en-IN" } },
+      { "name": "send_message", "args": { "to": "patient", "text": "అమ్మా, మీ మాత్రలు ఆర్డర్ అయ్యాయి. కెమిస్ట్‌కి పేమెంట్ అయింది. మీకు డెలివరీ చేయించడానికి ప్రయత్నిస్తున్నాను.", "language": "te-IN" } },
+      { "name": "send_message", "args": { "to": "family_group", "text": "Amma's tablets are sorted. The chemist has been paid and we're arranging delivery.", "language": "en-IN" } }
+    ]
+  },
+  {
+    "_comment": "Turn 5: Now handle Arun's inhaler (medium priority). Call MedPlus Gachibowli.",
+    "text": "",
+    "toolCalls": [
+      { "name": "log_decision", "args": { "received": "Lakshmi's refill is sorted. Moving to the next priority: Arun's inhaler has ~20 doses left (~10 days).", "source": "Clock, refill cycle check", "decided": "Call MedPlus Gachibowli for Arun's Budesonide + Formoterol inhaler.", "rule_id": "R3", "why": "10 days of cover, not critical but should be refilled before it runs out. Arun is in Hyderabad, so use his local chemist.", "action": "Call MedPlus Gachibowli", "recipient": "MedPlus Gachibowli", "connector": "Phone" } },
+      { "name": "set_stage", "args": { "stage": 6, "why": "acting: refilling Arun's inhaler from his Hyderabad chemist" } },
+      { "name": "place_call", "args": { "to": "MedPlus Gachibowli", "phone": "+91-80000-20003", "purpose": "refill Budesonide + Formoterol 200/6 mcg inhaler for Arun", "say": "I am calling for Arun, 29 years old, a patient of Dr. K. Iyer. He needs a Budesonide plus Formoterol 200 over 6 microgram inhaler. Prescription ID RX-HYD-2026-0718. Do you have it?" } }
+    ]
+  },
+  {
+    "_comment": "Turn 6: MedPlus has it. 480 rupees > threshold. Ask Arun (he is the RP and the patient here).",
+    "text": "",
+    "toolCalls": [
+      { "name": "log_decision", "args": { "received": "MedPlus Gachibowli has the Budesonide Formoterol inhaler. 480 rupees.", "source": "MedPlus Gachibowli, phone call", "decided": "480 exceeds the threshold. Ask Arun. Since it is his own medicine, this is straightforward.", "rule_id": "R15", "why": "480 > 200 threshold. Arun is both the RP and the person who needs this medicine.", "action": "Approval card to Arun for his own inhaler", "recipient": "rp", "connector": "In-app message" } },
+      { "name": "record_provider_outcome", "args": { "kind": "chemists", "provider": "MedPlus Gachibowli", "outcome": "answered", "why": "Budesonide + Formoterol inhaler available at 480 rupees." } },
+      { "name": "send_message", "args": { "to": "rp", "text": "Your inhaler is running low too. MedPlus Gachibowli has it. OK to pay?", "language": "en-IN", "card": "{\"kind\":\"spend_above_threshold\",\"amount_inr\":480,\"payee\":\"MedPlus Gachibowli\",\"medicine\":\"Budesonide + Formoterol\",\"strength\":\"200/6 mcg inhaler\",\"quantity\":\"1 inhaler (120 doses)\",\"for\":\"Arun\",\"wallet_left_inr\":4200,\"why\":\"Above the \\u20b9200 you set for asking first.\",\"on_timeout\":\"hold the order unpaid and call you\"}" } },
+      { "name": "wait_for_reply", "args": { "from": "rp", "wait_seconds": 180, "what_for": "approve the inhaler refill from MedPlus" } }
+    ]
+  },
+  {
+    "_comment": "Turn 7: Arun approves his own inhaler. Pay, MedPlus delivers to him in Hyderabad itself, update group.",
+    "text": "",
+    "toolCalls": [
+      { "name": "log_decision", "args": { "received": "Arun approved his inhaler refill, 480 rupees at MedPlus Gachibowli", "source": "Arun, reply in the app", "decided": "Pay MedPlus and record it on the ledger. MedPlus delivers to Arun in Hyderabad. Update the group.", "rule_id": "R18", "why": "Approval received. MedPlus delivers locally; the refill date waits for what they actually hand over (R21).", "action": "Pay, arrange delivery, update group", "recipient": "MedPlus Gachibowli, rp, family_group", "connector": "Wallet ledger, in-app message" } },
+      { "name": "wallet_ledger_append", "args": { "amount_inr": 480, "payee": "MedPlus Gachibowli", "what": "Budesonide + Formoterol inhaler for Arun" } },
+      { "name": "send_message", "args": { "to": "rp", "text": "Paid for your inhaler. MedPlus is arranging delivery to your Hyderabad address. You should have it by this evening.", "language": "en-IN" } },
+      { "name": "send_message", "args": { "to": "family_group", "text": "Both refills are sorted. Everything is on its way.", "language": "en-IN" } },
+      { "name": "set_stage", "args": { "stage": 7, "why": "checking in: both refills arranged, delivery in progress" } }
+    ]
+  },
+  { "_comment": "Both refills ordered. Waiting on the chemists to confirm what they handed over.", "text": "Both refills are ordered and paid for. Waiting on the chemists to confirm what they handed over.", "toolCalls": [] },
+  {
+    "_comment": "Turn 9: Kazipet confirms on its screen what it dispensed. Set the refill clock from that (R21).",
+    "text": "",
+    "toolCalls": [
+      { "name": "log_decision", "args": { "received": "Kazipet Pharmacy confirmed sixty Metoprolol 25mg tablets handed over", "source": "Kazipet Pharmacy, chemist confirmation in the app", "decided": "Set the refill cycle from the sixty dispensed", "rule_id": "R21", "why": "the clock runs from what the counter handed over, never from the prescription", "action": "set the refill cycle", "recipient": "none", "connector": "none" } },
+      { "name": "set_refill_cycle", "args": { "medicine_id": "med_chronic_1", "quantity_dispensed": 60, "source": "chemist_confirmation", "receipt_ref": "chemist confirmation, Kazipet Pharmacy", "from_date": "2026-10-06" } }
+    ]
+  },
+  { "text": "done", "toolCalls": [] }
+]

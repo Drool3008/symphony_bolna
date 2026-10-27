@@ -1,0 +1,1484 @@
+{
+  "_note": "Scripted paths for the sample triggers in config/trigger-samples.json, used only when MODEL_PROVIDER=stub. One script per severity band, plus per-sample overrides for sentences that exercise something their band does not. `bands` is matched on the sample's expected tier; `samples` wins when a key matches the sample id. config/stub-script.json is untouched and is still the default take (the clock-driven medication refill).",
+  "_limits": "A static script cannot quote words it has not seen, so these do not call record_account: the transcript has to be verbatim (R5) and only a real model has the sentence in front of it. They also avoid naming a provider, because provider names live in onboarding data that is all placeholder today. What these scripts do demonstrate is the routing the severity decides: critical acts and settles up afterwards, urgent and routine stop and ask the RP first. A static script also cannot branch on an answer: test_due_tap always closes on the second clinic, whichever of the three buttons is pressed. A real model reads the answer and does what was actually chosen -- including the decline path, where it tells the family and escalates to the RP. The money is the same: spoken_account always scripts the approved path, because a static script cannot know what Arun actually tapped on the receipt. A real model reads his answer and passes through what he really chose -- including the decline, where nothing is debited, no cab is booked and she is not told one is coming. The two taps are the same again at the other end of the call: refill_tap is scripted with the first chemist holding the strip and test_due_tap with the second clinic holding the slot, because a static script cannot branch on what the line actually came back with. A real model hears the out of stock or the fully booked and works down the ranked list instead -- order_medicines and book_test are only reached once somebody has really said yes. test_due_tap and test_due_unavailable are the two ends of the same phone call, split because a static script cannot branch on what the line came back with: the tap books on her own doctor's first free slot, and test_due_unavailable is the same request when he has nothing and the choice goes back to her. A real model hears which one it got and only one of these ever happens. The delivery is scripted on the path where it works: Pillar Road delivers, the counter confirms what it handed over, and Lakshmi confirms she has it. R14 is the other half of that call and a real model has to take it -- a chemist that cannot deliver means arranging a pickup from the nearest chemist and an auto for somebody in the family instead. A static script also cannot wait on the chemist or on Lakshmi, so it stops after asking and picks up again when their confirmation arrives.",
+  "_r19": "Every turn that calls a tool opens with log_decision. There is no exemption, not even for set_stage.",
+  "bands": {
+    "critical": [
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "A member described a severe symptom in the app",
+              "source": "Chat message from a named family member, in the app",
+              "decided": "Open an incident and tell them help is already moving",
+              "rule_id": "R2",
+              "why": "a real person sent this, so it is an input the agent may act on",
+              "action": "opened the incident and acknowledged it",
+              "recipient": "the person who wrote in",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 2,
+              "why": "a named person reported a severe symptom"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "patient",
+              "text": "నేను చూసుకుంటున్నాను. ఇప్పుడే మీ కోసం ప్రయాణం ఏర్పాటు చేస్తున్నాను. ఫోన్ దగ్గరే ఉంచుకోండి.",
+              "language": "te-IN"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The account of the symptom",
+              "source": "Agent's own weighing at stage 5",
+              "decided": "Critical",
+              "rule_id": "R7",
+              "why": "matches the family's red-flag list, is new for this patient, and nobody able to drive is at home",
+              "action": "assessed critical",
+              "recipient": "none",
+              "connector": "none"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 5,
+              "why": "weighing the four factors before routing"
+            }
+          },
+          {
+            "name": "record_assessment",
+            "args": {
+              "about": "patient",
+              "tier": "critical",
+              "factors": "red flag matched; sudden change from baseline; touches a known condition; nobody at home can drive her",
+              "can_tell": true,
+              "unsure": false
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Assessment came back critical",
+              "source": "record_assessment at stage 5",
+              "decided": "Arrange transport now rather than ask first",
+              "rule_id": "R4",
+              "why": "at this tier the delay of waiting for an answer is the risk",
+              "action": "searching for a ride",
+              "recipient": "none",
+              "connector": "Beckn"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 6,
+              "why": "acting: transport first"
+            }
+          },
+          {
+            "name": "beckn_search",
+            "args": {
+              "from": "Home",
+              "to": "The nearest clinic on file",
+              "for_person": "patient"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Rides came back from the search",
+              "source": "Beckn on_search",
+              "decided": "Take the one that can reach her soonest",
+              "rule_id": "R10",
+              "why": "at a critical tier arrival time decides it, not fare",
+              "action": "booked the ride",
+              "recipient": "patient",
+              "connector": "Beckn"
+            }
+          },
+          {
+            "name": "beckn_confirm",
+            "args": {
+              "item_id": "the soonest ride from on_search",
+              "fare_inr": 420,
+              "for_person": "patient"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Ride confirmed, fare known",
+              "source": "Beckn on_confirm",
+              "decided": "Pay it from the wallet now and let the RP overrule it afterwards",
+              "rule_id": "R10",
+              "why": "holding a critical booking unpaid to wait for an answer is the worse risk; the RP keeps the veto",
+              "action": "debited the fare and opened the reversal window",
+              "recipient": "rp",
+              "connector": "Wallet ledger"
+            }
+          },
+          {
+            "name": "wallet_ledger_append",
+            "args": {
+              "amount_inr": 420,
+              "payee": "Ride to the clinic",
+              "what": "Cab for the patient, critical"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "rp",
+              "text": "I have booked a cab for Amma to the clinic and paid Rs 420 from the wallet. I did not wait to ask, because of how she described it. The clinic is expecting her. You can reverse this if you want to.",
+              "language": "en-IN",
+              "card": "{\"kind\":\"payment\",\"title\":\"Cab booked and paid\",\"amount_inr\":420,\"payee\":\"Ride to the clinic\",\"for\":\"Amma\",\"why\":\"She described it as severe, so I moved first and am telling you now.\",\"buttons\":[\"Fine\",\"Reverse it\"]}"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "family_group",
+              "text": "Amma is on her way to the clinic and I am handling it. I will post again when she has been seen.",
+              "language": "en-IN"
+            }
+          },
+          {
+            "name": "open_reversal_window",
+            "args": {
+              "about": "patient",
+              "decided_by": "patient",
+              "decision": "Send her to the clinic by cab straight away",
+              "action_taken": "Cab booked and Rs 420 paid from the wallet; the clinic has been told to expect her",
+              "window_seconds": 30
+            }
+          }
+        ]
+      },
+      {
+        "text": "Transport is moving and the RP has been told what it cost. Waiting on the clinic now.",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Everything for this step is done",
+              "source": "Agent's own check of the step",
+              "decided": "Move to checking in and wait on the clinic",
+              "rule_id": "R21",
+              "why": "the ride is booked, paid and the family told; nothing here is left silent",
+              "action": "moved to checking in",
+              "recipient": "none",
+              "connector": "none"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 7,
+              "why": "ride booked and paid, now checking in"
+            }
+          }
+        ]
+      }
+    ],
+    "urgent": [
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "A member described a symptom in the app",
+              "source": "Chat message from a named family member, in the app",
+              "decided": "Open an incident and acknowledge it",
+              "rule_id": "R2",
+              "why": "a real person sent this, so it is an input the agent may act on",
+              "action": "opened the incident",
+              "recipient": "the person who wrote in",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 2,
+              "why": "a named person reported a symptom"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "patient",
+              "text": "చెప్పినందుకు ధన్యవాదాలు. నేను దీన్ని నమోదు చేశాను, ఇంట్లో వాళ్ళతో మాట్లాడి తిరిగి చెబుతాను.",
+              "language": "te-IN"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The account of the symptom",
+              "source": "Agent's own weighing at stage 5",
+              "decided": "Urgent, and not mine to act on alone",
+              "rule_id": "R7",
+              "why": "no red flag matched, but it is a change from baseline and it touches a current medicine",
+              "action": "assessed urgent",
+              "recipient": "none",
+              "connector": "none"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 5,
+              "why": "weighing the four factors before routing"
+            }
+          },
+          {
+            "name": "record_assessment",
+            "args": {
+              "about": "patient",
+              "tier": "urgent",
+              "factors": "no red flag matched; a change from baseline over two days; touches a current medicine; a clinic is open today",
+              "can_tell": true,
+              "unsure": false
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Assessment came back urgent",
+              "source": "record_assessment at stage 5",
+              "decided": "Put it to the RP with the detail and wait for their answer",
+              "rule_id": "R17",
+              "why": "nothing here needs to happen this minute, so the choice is the RP's and not mine",
+              "action": "asked the RP and stopped",
+              "recipient": "rp",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "rp",
+              "text": "Amma has reported something I would call urgent, but not an emergency. I have not booked anything. Shall I get her a clinic slot today?",
+              "language": "en-IN",
+              "card": "{\"kind\":\"booking\",\"title\":\"Book a clinic slot today?\",\"detail\":\"What she described, in her words, is in your thread above. No red flag matched, but it is new for her and it touches one of her current medicines.\",\"for\":\"Amma\",\"why\":\"Nothing is booked and nothing is spent until you say so.\",\"buttons\":[\"Yes, book it\",\"Not yet\",\"Call me\"],\"on_timeout\":\"I will ask the next person on the list rather than book it myself.\"}"
+            }
+          },
+          {
+            "name": "wait_for_reply",
+            "args": {
+              "from": "rp",
+              "wait_seconds": 180,
+              "what_for": "whether to book a clinic slot today"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The RP answered",
+              "source": "RP's tap in the app",
+              "decided": "Do what they said, and nothing beyond it",
+              "rule_id": "R10",
+              "why": "the RP holds this call and they have now made it",
+              "action": "acting on the RP's answer",
+              "recipient": "rp",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 6,
+              "why": "the RP said to go ahead"
+            }
+          },
+          {
+            "name": "next_provider",
+            "args": {
+              "kind": "clinics",
+              "why": "the RP asked for a slot today"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Slot being arranged on the RP's instruction. The group has the status, without the detail.",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "A clinic to try",
+              "source": "next_provider",
+              "decided": "Tell the group the status only",
+              "rule_id": "R18",
+              "why": "the group gets what is happening and who is handling it, never the symptom and never the cost",
+              "action": "posted a status line",
+              "recipient": "family_group",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "family_group",
+              "text": "I am arranging a clinic visit for Amma today. Nothing to worry about, I will update here once it is fixed.",
+              "language": "en-IN"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 7,
+              "why": "waiting on the clinic"
+            }
+          }
+        ]
+      }
+    ],
+    "routine": [
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "A member described something minor in the app",
+              "source": "Chat message from a named family member, in the app",
+              "decided": "Open an incident and acknowledge it",
+              "rule_id": "R2",
+              "why": "a real person sent this, so it is an input the agent may act on",
+              "action": "opened the incident",
+              "recipient": "the person who wrote in",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 2,
+              "why": "a named person reported something minor"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "patient",
+              "text": "చెప్పినందుకు ధన్యవాదాలు. పెద్ద విషయం కాదు. నేను నమోదు చేసి ఇంట్లో వాళ్ళతో మాట్లాడుతాను.",
+              "language": "te-IN"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The account of the complaint",
+              "source": "Agent's own weighing at stage 5",
+              "decided": "Routine",
+              "rule_id": "R7",
+              "why": "no red flag, no change from baseline worth calling one, and nothing touching a current medicine",
+              "action": "assessed routine",
+              "recipient": "none",
+              "connector": "none"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 5,
+              "why": "weighing the four factors before routing"
+            }
+          },
+          {
+            "name": "record_assessment",
+            "args": {
+              "about": "patient",
+              "tier": "routine",
+              "factors": "no red flag; settles on its own and has before; no link to a current medicine; a clinic is open tomorrow",
+              "can_tell": true,
+              "unsure": false
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Assessment came back routine",
+              "source": "record_assessment at stage 5",
+              "decided": "Tell the RP what it is and let them pick what happens next",
+              "rule_id": "R17",
+              "why": "a routine complaint is the RP's call, and I will not name a medicine for it (R1)",
+              "action": "asked the RP and stopped",
+              "recipient": "rp",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "rp",
+              "text": "Amma has reported something minor. I would not call it urgent. It may well be covered by something she already has at home, but I am not going to name a medicine for it. Do you want a clinic slot, or shall I leave it?",
+              "language": "en-IN",
+              "card": "{\"kind\":\"booking\",\"title\":\"Anything to do here?\",\"detail\":\"Her own words are in your thread above. No red flag, nothing new for her, and no link to her current medicines.\",\"for\":\"Amma\",\"why\":\"Your call entirely. I will not pick a medicine, and nothing is spent unless you ask for it.\",\"buttons\":[\"Book a slot\",\"Leave it for now\",\"Call me\"],\"on_timeout\":\"I will leave it and keep it on her record.\"}"
+            }
+          },
+          {
+            "name": "wait_for_reply",
+            "args": {
+              "from": "rp",
+              "wait_seconds": 900,
+              "what_for": "whether to do anything about a routine complaint"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Logged on her record, with the RP's answer against it. Nothing booked and nothing spent.",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The RP answered",
+              "source": "RP's tap in the app",
+              "decided": "Do what they said and close the incident",
+              "rule_id": "R10",
+              "why": "the RP holds a routine call and they have made it",
+              "action": "acted on the RP's answer and closed",
+              "recipient": "rp",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 9,
+              "why": "the RP has decided and nothing is outstanding"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "samples": {
+    "spoken_account": [
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "A spoken account from the patient, transcribed through the speech port",
+              "source": "Patient, recorded in the app; transcript from the speech port",
+              "decided": "Keep her words as they came back and ask her two things out loud",
+              "rule_id": "R5",
+              "why": "the transcript is hers and is stored unedited; what is missing is when it started and whether anything else came with it",
+              "action": "opened the account and asked the first question aloud",
+              "recipient": "patient",
+              "connector": "Speech port"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 4,
+              "why": "she has described it in her own words; now filling the gaps"
+            }
+          },
+          {
+            "name": "ask_followup",
+            "args": {
+              "text": "ఈ ఇబ్బంది ఎప్పటి నుంచి ఉంది?",
+              "language": "te-IN",
+              "to": "patient"
+            }
+          },
+          {
+            "name": "wait_for_reply",
+            "args": {
+              "from": "patient",
+              "wait_seconds": 180,
+              "what_for": "how long it has been going on"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Her answer to the first question",
+              "source": "Patient, recorded in the app; transcript from the speech port",
+              "decided": "Ask one more, about whether anything came with it",
+              "rule_id": "R5",
+              "why": "two questions is enough to write it up; more than that is an interrogation, not a call",
+              "action": "asked the second question aloud",
+              "recipient": "patient",
+              "connector": "Speech port"
+            }
+          },
+          {
+            "name": "ask_followup",
+            "args": {
+              "text": "ఇది మరో చోటికి పొక్కుతోందా, లేదా చెమటలు పట్టినాయా?",
+              "language": "te-IN",
+              "to": "patient"
+            }
+          },
+          {
+            "name": "wait_for_reply",
+            "args": {
+              "from": "patient",
+              "wait_seconds": 180,
+              "what_for": "whether it is spreading or she is sweating"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Her account and both answers",
+              "source": "The exchange recorded at stage 4",
+              "decided": "Close the questions and have the whole exchange written up",
+              "rule_id": "R7",
+              "why": "I have when it started and what came with it; that is enough to weigh and to hand to a person",
+              "action": "summarised the exchange and sent it on",
+              "recipient": "patient and rp",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 5,
+              "why": "the account is complete; writing it up and routing it"
+            }
+          },
+          {
+            "name": "summarise_account",
+            "args": {
+              "why": "she has told me when it began and what came with it, so there is nothing more I should be asking her"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Her own words are on the record, she has been told what happens next, and Arun has the account.",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The write-up went to both of them",
+              "source": "summarise_account",
+              "decided": "Tell the group it is being handled and nothing more",
+              "rule_id": "R18",
+              "why": "the group hears who is handling it, never the symptom",
+              "action": "posted a status line",
+              "recipient": "family_group",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "family_group",
+              "text": "Lakshmi got in touch with me herself. Arun and I are sorting it out and I will update here.",
+              "language": "en-IN"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 7,
+              "why": "waiting on Arun"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The write-up of her account, and a clinic visit with a cab that comes to more than the ask-first amount",
+              "source": "summarise_account, plus the wallet limits Arun set at signup",
+              "decided": "Put the whole thing to Arun as an itemised receipt and spend nothing until he answers",
+              "rule_id": "R15",
+              "why": "this is above the threshold he set and the tier is not critical, so the money is his call and nothing is booked or paid before he makes it",
+              "action": "sent him the account, the money status and the receipt, and stopped",
+              "recipient": "rp",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "quote_care",
+            "args": {
+              "about": "patient",
+              "clinic": "Dr. S. Rao's clinic, Hanamkonda",
+              "when": "today 4:30 pm",
+              "why": "she described it herself and her own treating doctor has this afternoon free; the consultation and the cab together are above the amount Arun set as ask-first"
+            }
+          },
+          {
+            "name": "wait_for_reply",
+            "args": {
+              "from": "rp",
+              "wait_seconds": 180,
+              "what_for": "whether to go ahead with the clinic visit and the cab at the quoted cost"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Arun approved the receipt, so it is paid for. Lakshmi has been told in Telugu that the visit and the cab are arranged, and the group has the status and no figures.",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Arun's answer on the receipt card",
+              "source": "Arun's tap in the app",
+              "decided": "Settle exactly what he approved: debit the wallet, tell Lakshmi in her own language, and let the group have the status line",
+              "rule_id": "R24",
+              "why": "approved carries what he actually tapped and nothing else; the group narration settle_care posts stays third person with no symptom and no figure",
+              "action": "debited the wallet, told Lakshmi the clinic visit and the cab are set, and posted the status only",
+              "recipient": "patient and family_group",
+              "connector": "Wallet ledger"
+            }
+          },
+          {
+            "name": "settle_care",
+            "args": {
+              "approved": true,
+              "why": "Arun tapped Go ahead on the receipt, so the money moves and she is told it is arranged"
+            }
+          }
+        ]
+      }
+    ],
+    "crit_unreachable": [
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "A member says the patient reported chest tightness and the line then cut, with nobody at the house answering",
+              "source": "Chat message from a named family member, in the app",
+              "decided": "Treat it as critical on a secondhand account and start calling",
+              "rule_id": "R2",
+              "why": "a real person sent this; the account being secondhand does not make it less of an input",
+              "action": "opened the incident",
+              "recipient": "the member who wrote in",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 2,
+              "why": "a severe symptom reported secondhand, nobody reachable at home"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "A secondhand account of chest tightness and a dropped call",
+              "source": "Agent's own weighing at stage 5",
+              "decided": "Critical",
+              "rule_id": "R7",
+              "why": "red flag matched, and not being able to reach her makes it worse rather than better",
+              "action": "assessed critical",
+              "recipient": "none",
+              "connector": "none"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 5,
+              "why": "weighing the four factors"
+            }
+          },
+          {
+            "name": "record_assessment",
+            "args": {
+              "about": "patient",
+              "tier": "critical",
+              "factors": "red flag matched; call dropped mid-sentence; nobody at the house picking up; the nearest member is two hours away",
+              "can_tell": true,
+              "unsure": false
+            }
+          }
+        ]
+      },
+      {
+        "text": "Ambulance sent without waiting for anyone to pick up. Still calling down the list.",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Critical, and nobody reachable",
+              "source": "record_assessment plus the failed calls",
+              "decided": "Dispatch anyway, then keep calling down the contact list",
+              "rule_id": "R9",
+              "why": "waiting for somebody to answer is not a plan at this tier; the dispatch happens and the calling continues",
+              "action": "dispatched and still calling",
+              "recipient": "family_group",
+              "connector": "phone"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 6,
+              "why": "dispatching with nobody reachable"
+            }
+          },
+          {
+            "name": "record_dispatch",
+            "args": {
+              "transport": "Ambulance on 108, sent to the house for the patient",
+              "clinic_notified": "The nearest clinic on file has been told to expect her",
+              "family_alerted": "Posted to the family group that an ambulance is on its way and that I am still calling round",
+              "still_calling": true,
+              "why": "critical with nobody reachable, so all four parts happen at once (R9)"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Dispatch recorded with all four parts",
+              "source": "record_dispatch",
+              "decided": "Keep working down the contact list and tell the group the status",
+              "rule_id": "R18",
+              "why": "the group hears what is happening and who is handling it, never the symptom",
+              "action": "posted the status and carried on calling",
+              "recipient": "family_group",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "family_group",
+              "text": "An ambulance is on its way to Amma and the clinic is expecting her. I could not reach anyone at the house, so I am still calling round. I will update here.",
+              "language": "en-IN"
+            }
+          },
+          {
+            "name": "next_contact",
+            "args": {
+              "affected": "patient",
+              "tier": "critical",
+              "why": "nobody at the house answered, so I am working down the chain while the ambulance is on its way"
+            }
+          }
+        ]
+      }
+    ],
+    "spoken_account_more": [
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "She added something after hearing the write-up",
+              "source": "Patient, recorded in the app; transcript from the speech port",
+              "decided": "Take the addition and ask one thing about it",
+              "rule_id": "R5",
+              "why": "what she volunteers after hearing it back is worth more than another question of mine",
+              "action": "asked one follow-up aloud",
+              "recipient": "patient",
+              "connector": "Speech port"
+            }
+          },
+          {
+            "name": "ask_followup",
+            "args": {
+              "text": "అర్థమైంది. ఇది ఇంతకు ముందు ఎప్పుడైనా జరిగిందా?",
+              "language": "te-IN",
+              "to": "patient"
+            }
+          },
+          {
+            "name": "wait_for_reply",
+            "args": {
+              "from": "patient",
+              "wait_seconds": 180,
+              "what_for": "whether this has happened before"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Her addition is on the record and the write-up has been done again.",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Everything she has said, including the addition",
+              "source": "The exchange recorded at stage 4",
+              "decided": "Write it up again over the whole exchange",
+              "rule_id": "R7",
+              "why": "the summary has to cover what she added, not the version before it",
+              "action": "summarised again and sent it on",
+              "recipient": "patient and rp",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "summarise_account",
+            "args": {
+              "why": "she has added what she wanted and answered on top of it"
+            }
+          }
+        ]
+      }
+    ],
+    "refill_tap": [
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "A refill was raised from the app for Lakshmi's Metoprolol 25mg, with six tablets left on the record",
+              "source": "Tap on the medicine card in the app, by the person holding the phone",
+              "decided": "Order it myself, starting with the first chemist on her ranked list",
+              "rule_id": "R2",
+              "why": "a real person asked for this, and the record agrees with them: six tablets at two a day is three days of cover on a tablet marked must not miss",
+              "action": "took her ranked chemist list and opened the order",
+              "recipient": "none",
+              "connector": "none"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 2,
+              "why": "a refill was asked for from the app and the cover is down to three days"
+            }
+          },
+          {
+            "name": "next_provider",
+            "args": {
+              "kind": "chemists",
+              "why": "her own first chemist has filled this prescription before, so he is tried before anyone else"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Pillar Road Medicals, Hanamkonda, first on her list",
+              "source": "next_provider, from the ranked chemists in her onboarding data",
+              "decided": "Ask for exactly what Dr. Rao wrote, by name and strength, and take nothing in its place",
+              "rule_id": "R1",
+              "why": "a chemist offering something of the same class is the usual way a wrong tablet gets into the house; RX-WGL-2026-0612 says Metoprolol 25mg and only that fills it",
+              "action": "called the chemist for a fortnight's strip",
+              "recipient": "Pillar Road Medicals, Hanamkonda",
+              "connector": "Phone"
+            }
+          },
+          {
+            "name": "place_call",
+            "args": {
+              "to": "Pillar Road Medicals, Hanamkonda",
+              "phone": "+91-80000-20001",
+              "purpose": "a fortnight of Metoprolol 25mg for Lakshmi, thirty tablets, against RX-WGL-2026-0612",
+              "say": "I am calling for Lakshmi, sixty-seven, a patient of Dr. S. Rao. She needs Metoprolol 25 mg, thirty tablets, against prescription RX-WGL-2026-0612. It has to be that one, nothing of the same class in its place. Do you have it, and what does it come to?"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The chemist has the strip: thirty Metoprolol 25mg at about four rupees a tablet, a hundred and twenty rupees",
+              "source": "Pillar Road Medicals, Hanamkonda, on the phone",
+              "decided": "Order it and pay from the wallet now, and let Arun see it afterwards rather than asking him first",
+              "rule_id": "R15",
+              "why": "a hundred and twenty is under the two hundred he set as ask-first and the wallet stays nowhere near its low mark, so this one is mine to decide; a full month at sixty tablets would be two hundred and forty and would have gone to him before anything moved",
+              "action": "placed the order, recorded the spend on the ledger, and told Lakshmi it is paid for and on its way",
+              "recipient": "rp and family_group through the tool, and the patient in Telugu",
+              "connector": "Wallet ledger and in-app message"
+            }
+          },
+          {
+            "name": "order_medicines",
+            "args": {
+              "medicine_id": "med_chronic_1",
+              "medicine": "Metoprolol",
+              "strength": "25mg",
+              "quantity": "30 tablets",
+              "doses_added": 30,
+              "chemist": "Pillar Road Medicals, Hanamkonda",
+              "amount_inr": 120,
+              "for_member": "patient",
+              "why": "three days of cover left on a tablet she must not miss, and the chemist who has filled this prescription before has it on the shelf"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "patient",
+              "language": "te-IN",
+              "text": "అమ్మా, మీ మాత్రలు ఆర్డర్ చేసాను. పిల్లర్ రోడ్ మెడికల్స్ నుంచి ఈరోజే మీకు అందుతాయి. డబ్బు కట్టడం అయిపోయింది, మీరు ఏమి ఇవ్వనవసరం లేదు."
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The order is paid for and the strip is on the counter at Pillar Road Medicals",
+              "source": "order_medicines, and the chemist on the phone",
+              "decided": "Ask the chemist to deliver it to her door rather than leaving her to fetch it, and to confirm on their screen how many tablets they hand over",
+              "rule_id": "R14",
+              "why": "she is sixty-seven and lives alone in Warangal, and Pillar Road is two kilometres from her; if they cannot deliver I arrange a pickup from the nearest chemist and an auto for someone in the family",
+              "action": "asked the chemist to deliver it today and to confirm the quantity handed over",
+              "recipient": "Pillar Road Medicals, Hanamkonda",
+              "connector": "Phone"
+            }
+          },
+          {
+            "name": "place_call",
+            "args": {
+              "to": "Pillar Road Medicals, Hanamkonda",
+              "phone": "+91-80000-20001",
+              "purpose": "deliver the paid Metoprolol strip to Lakshmi today",
+              "say": "The Metoprolol 25 mg for Lakshmi is paid for. Could you deliver it to her at home today, and confirm on your screen how many tablets you hand over?"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Ordered and paid for. Waiting for the chemist to confirm how many tablets they handed over.",
+        "toolCalls": []
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The chemist confirmed on their screen: thirty tablets handed over",
+              "source": "Pillar Road Medicals, Hanamkonda, chemist confirmation in the app",
+              "decided": "Set the clock from the thirty the counter handed over, not the sixty on the prescription, and put the fill on her record",
+              "rule_id": "R21",
+              "why": "the prescription says sixty and she was given thirty; a cycle set from the prescription would come round a fortnight late and nobody would notice until she had none left",
+              "action": "set the refill cycle from the chemist confirmation and updated her record",
+              "recipient": "none",
+              "connector": "none"
+            }
+          },
+          {
+            "name": "set_refill_cycle",
+            "args": {
+              "medicine_id": "med_chronic_1",
+              "quantity_dispensed": 30,
+              "source": "chemist_confirmation",
+              "receipt_ref": "chemist confirmation, Pillar Road Medicals, Hanamkonda",
+              "from_date": "2026-10-06"
+            }
+          },
+          {
+            "name": "record_update",
+            "args": {
+              "target": "medicine",
+              "id": "med_chronic_1",
+              "changes": "{\"last_filled_at\": \"Pillar Road Medicals, Hanamkonda\", \"last_filled_on\": \"2026-10-06\", \"last_filled_quantity\": 30}",
+              "why": "her record should say where this strip came from and when, so the next refill is not a guess about who last had it"
+            }
+          }
+        ]
+      },
+      {
+        "text": "The refill clock is set from what was handed over. Waiting for someone to confirm the tablets reached her.",
+        "toolCalls": []
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Lakshmi confirmed she has the strip",
+              "source": "Lakshmi, confirmation in the app",
+              "decided": "Close the episode: tell the family who did what, and go back to watching the dates",
+              "rule_id": "R21",
+              "why": "the episode closes on the medicine reaching her, not on an order or a delivery booked",
+              "action": "told the family group and returned to Idle",
+              "recipient": "family_group",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "family_group",
+              "text": "Amma has her tablets. Pillar Road Medicals delivered them and I have set her next refill date.",
+              "language": "en-IN"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 1,
+              "why": "she has her tablets, the clock is set from what was dispensed, and nothing is waiting on anybody"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Her tablets reached her, the family knows who did what, and the next refill date is set from the thirty the counter actually gave.",
+        "toolCalls": []
+      }
+    ],
+    "test_due_tap": [
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "An overdue BP check was raised from the app",
+              "source": "Tap on the check-up card in the app, by the person holding the phone",
+              "decided": "Book it, starting with her own treating doctor",
+              "rule_id": "R2",
+              "why": "a real person asked for this; the record says it is overdue and her prescription depends on it",
+              "action": "called her treating doctor for the earliest slot",
+              "recipient": "Dr. S. Rao's clinic, Hanamkonda",
+              "connector": "Phone"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 6,
+              "why": "booking the overdue check-up she asked for"
+            }
+          },
+          {
+            "name": "next_provider",
+            "args": {
+              "kind": "clinics",
+              "why": "her own treating doctor knows the case, so he is tried first"
+            }
+          },
+          {
+            "name": "place_call",
+            "args": {
+              "to": "Dr. S. Rao's clinic, Hanamkonda",
+              "phone": "+91-80000-10001",
+              "purpose": "book the earliest BP check slot for Lakshmi",
+              "say": "I am calling for Lakshmi, a patient of Dr. Rao. Her BP check is overdue and her prescription needs it. What is the earliest slot you have?"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Dr. Rao's clinic has 4:30 pm today with the duty doctor",
+              "source": "Dr. S. Rao's clinic, Hanamkonda, reception, on the phone",
+              "decided": "Take the slot, book a cab to get her there, and settle it out of the wallet",
+              "rule_id": "R15",
+              "why": "a hundred and twenty for the reading and sixty for the auto comes to a hundred and eighty, under the two hundred Arun set as ask-first, so this one I settle and he gets the receipt rather than a question; book_test tells her in Telugu, sends him the figures and posts the group its status line, so I send none of those a second time",
+              "action": "booked the slot and the cab and debited the wallet",
+              "recipient": "the patient, the rp and family_group, through the tool",
+              "connector": "Wallet ledger and in-app message"
+            }
+          },
+          {
+            "name": "record_provider_outcome",
+            "args": {
+              "kind": "clinics",
+              "provider": "Dr. S. Rao's clinic, Hanamkonda",
+              "outcome": "booked",
+              "why": "her own treating doctor had a slot the same day, so there was no reason to go down the list",
+              "chose": "today 4:30 pm"
+            }
+          },
+          {
+            "name": "book_test",
+            "args": {
+              "test_id": "test_1",
+              "test_name": "BP check",
+              "clinic": "Dr. S. Rao's clinic, Hanamkonda",
+              "when": "today 4:30 pm",
+              "for_member": "patient",
+              "test_inr": 120,
+              "cab_inr": 60,
+              "why": "the check is overdue and RX-WGL-2026-0612 cannot be renewed without it"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The booking came back held in her name, with the cab arranged",
+              "source": "book_test",
+              "decided": "Put the appointment on the test record and close",
+              "rule_id": "R21",
+              "why": "the slot is confirmed by name and the family has been told; the record should now say where and when rather than only that it is overdue",
+              "action": "updated the test record and went back to watching the dates",
+              "recipient": "none",
+              "connector": "none"
+            }
+          },
+          {
+            "name": "record_update",
+            "args": {
+              "target": "test_schedule",
+              "id": "test_1",
+              "changes": "{\"booked_at\": \"Dr. S. Rao's clinic, Hanamkonda\", \"booked_for\": \"2026-10-06T16:30:00+05:30\", \"booked_by\": \"the agent, on her own treating doctor's first free slot\"}",
+              "why": "the BP check now has a clinic and a time against it, so the home screen stops showing nothing but overdue"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 1,
+              "why": "slot confirmed by name, cab arranged, the family told and the record updated; nothing is waiting on anybody"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Her BP check is on for 4:30 this afternoon at Dr. Rao's clinic, with a cab to take her and bring her back. Arun has the receipt; the group has been told it is booked.",
+        "toolCalls": []
+      }
+    ],
+    "test_due_unavailable": [
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "An overdue BP check was raised from the app",
+              "source": "Tap on the check-up card in the app, by the person holding the phone",
+              "decided": "Book it, starting with her own treating doctor",
+              "rule_id": "R2",
+              "why": "a real person asked for this; the record says it is overdue and her prescription depends on it",
+              "action": "called her treating doctor for the earliest slot",
+              "recipient": "Dr. S. Rao's clinic, Hanamkonda",
+              "connector": "Phone"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 6,
+              "why": "booking the overdue check-up she asked for"
+            }
+          },
+          {
+            "name": "next_provider",
+            "args": {
+              "kind": "clinics",
+              "why": "her own treating doctor knows the case, so he is tried first"
+            }
+          },
+          {
+            "name": "place_call",
+            "args": {
+              "to": "Dr. S. Rao's clinic, Hanamkonda",
+              "phone": "+91-80000-10001",
+              "purpose": "book the earliest BP check slot for Lakshmi",
+              "say": "I am calling for Lakshmi, a patient of Dr. Rao. Her BP check is overdue and her prescription needs it. What is the earliest slot you have?"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "No answer at Dr. S. Rao's clinic",
+              "source": "Phone, no answer after eight rings",
+              "decided": "Redial the same clinic once before trying anyone else",
+              "rule_id": "R11",
+              "why": "silence is not an answer, and her own doctor is worth a second try before a new one",
+              "action": "redialled the clinic",
+              "recipient": "Dr. S. Rao's clinic, Hanamkonda",
+              "connector": "Phone"
+            }
+          },
+          {
+            "name": "record_provider_outcome",
+            "args": {
+              "kind": "clinics",
+              "provider": "Dr. S. Rao's clinic, Hanamkonda",
+              "outcome": "no_answer"
+            }
+          },
+          {
+            "name": "next_provider",
+            "args": {
+              "kind": "clinics",
+              "why": "checking who is owed a redial before moving down the list"
+            }
+          },
+          {
+            "name": "place_call",
+            "args": {
+              "to": "Dr. S. Rao's clinic, Hanamkonda",
+              "phone": "+91-80000-10001",
+              "purpose": "second attempt: earliest BP check slot for Lakshmi",
+              "say": "Calling again about Lakshmi's overdue BP check. Do you have any slot today, or the earliest after that?"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The clinic answered on the redial: no slots today",
+              "source": "Dr. S. Rao's clinic, Hanamkonda, on the phone",
+              "decided": "Put her three real choices to her rather than picking one",
+              "rule_id": "R12",
+              "why": "a new doctor is one of the things I must ask a person about, and the choice to skip it is hers",
+              "action": "offered another named clinic, a later date with her own doctor, or not booking",
+              "recipient": "Lakshmi",
+              "connector": "In-app message"
+            }
+          },
+          {
+            "name": "record_provider_outcome",
+            "args": {
+              "kind": "clinics",
+              "provider": "Dr. S. Rao's clinic, Hanamkonda",
+              "outcome": "no_slot",
+              "why": "nothing today after a redial; offering the second known clinic tomorrow, Dr. Rao on Thursday, or not booking",
+              "chose": "put all three to the patient rather than choosing for her"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "patient",
+              "language": "te-IN",
+              "text": "డాక్టర్ రావు గారి క్లినిక్‌కి రెండుసార్లు ఫోన్ చేశాను. ఈరోజు స్లాట్ లేదు అన్నారు. మీరు ఏం చేద్దాం అనుకుంటున్నారు?",
+              "card": "{\"kind\": \"slot_unavailable\", \"test\": \"BP check\", \"for\": \"Lakshmi\", \"detail\": \"I called Dr. Rao's clinic twice. Nobody picked up the first time, and on the second call they said there is nothing free today.\", \"why\": \"This reading is overdue and your tablets cannot be renewed without it, so I did not want to leave it or choose for you.\", \"options\": [{\"label\": \"Another doctor, sooner\", \"value\": \"Warangal Family Health Centre — tomorrow 9:30am · Hanamkonda, 4.8 km · +91-80000-10002\"}, {\"label\": \"Your own doctor, later\", \"value\": \"Dr. S. Rao — Thursday 11:00am · Hanamkonda, 2.1 km\"}, {\"label\": \"Not at all\", \"value\": \"I will tell Arun and the family, and ask you again next week\"}], \"buttons\": [\"Warangal Family Health Centre\", \"Wait for Dr. Rao\", \"Don't book\"], \"on_timeout\": \"I will hold Thursday with Dr. Rao and tell Arun\"}"
+            }
+          },
+          {
+            "name": "wait_for_reply",
+            "args": {
+              "from": "patient",
+              "wait_seconds": 900,
+              "what_for": "another doctor tomorrow, her own doctor on Thursday, or not booking at all"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Lakshmi chose the earlier slot at the second clinic",
+              "source": "Lakshmi, answer on the card in the app",
+              "decided": "Ring Warangal Family Health Centre for the slot she picked, and tell Arun where her own doctor got to",
+              "rule_id": "R12",
+              "why": "she took the sooner appointment over waiting until Thursday and the reading is already overdue; I am not telling her it is booked until a clinic has said so",
+              "action": "called the second clinic for tomorrow morning and told the RP about the dead end at the first",
+              "recipient": "Warangal Family Health Centre and the RP",
+              "connector": "Phone and in-app message"
+            }
+          },
+          {
+            "name": "send_message",
+            "args": {
+              "to": "rp",
+              "language": "en-IN",
+              "text": "Dr. Rao's clinic did not answer, and on the redial had nothing free. I put three options to Lakshmi and she chose Warangal Family Health Centre. I am ringing them now for tomorrow morning and will confirm once it is held."
+            }
+          },
+          {
+            "name": "place_call",
+            "args": {
+              "to": "Warangal Family Health Centre",
+              "phone": "+91-80000-10002",
+              "purpose": "hold tomorrow 9:30 am for Lakshmi's overdue BP check",
+              "say": "I am calling for Lakshmi, sixty-seven. Her BP check is overdue and her prescription cannot be renewed without it. She would like tomorrow at nine thirty in the morning. Can you hold it in her name?"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "Warangal Family Health Centre has tomorrow 9:30 am and will hold it in her name",
+              "source": "Warangal Family Health Centre, front desk, on the phone",
+              "decided": "Take it, pay for the reading and the auto out of the wallet, and let Arun see it afterwards",
+              "rule_id": "R15",
+              "why": "a hundred and twenty for the reading and sixty for the four-kilometre auto comes to a hundred and eighty, under the two hundred he set as ask-first, so this one I settle and he gets the receipt rather than a question; book_test tells her in Telugu, sends him the figures and posts the group its status line, so I send none of those a second time",
+              "action": "booked the slot and the cab and debited the wallet",
+              "recipient": "the patient, the rp and family_group, through the tool",
+              "connector": "Wallet ledger and in-app message"
+            }
+          },
+          {
+            "name": "record_provider_outcome",
+            "args": {
+              "kind": "clinics",
+              "provider": "Warangal Family Health Centre",
+              "outcome": "booked",
+              "why": "patient chose the earlier slot over waiting for her own doctor",
+              "chose": "tomorrow 9:30am"
+            }
+          },
+          {
+            "name": "book_test",
+            "args": {
+              "test_id": "test_1",
+              "test_name": "BP check",
+              "clinic": "Warangal Family Health Centre",
+              "when": "tomorrow 9:30 am",
+              "for_member": "patient",
+              "test_inr": 120,
+              "cab_inr": 60,
+              "why": "the check is overdue, RX-WGL-2026-0612 cannot be renewed without it, and she chose this clinic over waiting until Thursday"
+            }
+          }
+        ]
+      },
+      {
+        "text": "",
+        "toolCalls": [
+          {
+            "name": "log_decision",
+            "args": {
+              "received": "The booking came back held in her name, with the cab arranged",
+              "source": "book_test",
+              "decided": "Put the appointment on the test record and close",
+              "rule_id": "R21",
+              "why": "the slot is confirmed by name and the family has been told; the record should now say where and when rather than only that it is overdue",
+              "action": "updated the test record and went back to watching the dates",
+              "recipient": "none",
+              "connector": "none"
+            }
+          },
+          {
+            "name": "record_update",
+            "args": {
+              "target": "test_schedule",
+              "id": "test_1",
+              "changes": "{\"booked_at\": \"Warangal Family Health Centre\", \"booked_for\": \"2026-10-07T09:30:00+05:30\", \"booked_by\": \"the agent, on Lakshmi's own choice of clinic\"}",
+              "why": "the BP check now has a clinic and a time against it, so the home screen stops showing nothing but overdue"
+            }
+          },
+          {
+            "name": "set_stage",
+            "args": {
+              "stage": 1,
+              "why": "slot confirmed by name, cab arranged, the family told and the record updated; nothing is waiting on anybody"
+            }
+          }
+        ]
+      },
+      {
+        "text": "Her BP check is on for tomorrow 9:30 am at Warangal Family Health Centre with a cab to take her, Arun has the itemised receipt, and the test record now says where and when.",
+        "toolCalls": []
+      }
+    ]
+  }
+}

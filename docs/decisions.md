@@ -195,3 +195,29 @@ Gemini stays on REST `generateContent` with the reference's retry on 429 and
 5xx and its default model. OpenCode Go keeps the reference's endpoint notes;
 `OPENCODE_BASE_URL` is accepted as the full `/messages` URL, as the reference
 took it, or as a root.
+
+### The stub scripts, carried and rewritten where the rails were removed
+
+`config/trigger-samples.json` is carried unchanged. `config/stub-script.json`
+and `config/stub-scenarios.json` are carried with these changes only:
+
+- `connector` values: WhatsApp becomes "In-app message", Gnani "Speech
+  port", Pine Labs "Wallet ledger"; sources that named the speech vendor or
+  a WhatsApp reply say "the speech port" and "reply in the app".
+- `gnani_tts` (a question asked aloud at Listening) becomes `ask_followup`
+  with `text`, `language` and `to`. **Proposal:** the tool's name and shape
+  are new; it lands with Listening in Stage 4.
+- `wallet_ledger_append` loses its `rail` argument; the ledger records
+  `rail: "recorded"` itself.
+- `set_refill_cycle` no longer appears with `source: "dispensing_receipt"`.
+  In the default take it moves after the chemist's confirmation, with
+  `source: "chemist_confirmation"`. The rail-only turns in `refill_tap`
+  (reserve block and debit; pincode, shipment, pickup, tracking and named
+  recipient) are replaced by: order and pay, ask the chemist to deliver and
+  confirm the quantity, stop; on the chemist's confirmation, set the cycle,
+  stop; on Lakshmi's confirmation, tell the family and return to Idle.
+- The `_limits` note's paragraph on courier delivery is rewritten to match.
+
+The stub keeps its place in the store, so a restart does not replay the
+script from the top. The arguments of tools that land in Stage 5 may need
+adjusting then.

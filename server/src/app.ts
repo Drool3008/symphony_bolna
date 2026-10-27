@@ -16,6 +16,8 @@ import type { Runtime } from './runtime.js'
 
 export interface Services {
   operator: OperatorQueue
+  /** Under the stub only: points the script at the path a sample trigger exercises. */
+  selectScenario?: (sampleId: string | undefined) => string | null
 }
 
 export function createApp(rt: Runtime, services: Services): Express {
@@ -94,7 +96,17 @@ export function createApp(rt: Runtime, services: Services): Express {
    */
   app.post('/api/input', (req, res) => {
     const { memberId } = actor(rt, req)
-    const { text } = bodyOf(InputBody, req)
+    // sample_id says which canned sentence a client offered. It picks the
+    // stub's script and is never put on the input: a real model must not see
+    // the tier the sample expects (settled decision 1).
+    const { text, sample_id } = bodyOf(InputBody, req)
+    const picked = services.selectScenario?.(sample_id) ?? null
+    if (picked)
+      rt.emit('scenario_selected', {
+        sample_id,
+        script: picked,
+        note: 'stub only; the agent was told nothing',
+      })
     const name = rt.onboarding().family.members.find((m) => m.id === memberId)?.name ?? memberId
     rt.threads.post({ thread: memberId, from: memberId, to: 'agent', text })
     deliverInput(rt, { kind: 'message', source: `${name}, in the chat with the agent`, from: memberId, text })
@@ -142,7 +154,10 @@ export function createApp(rt: Runtime, services: Services): Express {
   return app
 }
 
-const InputBody = z.object({ text: z.string().trim().min(1, 'say something') })
+const InputBody = z.object({
+  text: z.string().trim().min(1, 'say something'),
+  sample_id: z.string().optional(),
+})
 
 const OperatorAnswerBody = z.object({
   variant: z.string().optional(),
