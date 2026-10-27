@@ -1,0 +1,83 @@
+{
+  "_note": "Past, already-resolved escalations so Arun's chat opens with a history. Derived from config/onboarding.json; fictional.",
+  "messages": [
+    {
+      "id": "rph1",
+      "from": "agent",
+      "to": "rp",
+      "at": "2026-08-19T09:40:00+05:30",
+      "text": "Quick one before I spend anything."
+    },
+    {
+      "id": "rph2",
+      "from": "agent",
+      "to": "rp",
+      "at": "2026-08-19T09:41:00+05:30",
+      "card": {
+        "kind": "spend_above_threshold",
+        "amount_inr": 240,
+        "payee": "Pillar Road Medicals, Hanamkonda",
+        "wallet_left_inr": 4760,
+        "why": "Above the ₹200 you set for asking first, so I stopped and asked.",
+        "on_timeout": "held the booking unpaid",
+        "medicine": "Metoprolol",
+        "strength": "25mg",
+        "quantity": "60 tablets",
+        "for": "Lakshmi"
+      },
+      "answer": "Approve",
+      "answered_at": "2026-08-19T09:52:00+05:30"
+    },
+    {
+      "id": "rph3",
+      "from": "agent",
+      "to": "rp",
+      "at": "2026-08-19T09:53:00+05:30",
+      "text": "Paid and delivered the same evening. Lakshmi took it at the door. Wallet left ₹4,760."
+    },
+    {
+      "id": "rph4",
+      "from": "agent",
+      "to": "rp",
+      "at": "2026-09-11T18:05:00+05:30",
+      "card": {
+        "kind": "dead_end",
+        "title": "I hit a dead end",
+        "detail": "Called Dr. S. Rao's clinic and Warangal Family Health Centre twice. No answer at either after 6 pm.",
+        "why": "I did not want to keep redialling without telling you.",
+        "on_timeout": "kept trying in the morning"
+      },
+      "answer": "Try something else",
+      "answered_at": "2026-09-11T18:20:00+05:30"
+    },
+    {
+      "id": "rph5",
+      "from": "agent",
+      "to": "rp",
+      "at": "2026-09-11T18:21:00+05:30",
+      "text": "Understood. Booked the morning walk-in slot instead and told Lakshmi."
+    },
+    {
+      "id": "rph6",
+      "from": "agent",
+      "to": "rp",
+      "at": "2026-09-25T11:02:00+05:30",
+      "card": {
+        "kind": "substitute_offered",
+        "title": "A chemist offered a substitute",
+        "detail": "Pillar Road Medicals is out of Metoprolol 25mg and offered a different brand.",
+        "why": "Swapping a medicine is not mine to decide.",
+        "on_timeout": "declined and tried the next chemist"
+      },
+      "answer": "Ask the doctor",
+      "answered_at": "2026-09-25T11:30:00+05:30"
+    },
+    {
+      "id": "rph7",
+      "from": "agent",
+      "to": "rp",
+      "at": "2026-09-25T12:10:00+05:30",
+      "text": "Asked Dr. S. Rao's clinic. They said stay on the same brand, so I got it from Kazipet Pharmacy."
+    }
+  ]
+}

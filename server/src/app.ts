@@ -1,5 +1,6 @@
 import express, { type Express } from 'express'
 import type { MembersResponse, Onboarding } from '@family-health/shared'
+import { MEDIA_DIR } from './domain/history.js'
 import { homeFor } from './domain/home.js'
 
 export interface AppContext {
@@ -11,6 +12,9 @@ export interface AppContext {
 export function createApp(ctx: AppContext): Express {
   const app = express()
   app.use(express.json({ limit: '5mb' }))
+
+  /** Seeded, fictional records, at the paths the chat history points to. */
+  app.use('/media', express.static(MEDIA_DIR))
 
   /** The family with roles and languages. No phone numbers: those are for the agent's calls. */
   app.get('/api/members', (_req, res) => {
