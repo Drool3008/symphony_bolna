@@ -1,15 +1,11 @@
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
 import { createApp } from '../src/app.js'
-import { loadOnboarding } from '../src/config/onboarding.js'
-
-const ob = loadOnboarding()
+import { testRuntime } from './helpers.js'
 
 describe('GET /api/members', () => {
   it('lists the family with roles and languages, and no phone numbers', async () => {
-    const res = await request(createApp({ onboarding: ob, clock: () => new Date(ob.sim_clock.start) })).get(
-      '/api/members',
-    )
+    const res = await request(createApp(testRuntime())).get('/api/members')
     expect(res.status).toBe(200)
     expect(res.body.members).toEqual([
       { id: 'patient', name: 'Lakshmi', role: 'patient', language: 'te-IN' },

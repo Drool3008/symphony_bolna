@@ -1,15 +1,11 @@
 import express, { type Express, type Request } from 'express'
-import type { MembersResponse, Onboarding } from '@family-health/shared'
+import type { MembersResponse } from '@family-health/shared'
 import { MEDIA_DIR } from './domain/history.js'
 import { homeFor } from './domain/home.js'
 
-export interface AppContext {
-  onboarding: Onboarding
-  /** The simulated clock. Until the clock is stored, it stands at the onboarding start. */
-  clock: () => Date
-}
+import type { Runtime } from './runtime.js'
 
-export function createApp(ctx: AppContext): Express {
+export function createApp(rt: Runtime): Express {
   const app = express()
 
   /**
@@ -19,7 +15,7 @@ export function createApp(ctx: AppContext): Express {
    */
   const actingMember = (req: Request): string | null => {
     const id = req.get('X-Member-Id')
-    return id && ctx.onboarding.family.members.some((m) => m.id === id) ? id : null
+    return id && rt.onboarding().family.members.some((m) => m.id === id) ? id : null
   }
   app.use(express.json({ limit: '5mb' }))
 
@@ -29,7 +25,7 @@ export function createApp(ctx: AppContext): Express {
   /** The family with roles and languages. No phone numbers: those are for the agent's calls. */
   app.get('/api/members', (_req, res) => {
     const body: MembersResponse = {
-      members: ctx.onboarding.family.members.map(({ id, name, role, language }) => ({
+      members: rt.onboarding().family.members.map(({ id, name, role, language }) => ({
         id,
         name,
         role,
@@ -49,7 +45,7 @@ export function createApp(ctx: AppContext): Express {
       res.status(400).json({ error: 'X-Member-Id must name a family member' })
       return
     }
-    const home = homeFor(ctx.onboarding, req.params.id, ctx.clock(), viewer)
+    const home = homeFor(rt.onboarding(), req.params.id, rt.clock(), viewer)
     if (!home) {
       res.status(404).json({ error: `no family member with id ${req.params.id}` })
       return

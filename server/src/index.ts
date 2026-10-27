@@ -3,6 +3,8 @@ import { pino } from 'pino'
 import { createApp } from './app.js'
 import { parseEnv } from './config/env.js'
 import { loadOnboarding, OnboardingError } from './config/onboarding.js'
+import { fromRoot } from './config/paths.js'
+import { createRuntime } from './runtime.js'
 
 const log = pino({ name: PRODUCT_NAME })
 
@@ -13,11 +15,21 @@ const log = pino({ name: PRODUCT_NAME })
 function boot() {
   try {
     const env = parseEnv()
+    // Always read and checked, even when the store already holds a working
+    // copy: a broken file on disk would otherwise go unnoticed until a reset.
     const onboarding = loadOnboarding()
-    const start = new Date(onboarding.sim_clock.start)
-    const app = createApp({ onboarding, clock: () => start })
+    const rt = createRuntime({ databasePath: fromRoot(env.DATABASE_PATH), loadOnboarding: () => onboarding })
+    const app = createApp(rt)
     app.listen(env.PORT, () => {
-      log.info({ port: env.PORT, model: env.MODEL_PROVIDER, speech: env.SPEECH_PROVIDER }, 'listening')
+      log.info(
+        {
+          port: env.PORT,
+          model: env.MODEL_PROVIDER,
+          speech: env.SPEECH_PROVIDER,
+          database: env.DATABASE_PATH,
+        },
+        'listening',
+      )
     })
   } catch (err) {
     if (err instanceof OnboardingError) console.error(err.message)
