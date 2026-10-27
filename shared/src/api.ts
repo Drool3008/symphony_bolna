@@ -1,5 +1,5 @@
 /** Request and response shapes for the HTTP surface. */
-import type { Role } from './onboarding.js'
+import type { Role, ShareLevel } from './onboarding.js'
 
 export interface MemberSummary {
   id: string
@@ -41,6 +41,8 @@ export interface MemberHomeResponse {
   /** The sim clock the figures were computed against. */
   clock: string
   today: string
+  /** How much the asking member may see under the subject's consent. Status only leaves the lists empty. */
+  shared: ShareLevel
   medicines: HomeMedicine[]
   tests: HomeTest[]
   /** The agent's most recent message to this member, once there is an agent. */

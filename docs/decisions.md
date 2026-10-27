@@ -95,3 +95,16 @@ script itself waits for a place in the plan. Raised at Checkpoint 1.
 
 The reference defaulted to `gemini`. A fresh clone with no keys now boots on
 the scripted provider instead of failing for want of a key.
+
+### Who may see whose record (Proposal)
+
+Consent is read from onboarding (reference `config/onboarding.json`,
+`consent`; the reference stored it and nothing read it). A member sees their
+own record in full. The responsible person sees another member's under that
+member's `share_with_rp`; anybody else under `share_with_family_group`, the
+same as the group thread. Status only means no medicines, no tests and no
+agent word. A member with no consent entry shares status only and has no
+calls recorded. Requests name the asking member in `X-Member-Id` (brief,
+Section 5.1); it is checked against onboarding, and a request without a known
+member is refused. That says who is asking; it does not prove it, since auth
+is an open question.

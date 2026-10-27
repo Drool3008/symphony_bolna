@@ -1,4 +1,4 @@
-import express, { type Express } from 'express'
+import express, { type Express, type Request } from 'express'
 import type { MembersResponse, Onboarding } from '@family-health/shared'
 import { MEDIA_DIR } from './domain/history.js'
 import { homeFor } from './domain/home.js'
@@ -11,6 +11,16 @@ export interface AppContext {
 
 export function createApp(ctx: AppContext): Express {
   const app = express()
+
+  /**
+   * The member making the request, from X-Member-Id, checked against
+   * onboarding. There is no auth in this pass; this says who is asking, it
+   * does not prove it.
+   */
+  const actingMember = (req: Request): string | null => {
+    const id = req.get('X-Member-Id')
+    return id && ctx.onboarding.family.members.some((m) => m.id === id) ? id : null
+  }
   app.use(express.json({ limit: '5mb' }))
 
   /** Seeded, fictional records, at the paths the chat history points to. */
@@ -29,9 +39,17 @@ export function createApp(ctx: AppContext): Express {
     res.json(body)
   })
 
-  /** Medicines with days left and tests with next due, computed against the sim clock. */
+  /**
+   * Medicines with days left and tests with next due, computed against the
+   * sim clock, as much as the asking member's view of this person allows.
+   */
   app.get('/api/members/:id/home', (req, res) => {
-    const home = homeFor(ctx.onboarding, req.params.id, ctx.clock())
+    const viewer = actingMember(req)
+    if (!viewer) {
+      res.status(400).json({ error: 'X-Member-Id must name a family member' })
+      return
+    }
+    const home = homeFor(ctx.onboarding, req.params.id, ctx.clock(), viewer)
     if (!home) {
       res.status(404).json({ error: `no family member with id ${req.params.id}` })
       return

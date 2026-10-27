@@ -6,7 +6,8 @@ import { addDays, calendarDate, daysBetween, offsetMinutes } from '../src/domain
 
 const ob = loadOnboarding()
 const app = createApp({ onboarding: ob, clock: () => new Date(ob.sim_clock.start) })
-const home = async (id: string) => (await request(app).get(`/api/members/${id}/home`)).body
+const home = async (id: string, viewer = id) =>
+  (await request(app).get(`/api/members/${id}/home`).set('X-Member-Id', viewer)).body
 
 describe('calendar dates on the family clock', () => {
   it('reads the date at the clock offset, not the host timezone', () => {
@@ -64,7 +65,7 @@ describe('GET /api/members/:id/home, at the sim clock start', () => {
 
   it('has no agent word yet, and refuses an unknown member', async () => {
     expect((await home('patient')).latest_agent_word).toBeNull()
-    const res = await request(app).get('/api/members/uncle/home')
+    const res = await request(app).get('/api/members/uncle/home').set('X-Member-Id', 'rp')
     expect(res.status).toBe(404)
   })
 })
