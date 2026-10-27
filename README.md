@@ -17,14 +17,14 @@ Vantari; whether it stays is an open question.
 
 ## Where things are
 
-| Path | What it holds |
-|---|---|
-| `server/` | The backend: HTTP, the event stream, the agent loop, the domain rules |
-| `shared/` | Types and request/response contracts any client can import |
-| `config/` | Onboarding data for the seeded family, the system prompt, scripted flows |
-| `fixtures/` | Answers for the transport adapter and for calls a person plays |
-| `reports/`, `media/` | Seeded, fictional family records, each carrying a DEMO mark |
-| `docs/` | Decisions, open questions, and how to run it |
+| Path                 | What it holds                                                            |
+| -------------------- | ------------------------------------------------------------------------ |
+| `server/`            | The backend: HTTP, the event stream, the agent loop, the domain rules    |
+| `shared/`            | Types and request/response contracts any client can import               |
+| `config/`            | Onboarding data for the seeded family, the system prompt, scripted flows |
+| `fixtures/`          | Answers for the transport adapter and for calls a person plays           |
+| `reports/`, `media/` | Seeded, fictional family records, each carrying a DEMO mark              |
+| `docs/`              | Decisions, open questions, and how to run it                             |
 
 ## House rules
 

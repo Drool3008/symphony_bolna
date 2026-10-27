@@ -20,12 +20,12 @@ From `docs/workflow.md` in the reference, settled 2026-10-04:
 
 ## Removed integrations (brief, Section 3.2)
 
-| Vendor | What the reference had | Gone from this repository |
-|---|---|---|
-| Pine Labs (payments) | `pinelabs_reserve_block`, `pinelabs_reserve_debit`, `pinelabs_reserve_status`, `pinelabs_payment_link_create`, `pinelabs_payment_link_status`, `pinelabs_payment_link_resend`, the imagined `pinelabs_dispensing_receipt`, `fixtures/pinelabs/`, `wallet.rail`, `wallet.reserve_pay_sub_id`, `settle_care`'s `pinelabs` rail | all of it |
-| Delhivery (courier) | `delhivery_pincode`, `delhivery_create_shipment`, `delhivery_pickup_request`, `delhivery_track`, the imagined `delhivery_named_recipient`, `fixtures/delhivery/`, `delhivery_pickup_registered` on chemists | all of it |
-| Gnani / Vachana (speech) | `server/rails/gnani.js`, `gnani_stt`, `gnani_tts`, the imagined `gnani_call_session`, `fixtures/gnani/`, `GNANI_API_KEY`, endpoints at `api.vachana.ai` | all of it |
-| Sarvam (speech, proposed later) | Indus voice agents, Saaras, Bulbul, Sarvam-105B, in the project proposal only | never wired |
+| Vendor                          | What the reference had                                                                                                                                                                                                                                                                                                       | Gone from this repository |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| Pine Labs (payments)            | `pinelabs_reserve_block`, `pinelabs_reserve_debit`, `pinelabs_reserve_status`, `pinelabs_payment_link_create`, `pinelabs_payment_link_status`, `pinelabs_payment_link_resend`, the imagined `pinelabs_dispensing_receipt`, `fixtures/pinelabs/`, `wallet.rail`, `wallet.reserve_pay_sub_id`, `settle_care`'s `pinelabs` rail | all of it                 |
+| Delhivery (courier)             | `delhivery_pincode`, `delhivery_create_shipment`, `delhivery_pickup_request`, `delhivery_track`, the imagined `delhivery_named_recipient`, `fixtures/delhivery/`, `delhivery_pickup_registered` on chemists                                                                                                                  | all of it                 |
+| Gnani / Vachana (speech)        | `server/rails/gnani.js`, `gnani_stt`, `gnani_tts`, the imagined `gnani_call_session`, `fixtures/gnani/`, `GNANI_API_KEY`, endpoints at `api.vachana.ai`                                                                                                                                                                      | all of it                 |
+| Sarvam (speech, proposed later) | Indus voice agents, Saaras, Bulbul, Sarvam-105B, in the project proposal only                                                                                                                                                                                                                                                | never wired               |
 
 Replacements are in the brief's Section 3.3 and restated in `CLAUDE.md`.
 

@@ -1,0 +1,12 @@
+node_modules/
+dist/
+coverage/
+package-lock.json
+# Data carried from the reference stays byte for byte as it was written.
+config/
+fixtures/
+reports/
+media/
+assets/
+PROMPT.md
+prompt.md
