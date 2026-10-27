@@ -13,7 +13,8 @@ function boot() {
   try {
     const env = parseEnv()
     const onboarding = loadOnboarding()
-    const app = createApp({ onboarding })
+    const start = new Date(onboarding.sim_clock.start)
+    const app = createApp({ onboarding, clock: () => start })
     app.listen(env.PORT, () => {
       log.info({ port: env.PORT, model: env.MODEL_PROVIDER, speech: env.SPEECH_PROVIDER }, 'listening')
     })

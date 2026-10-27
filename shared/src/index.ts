@@ -4,3 +4,4 @@
  * app can import it as is.
  */
 export * from './onboarding.js'
+export * from './api.js'
