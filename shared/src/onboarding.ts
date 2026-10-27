@@ -131,7 +131,7 @@ export const WalletSettingsSchema = z.strictObject({
   low_wallet_pct: z.number().min(0).max(100),
 })
 
-export const OnboardingSchema = z.strictObject({
+const OnboardingShape = z.strictObject({
   placeholder: z.boolean(),
   family: z.strictObject({
     name: text,
@@ -162,6 +162,78 @@ export const OnboardingSchema = z.strictObject({
   sim_clock: z.strictObject({ start: z.iso.datetime({ offset: true }) }),
 })
 
+/**
+ * What the shape alone cannot say: that every reference to a member, a
+ * prescription or a rank points at something that exists, once. A medicine
+ * for somebody who is not in the family is the kind of mistake that otherwise
+ * surfaces halfway through a run.
+ */
+function crossCheck(ob: z.infer<typeof OnboardingShape>, ctx: z.RefinementCtx) {
+  const issue = (path: (string | number)[], message: string) =>
+    ctx.addIssue({ code: 'custom', path, message })
+  const members = ob.family.members
+  const memberIds = new Set(members.map((m) => m.id))
+  const known = [...memberIds].join(', ')
+
+  const seen = new Set<string>()
+  members.forEach((m, i) => {
+    if (seen.has(m.id)) issue(['family', 'members', i, 'id'], `member id ${m.id} is used twice`)
+    seen.add(m.id)
+  })
+
+  const rps = members.filter((m) => m.role === 'responsible_person')
+  if (rps.length !== 1) {
+    issue(['family', 'members'], `there must be exactly one responsible_person, found ${rps.length}`)
+  }
+
+  const mustBeMember = (path: (string | number)[], ref: string | undefined) => {
+    if (ref !== undefined && !memberIds.has(ref))
+      issue(path, `${ref} is not a family member. Known: ${known}`)
+  }
+  ob.call_chain.order.forEach((ref, i) => mustBeMember(['call_chain', 'order', i], ref))
+  ob.known_conditions.forEach((c, i) => mustBeMember(['known_conditions', i, 'member'], c.member))
+  ob.current_medicines.forEach((m, i) => mustBeMember(['current_medicines', i, 'member'], m.member))
+  ob.recurring_tests.forEach((t, i) => mustBeMember(['recurring_tests', i, 'member'], t.member))
+  for (const kind of ['clinics', 'chemists', 'labs'] as const) {
+    const list: { rank: number; name: string; for_member?: string | undefined }[] = ob.providers[kind]
+    const ranks = new Set<number>()
+    list.forEach((p, i) => {
+      mustBeMember(['providers', kind, i, 'for_member'], p.for_member)
+      if (ranks.has(p.rank)) issue(['providers', kind, i, 'rank'], `rank ${p.rank} is used twice in ${kind}`)
+      ranks.add(p.rank)
+    })
+  }
+
+  for (const id of memberIds) {
+    if (!(id in ob.consent)) issue(['consent'], `no consent recorded for ${id}`)
+  }
+  for (const id of Object.keys(ob.consent)) mustBeMember(['consent', id], id)
+
+  const medIds = new Set<string>()
+  ob.current_medicines.forEach((m, i) => {
+    if (medIds.has(m.id)) issue(['current_medicines', i, 'id'], `medicine id ${m.id} is used twice`)
+    medIds.add(m.id)
+  })
+  const prescriptions = new Set(ob.current_medicines.map((m) => m.prescription_id))
+  const testIds = new Set<string>()
+  ob.recurring_tests.forEach((t, i) => {
+    if (testIds.has(t.id)) issue(['recurring_tests', i, 'id'], `test id ${t.id} is used twice`)
+    testIds.add(t.id)
+    if (!prescriptions.has(t.needed_for_prescription)) {
+      issue(
+        ['recurring_tests', i, 'needed_for_prescription'],
+        `${t.needed_for_prescription} is not the prescription of any medicine on file`,
+      )
+    }
+  })
+
+  if (ob.wallet.spent_inr > ob.wallet.limit_inr) {
+    issue(['wallet', 'spent_inr'], 'more is spent than the limit allows')
+  }
+}
+
+export const OnboardingSchema = OnboardingShape.superRefine(crossCheck)
+
 export type Member = z.infer<typeof MemberSchema>
 export type Consent = z.infer<typeof ConsentSchema>
 export type KnownCondition = z.infer<typeof KnownConditionSchema>
@@ -172,7 +244,7 @@ export type Chemist = z.infer<typeof ChemistSchema>
 export type Lab = z.infer<typeof LabSchema>
 export type Providers = z.infer<typeof ProvidersSchema>
 export type WalletSettings = z.infer<typeof WalletSettingsSchema>
-export type Onboarding = z.infer<typeof OnboardingSchema>
+export type Onboarding = z.infer<typeof OnboardingShape>
 
 /** Drops `_`-prefixed keys at every depth. They are comments in the data, not fields. */
 export function stripComments(value: unknown): unknown {
