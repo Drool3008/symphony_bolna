@@ -1,4 +1,5 @@
 import { OnboardingSchema, type AgentEvent, type Onboarding } from '@family-health/shared'
+import { EventBus } from './events.js'
 import { openDb, type Db } from './store/db.js'
 import { EventLog } from './store/event-log.js'
 import { SessionValues } from './store/session.js'
@@ -12,12 +13,16 @@ export interface Runtime {
   db: Db
   session: SessionValues
   log: EventLog
+  bus: EventBus
   /** The working copy of onboarding. The agent edits it; a reset rereads the file. */
   onboarding(): Onboarding
   setOnboarding(ob: Onboarding): void
   /** The simulated clock. */
   clock(): Date
+  /** Logs an event, then sends it to everyone listening. */
   emit(type: string, payload?: Record<string, unknown>): AgentEvent
+  /** What is true right now, for a client that has just caught up. */
+  syncState(): Record<string, unknown>
 }
 
 export interface RuntimeOptions {
@@ -30,11 +35,13 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
   const db = openDb(databasePath)
   const session = new SessionValues(db)
   const log = new EventLog(db, session)
+  const bus = new EventBus()
 
   const rt: Runtime = {
     db,
     session,
     log,
+    bus,
     onboarding() {
       const stored = session.get<unknown>('onboarding')
       // Checked on the way out as well as in, so a store written by an older
@@ -48,7 +55,16 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
       return new Date(session.get<string>('clock') ?? rt.onboarding().sim_clock.start)
     },
     emit(type, payload = {}) {
-      return log.append(type, payload, rt.clock())
+      const event = log.append(type, payload, rt.clock())
+      bus.publish(event)
+      return event
+    },
+    syncState() {
+      return {
+        clock: rt.clock().toISOString(),
+        stage: session.get<number>('stage') ?? 1,
+        generation: log.generation(),
+      }
     },
   }
 

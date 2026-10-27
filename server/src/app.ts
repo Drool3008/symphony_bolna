@@ -1,6 +1,7 @@
 import express, { type Express, type Request } from 'express'
 import type { MembersResponse } from '@family-health/shared'
 import { MEDIA_DIR } from './domain/history.js'
+import { streamEvents } from './events.js'
 import { homeFor } from './domain/home.js'
 
 import type { Runtime } from './runtime.js'
@@ -18,6 +19,8 @@ export function createApp(rt: Runtime): Express {
     return id && rt.onboarding().family.members.some((m) => m.id === id) ? id : null
   }
   app.use(express.json({ limit: '5mb' }))
+
+  app.get('/events', (req, res) => streamEvents(rt, req, res))
 
   /** Seeded, fictional records, at the paths the chat history points to. */
   app.use('/media', express.static(MEDIA_DIR))
