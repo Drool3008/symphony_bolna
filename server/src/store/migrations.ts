@@ -116,4 +116,26 @@ export const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    id: 5,
+    name: 'decision log',
+    sql: `
+      -- One row per log_decision: what came in, from where, what was decided,
+      -- under which rule, what was done and for whom, through what. The
+      -- family's and the doctor's record, and the audit trail.
+      CREATE TABLE decisions (
+        seq       INTEGER PRIMARY KEY AUTOINCREMENT,
+        sim_time  TEXT NOT NULL,
+        logged_at TEXT NOT NULL,
+        received  TEXT NOT NULL,
+        source    TEXT NOT NULL,
+        decided   TEXT NOT NULL,
+        rule_id   TEXT NOT NULL,
+        why       TEXT NOT NULL,
+        action    TEXT NOT NULL,
+        recipient TEXT NOT NULL,
+        connector TEXT NOT NULL
+      );
+    `,
+  },
 ]

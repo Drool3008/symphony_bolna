@@ -36,6 +36,7 @@ export interface Runtime {
   }
   /** The working copy of onboarding. The agent edits it; a reset rereads the file. */
   onboarding(): Onboarding
+  /** Replaces the working copy. Checked first: a change the schema refuses is thrown and nothing is written. */
   setOnboarding(ob: Onboarding): void
   /** Reads onboarding from disk again and checks it. Throws if the file cannot be used. */
   readOnboardingFromDisk(): Onboarding
@@ -91,7 +92,12 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
       return OnboardingSchema.parse(session.get<unknown>('onboarding'))
     },
     setOnboarding(ob) {
-      session.set('onboarding', ob)
+      const checked = OnboardingSchema.safeParse(ob)
+      if (!checked.success) {
+        const why = checked.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('; ')
+        throw new Error(`that change would leave the family record invalid: ${why}`)
+      }
+      session.set('onboarding', checked.data)
     },
     readOnboardingFromDisk: loadOnboarding,
     clock() {

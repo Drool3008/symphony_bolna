@@ -125,3 +125,20 @@ export interface ForwardRequest {
   caption?: string
   note?: string
 }
+
+/** One row of the decision log. */
+export interface Decision {
+  seq: number
+  /** Sim time. */
+  when: string
+  /** Wall time. */
+  logged_at: string
+  received: string
+  source: string
+  decided: string
+  rule_id: string
+  why: string
+  action: string
+  recipient: string
+  connector: string
+}

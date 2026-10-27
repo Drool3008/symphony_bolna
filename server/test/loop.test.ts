@@ -50,7 +50,7 @@ function setUp(replies: Parameters<typeof scripted>[0], opts: { auto?: boolean; 
   const { provider, seen } = scripted(replies)
   const agent = new Agent(rt, {
     provider,
-    tools: [note, ring, look_up],
+    tools: () => [note, ring, look_up] as never,
     operator,
     systemPrompt: () => 'system',
     declarations: () => [],

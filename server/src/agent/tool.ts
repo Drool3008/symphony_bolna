@@ -21,6 +21,11 @@ export interface ToolSpec<S extends z.ZodObject = z.ZodObject> {
   description: string
   mode: Mode
   schema: S
+  /**
+   * Checked before a PERSON or FIXTURE call is parked for somebody to answer.
+   * A result refuses the call and goes back to the model.
+   */
+  check?: (args: z.infer<S>, ctx: ToolContext) => unknown
   /** LIVE tools only. */
   handler?: (args: z.infer<S>, ctx: ToolContext) => unknown
   /** PERSON and FIXTURE tools: the answers on file, at fixtures/<path>.json. */

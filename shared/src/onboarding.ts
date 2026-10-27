@@ -75,6 +75,21 @@ export const MedicineSchema = z
     prescribed_quantity: z.number().int().positive(),
     prescription_id: text,
     prescribed_by: text,
+    // Written by the agent as it goes, never in the seeded file. The names are
+    // the reference's (server/acting.js set_refill_cycle, and the record_update
+    // in config/stub-scenarios.json).
+    next_refill_date: z.iso.datetime({ offset: true }).optional(),
+    refill_source: z
+      .strictObject({
+        source: z.enum(['chemist_confirmation', 'forwarded_receipt']),
+        receipt_ref: text.nullable(),
+        quantity_dispensed: z.number().positive(),
+        set_at: z.iso.datetime({ offset: true }),
+      })
+      .optional(),
+    last_filled_at: text.optional(),
+    last_filled_on: isoDate.optional(),
+    last_filled_quantity: z.number().int().positive().optional(),
   })
   .refine((m) => (m.pills_left === undefined) !== (m.doses_left === undefined), {
     message: 'give exactly one of pills_left and doses_left',
@@ -87,6 +102,9 @@ export const RecurringTestSchema = z.strictObject({
   every_days: z.number().int().positive(),
   last_done: isoDate,
   needed_for_prescription: text,
+  // Written by the agent once a slot is confirmed (reference server/agent.js, book_test).
+  booked_for: text.optional(),
+  booked_at: text.optional(),
 })
 
 /** `for_member` absent means the provider serves the patient (reference onboarding, providers._note). */

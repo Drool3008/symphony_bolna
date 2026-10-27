@@ -221,3 +221,50 @@ and `config/stub-scenarios.json` are carried with these changes only:
 The stub keeps its place in the store, so a restart does not replay the
 script from the top. The arguments of tools that land in Stage 5 may need
 adjusting then.
+
+### The system prompt: what changed from the reference, and why
+
+`config/system-prompt.md` keeps R1 to R24 and their IDs. Only the wording the
+removals force changed (`git diff --no-index` against the reference's file
+shows each):
+
+- Opening: "WhatsApp is how you reach people" becomes "You reach people by
+  message and by phone". The channel is an open question, so it is not named.
+- The family group: "a WhatsApp group" becomes "the family's shared group
+  chat. You are a member of it."
+- R2 and R23 named no channel in the reference, so they are unchanged.
+- R5: "exactly as Gnani returned them" becomes "exactly as the speech
+  provider or the person who typed it returned them".
+- R14: "Pincode not serviceable for delivery" becomes "The chemist cannot
+  deliver". The fallback (pickup from the nearest chemist, an auto for a
+  family member) is unchanged.
+- R15: unchanged. "Hold the booking unpaid" stays.
+- R21: the dispensed quantity is read "from the chemist's confirmation, or
+  from a receipt a member forwards to you" instead of "off the itemised
+  receipt". Never from the prescription, as before.
+- R24: one sentence added, "`settle_care` records the debit on the family's
+  wallet ledger." Nothing else changed.
+- How you work: "If a rail returns an error" becomes "If a tool returns an
+  error".
+- The reference prompt named no tool that has been removed, so no tool name
+  was taken out.
+
+The backend adds nothing else to the conversation: the onboarding data under
+the rules, and the clock on each input (reference `server/agent.js`).
+
+### The agent can change the family record only into a valid one (Proposal)
+
+The reference's `record_update` and `set_refill_cycle` wrote any field into
+onboarding. Here every write to the working copy is checked against the
+schema first, and a change that would leave it invalid goes back to the model
+as an error with nothing written. The fields the reference's agent wrote are
+in the schema as optional: `next_refill_date`, `refill_source`,
+`last_filled_at`, `last_filled_on`, `last_filled_quantity` on a medicine, and
+`booked_for`, `booked_at` on a test.
+
+### `place_call` refuses a number that is not on file (Proposal)
+
+Before a call is parked for a person to play, its number is checked against
+every number in onboarding (members, clinics, chemists, labs, 108). An
+invented number goes back to the model as an error. The reference relied on
+the prompt alone for this.

@@ -16,11 +16,12 @@ export type Guard = (call: ToolCall, step: { earlier: ToolCall[]; executed: Tool
 
 export interface AgentOptions {
   provider: ModelProvider
-  tools: ToolSpec[]
+  /** The catalogue, built fresh each step: it reads onboarding, which a run can change. */
+  tools: () => ToolSpec[]
   operator: OperatorQueue
   /** The system prompt with onboarding, built fresh each step. */
   systemPrompt: () => string
-  declarations: () => ToolDeclaration[]
+  declarations: (tools: ToolSpec[]) => ToolDeclaration[]
   guards?: Guard[]
   /** A pause before each step, so a scripted run can be watched. Zero for anything but the stub. */
   thinkMs?: number
@@ -37,7 +38,7 @@ export interface AgentOptions {
  * next step, so it never writes into the session that replaced it.
  */
 export class Agent {
-  private readonly byName: Map<string, ToolSpec>
+  private byName = new Map<string, ToolSpec>()
   private running: Promise<void> | null = null
   private epoch = 0
 
@@ -45,7 +46,6 @@ export class Agent {
     private readonly rt: Runtime,
     private readonly opts: AgentOptions,
   ) {
-    this.byName = new Map(opts.tools.map((t) => [t.name, t]))
     rt.hooks.input.on(() => this.wake())
     rt.hooks.reset.on(() => this.abort())
     rt.hooks.sync.provide('running', () => this.isRunning())
@@ -98,13 +98,15 @@ export class Agent {
       if (this.opts.thinkMs) await pause(this.opts.thinkMs)
       if (epoch !== this.epoch) return
 
+      const tools = this.opts.tools()
+      this.byName = new Map(tools.map((t) => [t.name, t]))
       this.rt.history.hold()
       let reply
       try {
         reply = await this.opts.provider.run({
           system: this.opts.systemPrompt(),
           history: this.rt.history.all(),
-          tools: this.opts.declarations(),
+          tools: this.opts.declarations(tools),
         })
       } catch (err) {
         this.rt.history.release()
@@ -184,6 +186,8 @@ export class Agent {
         return { ok: false, error: (err as Error).message }
       }
     }
+    const refused = tool.check?.(parsed.data, { rt: this.rt, callId: call.id })
+    if (refused !== undefined) return refused
     return this.opts.operator.enqueue({
       callId: call.id,
       tool: tool.name,
