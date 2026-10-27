@@ -2,6 +2,7 @@ import type { Onboarding } from '@family-health/shared'
 import { z } from 'zod'
 import type { Runtime } from '../runtime.js'
 import { DecisionLog } from '../store/decisions.js'
+import { ruleIds } from './prompt.js'
 import type { ToolDeclaration } from './providers/types.js'
 import { defineTool, type ToolSpec } from './tool.js'
 
@@ -60,7 +61,7 @@ export function buildTools(rt: Runtime): ToolSpec[] {
           'Where it came from: who or what, and through what channel. e.g. "Patient, voice note in the app" or "Clock, refill date from RX-4412"',
         ),
         decided: line('What you decided to do'),
-        rule_id: line('The rule this follows, e.g. R15'),
+        rule_id: z.enum(ruleIds() as [string, ...string[]]).describe('The rule this follows'),
         why: line('One line. For an assessment, name the factors you weighed.'),
         action: line('What you did or said, verbatim if it was a message'),
         recipient: line('Who it went to, or "none"'),

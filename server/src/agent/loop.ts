@@ -7,12 +7,23 @@ import type { ToolSpec } from './tool.js'
 
 export const MAX_STEPS = 30
 
+/** What a guard returns to refuse a call: the error the model reads, and the rule it enforces. */
+export interface Refusal {
+  ok: false
+  error: string
+  rule: string
+}
+
 /**
- * A check made on every call in a step before it runs. Returning a result
- * refuses the call: that result goes back to the model in place of running
- * it, and the model corrects itself. The backend never tells it how.
+ * A check made on every call in a step before it runs. A refusal goes back
+ * to the model in place of running the call, and the model corrects itself.
+ * The backend never tells it how. `ran` is this step's calls so far that ran,
+ * with what they returned.
  */
-export type Guard = (call: ToolCall, step: { earlier: ToolCall[]; executed: ToolCall[] }) => unknown
+export type Guard = (
+  call: ToolCall,
+  step: { ran: { call: ToolCall; result: unknown }[] },
+) => Refusal | undefined
 
 export interface AgentOptions {
   provider: ModelProvider
@@ -135,11 +146,16 @@ export class Agent {
       }
 
       const results: ToolResult[] = []
-      const executed: ToolCall[] = []
-      for (const [i, call] of calls.entries()) {
-        const refusal = this.refusal(call, calls.slice(0, i), executed)
-        if (refusal !== undefined) {
-          this.rt.emit('tool_rejected', { id: call.id, name: call.name, result: refusal })
+      const ran: { call: ToolCall; result: unknown }[] = []
+      for (const call of calls) {
+        const refusal = this.refusal(call, ran)
+        if (refusal) {
+          this.rt.emit('tool_rejected', {
+            id: call.id,
+            name: call.name,
+            reason: refusal.rule,
+            result: refusal,
+          })
           results.push({ id: call.id, name: call.name, result: refusal })
           continue
         }
@@ -147,7 +163,7 @@ export class Agent {
         this.rt.emit('tool_call', { id: call.id, name: call.name, args: call.args, mode: tool?.mode ?? null })
         const result = await this.execute(call)
         if (epoch !== this.epoch) return this.rt.history.release()
-        executed.push(call)
+        ran.push({ call, result })
         this.rt.emit('tool_result', { id: call.id, name: call.name, result })
         results.push({ id: call.id, name: call.name, result })
       }
@@ -157,10 +173,10 @@ export class Agent {
     this.rt.emit('error', { error: `stopped after ${max} steps without settling` })
   }
 
-  private refusal(call: ToolCall, earlier: ToolCall[], executed: ToolCall[]): unknown {
+  private refusal(call: ToolCall, ran: { call: ToolCall; result: unknown }[]): Refusal | undefined {
     for (const guard of this.opts.guards ?? []) {
-      const refused = guard(call, { earlier, executed })
-      if (refused !== undefined) return refused
+      const refused = guard(call, { ran })
+      if (refused) return refused
     }
     return undefined
   }

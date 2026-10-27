@@ -1,5 +1,6 @@
 import type { Env } from '../config/env.js'
 import type { Runtime } from '../runtime.js'
+import { defaultGuards } from './guards.js'
 import { Agent, type Guard } from './loop.js'
 import type { OperatorQueue } from './operator.js'
 import { systemPrompt } from './prompt.js'
@@ -46,7 +47,7 @@ export function startAgent(
     tools: () => buildTools(rt),
     declarations,
     systemPrompt: () => systemPrompt(rt),
-    ...(options.guards ? { guards: options.guards } : {}),
+    guards: options.guards ?? defaultGuards(),
     // The stub's pause is for people watching a dry run; a real model takes its own time.
     thinkMs: stub ? env.STUB_THINK_MS : 0,
   })
