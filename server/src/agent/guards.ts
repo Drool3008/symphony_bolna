@@ -1,3 +1,4 @@
+import { cardCarriesMoney, mentionsMoney } from '../domain/money.js'
 import type { Guard } from './loop.js'
 import { ruleIds } from './prompt.js'
 
@@ -37,4 +38,30 @@ export const knownRule =
     }
   }
 
-export const defaultGuards = (): Guard[] => [knownRule(), r19]
+/**
+ * R18, the half that can be checked in code: the family group hears what is
+ * happening and who is handling it, never what it cost. A message to the group
+ * with a figure in its text or its card is refused, and the model is told why,
+ * so it can send the amount to the RP and post the group the same line without
+ * the number (reference server/agent.js, send_message).
+ */
+export const noFiguresInGroup: Guard = (call) => {
+  if (call.name !== 'send_message' || call.args.to !== 'family_group') return undefined
+  let card: Record<string, unknown> | null = null
+  if (typeof call.args.card === 'string') {
+    try {
+      card = JSON.parse(call.args.card) as Record<string, unknown>
+    } catch {
+      card = null
+    }
+  }
+  if (!mentionsMoney(call.args.text as string) && !cardCarriesMoney(card)) return undefined
+  return {
+    ok: false,
+    rule: 'R18',
+    error:
+      'R18: the family group gets status only, never a cost. Send the amount to the RP and post the group a status line with no figure in it.',
+  }
+}
+
+export const defaultGuards = (): Guard[] => [knownRule(), r19, noFiguresInGroup]
