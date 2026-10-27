@@ -1,0 +1,149 @@
+{
+  "placeholder": false,
+  "_note": "Round 3 medicine-priority scenario. Lakshmi's Metoprolol is critically low (3 days). Arun's inhaler is running low (~10 days). Kavya's thyroid medicine has some headroom (15 days). The agent should triage by days of cover and must_not_miss. After editing, run `npm run gen:media` to rebuild the seeded records.",
+
+  "family": {
+    "name": "Lakshmi's family",
+    "pincode": "506002",
+    "city": "Warangal",
+    "members": [
+      { "id": "patient",  "name": "Lakshmi", "role": "patient",            "age": 67, "language": "te-IN", "phone": "+91-90000-00001", "lives_in": "Warangal", "lives_alone": true, "family_calls_her": "Amma" },
+      { "id": "rp",       "name": "Arun",    "role": "responsible_person", "age": 29, "language": "en-IN", "phone": "+91-90000-00002", "lives_in": "Hyderabad", "relation": "son" },
+      { "id": "member_3", "name": "Kavya",   "role": "family",             "age": 26, "language": "en-IN", "phone": "+91-90000-00003", "lives_in": "Bengaluru", "relation": "daughter, Arun's sister" }
+    ]
+  },
+
+  "call_chain": {
+    "_note": "Ranked by Arun at signup for ability to make a sound decision, not by age.",
+    "order": ["patient", "rp", "member_3"]
+  },
+
+  "consent": {
+    "_note": "Each adult consents to what is shared and with whom. Stage 0.",
+    "patient":  { "share_with_rp": "full", "share_with_family_group": "status_only", "share_with_doctor": "full", "record_calls": true },
+    "rp":       { "share_with_rp": "full", "share_with_family_group": "status_only", "share_with_doctor": "full", "record_calls": true },
+    "member_3": { "share_with_rp": "full", "share_with_family_group": "status_only", "share_with_doctor": "full", "record_calls": true }
+  },
+
+  "known_conditions": [
+    { "member": "patient", "label": "Hypertension", "since": "2018", "treated_by": "Dr. S. Rao" },
+    { "member": "rp",      "label": "Allergic asthma", "since": "childhood", "treated_by": "Dr. K. Iyer" },
+    { "member": "member_3","label": "Hypothyroidism", "since": "2025", "treated_by": "Dr. A. Nair" }
+  ],
+
+  "current_medicines": [
+    {
+      "id": "med_chronic_1", "member": "patient",
+      "name": "Metoprolol", "strength": "25mg",
+      "purpose": "blood pressure",
+      "priority": "critical",
+      "must_not_miss": true,
+      "daily_dose": 2, "schedule": "one tablet morning, one at night, after food",
+      "pills_left": 6,
+      "prescribed_quantity": 60,
+      "prescription_id": "RX-WGL-2026-0612",
+      "prescribed_by": "Dr. S. Rao"
+    },
+    {
+      "id": "med_chronic_2", "member": "rp",
+      "name": "Budesonide + Formoterol", "strength": "200/6 mcg inhaler",
+      "purpose": "asthma control",
+      "priority": "medium",
+      "must_not_miss": false,
+      "daily_dose": 2, "schedule": "one puff morning, one at night; extra puffs when needed, max 8 a day",
+      "doses_left": 20,
+      "prescribed_quantity": 120,
+      "unit": "doses",
+      "prescription_id": "RX-HYD-2026-0718",
+      "prescribed_by": "Dr. K. Iyer"
+    },
+    {
+      "id": "med_chronic_3", "member": "rp",
+      "name": "Cholecalciferol (Vitamin D3)", "strength": "60,000 IU",
+      "purpose": "vitamin D maintenance",
+      "priority": "low",
+      "must_not_miss": false,
+      "daily_dose": 0.033, "schedule": "one capsule on the first Sunday of each month, after food",
+      "pills_left": 3,
+      "prescribed_quantity": 6,
+      "prescription_id": "RX-HYD-2026-0520",
+      "prescribed_by": "Dr. K. Iyer"
+    },
+    {
+      "id": "med_chronic_4", "member": "member_3",
+      "name": "Levothyroxine", "strength": "50 mcg",
+      "purpose": "thyroid hormone replacement",
+      "priority": "medium",
+      "must_not_miss": false,
+      "daily_dose": 1, "schedule": "one tablet each morning, empty stomach",
+      "pills_left": 15,
+      "prescribed_quantity": 90,
+      "prescription_id": "RX-BLR-2026-0921",
+      "prescribed_by": "Dr. A. Nair"
+    }
+  ],
+
+  "recurring_tests": [
+    { "id": "test_1", "member": "patient", "name": "BP check", "every_days": 90, "last_done": "2026-06-06", "needed_for_prescription": "RX-WGL-2026-0612" },
+    { "id": "test_2", "member": "rp", "name": "Spirometry", "every_days": 365, "last_done": "2026-07-18", "needed_for_prescription": "RX-HYD-2026-0718" },
+    { "id": "test_3", "member": "rp", "name": "Vitamin D level", "every_days": 180, "last_done": "2026-05-20", "needed_for_prescription": "RX-HYD-2026-0520" },
+    { "id": "test_4", "member": "member_3", "name": "TSH", "every_days": 90, "last_done": "2026-09-19", "needed_for_prescription": "RX-BLR-2026-0921" }
+  ],
+
+  "red_flags": {
+    "_note": "Set with the family doctor at onboarding. The agent matches spoken symptoms against this list. It never names a condition. Giddiness on standing is deliberately not on it: urgent, not an emergency.",
+    "set_by": "Dr. S. Rao",
+    "list": [
+      "chest pain or tightness",
+      "fainting, or a fall she cannot get up from",
+      "slurred speech, a drooping face or weakness on one side",
+      "a sudden severe headache with blurred vision"
+    ]
+  },
+
+  "providers": {
+    "_note": "Each list is ranked. The member field says who uses that provider; absent means the patient (Lakshmi).",
+    "clinics": [
+      { "rank": 1, "name": "Dr. S. Rao's clinic, Hanamkonda", "doctor": "Dr. S. Rao", "phone": "+91-80000-10001", "distance_km": 2.1, "treating_doctor": true, "for_member": "patient" },
+      { "rank": 2, "name": "Warangal Family Health Centre", "phone": "+91-80000-10002", "distance_km": 4.8, "for_member": "patient" },
+      { "rank": 3, "name": "Iyer Family Clinic, Gachibowli", "doctor": "Dr. K. Iyer", "phone": "+91-90000-70201", "distance_km": 3.2, "treating_doctor": true, "for_member": "rp" }
+    ],
+    "chemists": [
+      { "rank": 1, "name": "Pillar Road Medicals, Hanamkonda", "phone": "+91-80000-20001", "pincode": "506001", "for_member": "patient" },
+      { "rank": 2, "name": "Kazipet Pharmacy", "phone": "+91-80000-20002", "pincode": "506003", "for_member": "patient" },
+      { "rank": 3, "name": "MedPlus Gachibowli", "phone": "+91-80000-20003", "pincode": "500032", "for_member": "rp" }
+    ],
+    "labs": [
+      { "rank": 1, "name": "Hanamkonda Diagnostics", "phone": "+91-80000-30001", "distance_km": 2.6 },
+      { "rank": 2, "name": "Warangal Path Lab", "phone": "+91-80000-30002", "distance_km": 5.9 }
+    ],
+    "emergency": { "name": "Ambulance", "phone": "108" }
+  },
+
+  "wallet": {
+    "_note": "Set by Arun at signup. A month of tablets (60 at about 4 rupees) is above the ask-first amount, so a full refill comes to him first.",
+    "limit_inr": 5000,
+    "spent_inr": 0,
+    "major_spend_threshold_inr": 200,
+    "low_wallet_pct": 20
+  },
+
+  "wait_times_seconds": {
+    "_note": "Proposed in the brief, kept configurable. How long the agent waits for an answer before moving down the call chain.",
+    "critical": 30,
+    "urgent": 180,
+    "routine": 900
+  },
+
+  "policy": {
+    "clash_resolution": "rp_wins_log_both",
+    "family_group_sharing": "status_only_ask_rp_before_sharing_summary",
+    "unsure_assessment": "escalate_one_tier",
+    "cant_tell": "treat_as_urgent_ask_human"
+  },
+
+  "sim_clock": {
+    "_note": "Tuesday morning. The refill check fires because Lakshmi's Metoprolol runs out in 3 days.",
+    "start": "2026-10-06T09:12:00+05:30"
+  }
+}
