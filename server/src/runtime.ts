@@ -1,6 +1,8 @@
 import { OnboardingSchema, type AgentEvent, type Onboarding } from '@family-health/shared'
 import type { ClockListener } from './clock.js'
 import { EventBus } from './events.js'
+import { loadFamilyHistory } from './domain/history.js'
+import { AgentThreads, FamilyChats } from './store/conversations.js'
 import { openDb, type Db } from './store/db.js'
 import { EventLog } from './store/event-log.js'
 import { SessionValues } from './store/session.js'
@@ -15,6 +17,10 @@ export interface Runtime {
   session: SessionValues
   log: EventLog
   bus: EventBus
+  /** The agent's conversation with each person, the group and the doctor. */
+  threads: AgentThreads
+  /** What the family says to each other. Never read by the model. */
+  chats: FamilyChats
   /** The working copy of onboarding. The agent edits it; a reset rereads the file. */
   onboarding(): Onboarding
   setOnboarding(ob: Onboarding): void
@@ -48,11 +54,23 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
   const clockListeners = new Set<ClockListener>()
   const resetListeners = new Set<() => void>()
 
+  const groupIds = new Set(
+    loadFamilyHistory()
+      .chats.filter((c) => c.kind === 'group')
+      .map((c) => c.id),
+  )
+
   const rt: Runtime = {
     db,
     session,
     log,
     bus,
+    get threads() {
+      return threads
+    },
+    get chats() {
+      return chats
+    },
     onboarding() {
       const stored = session.get<unknown>('onboarding')
       // Checked on the way out as well as in, so a store written by an older
@@ -93,6 +111,9 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
       }
     },
   }
+
+  const threads = new AgentThreads(rt)
+  const chats = new FamilyChats(rt, groupIds)
 
   if (session.get('onboarding') === undefined) {
     const ob = loadOnboarding()

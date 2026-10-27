@@ -1,28 +1,18 @@
-import express, { type Express, type Request } from 'express'
+import type { ChatSendResponse, MembersResponse } from '@family-health/shared'
+import express, { type Express } from 'express'
 import { z } from 'zod'
+import { actor } from './auth.js'
 import { advanceClock, ClockError } from './clock.js'
-import type { MembersResponse } from '@family-health/shared'
+import { OnboardingError } from './config/onboarding.js'
 import { MEDIA_DIR } from './domain/history.js'
+import { homeFor } from './domain/home.js'
 import { streamEvents } from './events.js'
 import { bodyOf, errorHandler, HttpError } from './http.js'
-import { OnboardingError } from './config/onboarding.js'
 import { resetSession } from './reset.js'
-import { homeFor } from './domain/home.js'
-
 import type { Runtime } from './runtime.js'
 
 export function createApp(rt: Runtime): Express {
   const app = express()
-
-  /**
-   * The member making the request, from X-Member-Id, checked against
-   * onboarding. There is no auth in this pass; this says who is asking, it
-   * does not prove it.
-   */
-  const actingMember = (req: Request): string | null => {
-    const id = req.get('X-Member-Id')
-    return id && rt.onboarding().family.members.some((m) => m.id === id) ? id : null
-  }
   app.use(express.json({ limit: '5mb' }))
 
   app.get('/events', (req, res) => streamEvents(rt, req, res))
@@ -33,12 +23,9 @@ export function createApp(rt: Runtime): Express {
   /** The family with roles and languages. No phone numbers: those are for the agent's calls. */
   app.get('/api/members', (_req, res) => {
     const body: MembersResponse = {
-      members: rt.onboarding().family.members.map(({ id, name, role, language }) => ({
-        id,
-        name,
-        role,
-        language,
-      })),
+      members: rt
+        .onboarding()
+        .family.members.map(({ id, name, role, language }) => ({ id, name, role, language })),
     }
     res.json(body)
   })
@@ -48,17 +35,29 @@ export function createApp(rt: Runtime): Express {
    * sim clock, as much as the asking member's view of this person allows.
    */
   app.get('/api/members/:id/home', (req, res) => {
-    const viewer = actingMember(req)
-    if (!viewer) {
-      res.status(400).json({ error: 'X-Member-Id must name a family member' })
-      return
-    }
-    const home = homeFor(rt.onboarding(), req.params.id, rt.clock(), viewer)
-    if (!home) {
-      res.status(404).json({ error: `no family member with id ${req.params.id}` })
-      return
-    }
+    const { memberId } = actor(rt, req)
+    const home = homeFor(rt.onboarding(), req.params.id, rt.clock(), memberId)
+    if (!home) throw new HttpError(404, `no family member with id ${req.params.id}`)
     res.json(home)
+  })
+
+  /**
+   * A member types into a family chat. Stored and sent to the other handsets,
+   * and that is all: family chat never reaches the agent (R2).
+   */
+  app.post('/api/chat/send', (req, res) => {
+    const { memberId } = actor(rt, req)
+    const { chat_id, text, ask_agent } = bodyOf(ChatSendBody, req)
+    const isMember = rt.onboarding().family.members.some((m) => m.id === chat_id)
+    if (!rt.chats.isGroup(chat_id) && !isMember)
+      throw new HttpError(400, `${chat_id} is not a chat in this family`)
+    if (chat_id === memberId) throw new HttpError(400, 'a direct chat is with somebody else')
+    if (ask_agent && !rt.chats.isGroup(chat_id))
+      throw new HttpError(400, '@agent works in the family group only')
+
+    const message = rt.chats.post({ from: memberId, chatId: chat_id, text, toAgent: Boolean(ask_agent) })
+    const body: ChatSendResponse = { key: message.key, message }
+    res.json(body)
   })
 
   /**
@@ -90,6 +89,12 @@ export function createApp(rt: Runtime): Express {
   app.use(errorHandler)
   return app
 }
+
+const ChatSendBody = z.object({
+  chat_id: z.string().trim().min(1),
+  text: z.string().trim().min(1, 'say something'),
+  ask_agent: z.boolean().optional(),
+})
 
 const ResetBody = z.object({ reason: z.string().trim().min(1).optional() })
 

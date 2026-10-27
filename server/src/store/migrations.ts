@@ -38,4 +38,40 @@ export const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    id: 2,
+    name: 'conversations',
+    sql: `
+      -- The agent's conversation with each person, one thread per person,
+      -- plus the family group and the doctor. Cards ride on messages.
+      CREATE TABLE messages (
+        seq          INTEGER PRIMARY KEY AUTOINCREMENT,
+        id           TEXT    NOT NULL UNIQUE,
+        thread       TEXT    NOT NULL,
+        sender       TEXT    NOT NULL,
+        recipient    TEXT    NOT NULL,
+        text         TEXT    NOT NULL,
+        language     TEXT,
+        kind         TEXT,
+        card         TEXT,
+        answer       TEXT,
+        answered_at  TEXT,
+        timed_out_at TEXT,
+        at           TEXT    NOT NULL
+      );
+      CREATE INDEX messages_by_thread ON messages (thread, seq);
+
+      -- What the family says to each other. Never read by the model (R2).
+      CREATE TABLE chat_messages (
+        seq      INTEGER PRIMARY KEY AUTOINCREMENT,
+        id       TEXT    NOT NULL UNIQUE,
+        chat_key TEXT    NOT NULL,
+        sender   TEXT    NOT NULL,
+        text     TEXT    NOT NULL,
+        to_agent INTEGER NOT NULL DEFAULT 0,
+        at       TEXT    NOT NULL
+      );
+      CREATE INDEX chat_messages_by_key ON chat_messages (chat_key, seq);
+    `,
+  },
 ]

@@ -73,3 +73,45 @@ export interface ClockResponse {
   /** The agent's dates the clock reached on this move. */
   reached: AgentDate[]
 }
+
+/** One message in the agent's conversation with a person, the family group, or the doctor. */
+export interface ThreadMessage {
+  id: string
+  thread: string
+  from: string
+  to: string
+  text: string
+  language: string | null
+  kind: string | null
+  card: Record<string, unknown> | null
+  answer: string | null
+  answered_at: string | null
+  timed_out_at: string | null
+  /** Sim time. */
+  at: string
+}
+
+/** One line in a family chat. The agent never reads these. */
+export interface ChatMessage {
+  id: string
+  key: string
+  from: string
+  text: string
+  /** Addressed to the agent with @agent in the family group. */
+  to_agent: boolean
+  at: string
+}
+
+/** POST /api/chat/send. The sender is the member in X-Member-Id. */
+export interface ChatSendRequest {
+  /** A family member's id for a direct chat, or the group's id. */
+  chat_id: string
+  text: string
+  /** In the family group only: this one message is addressed to the agent. */
+  ask_agent?: boolean
+}
+
+export interface ChatSendResponse {
+  key: string
+  message: ChatMessage
+}

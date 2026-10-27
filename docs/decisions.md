@@ -106,8 +106,7 @@ same as the group thread. Status only means no medicines, no tests and no
 agent word. A member with no consent entry shares status only and has no
 calls recorded. Requests name the asking member in `X-Member-Id` (brief,
 Section 5.1); it is checked against onboarding, and a request without a known
-member is refused. That says who is asking; it does not prove it, since auth
-is an open question.
+member is refused.
 
 ### "Vantari" is a working name (owner's answer, Checkpoint 1)
 
@@ -132,3 +131,17 @@ The stock in onboarding is counted on the sim clock's start date, so the
 run-out date is fixed at that date plus the days of cover, and the days left
 fall as the clock moves. The reference read `pills_left` against the clock
 without moving it, so the figure never changed.
+
+### Who is asking: X-Member-Id, behind one function (owner's answer, Checkpoint 1)
+
+Every route that needs to know who is asking calls `actor()` in
+`server/src/auth.ts`, and nothing else reads the header. It checks the member
+against onboarding (missing or unknown: 400) and, where a route asks for one,
+the role (wrong role: 403). The wallet routes and the reversal route will
+require the responsible person; the chemist's confirmation will require the
+chemist. **The header identifies a member; it does not prove who they are.**
+Real auth replaces the inside of `actor()` without touching a route, and stays
+an open question until the client is chosen.
+
+The chemist is not a family member, so how a chemist identifies itself is
+still to be settled; it first matters in Stage 5.
