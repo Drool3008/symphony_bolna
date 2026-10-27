@@ -1,7 +1,10 @@
 import express, { type Express, type Request } from 'express'
+import { z } from 'zod'
+import { advanceClock, ClockError } from './clock.js'
 import type { MembersResponse } from '@family-health/shared'
 import { MEDIA_DIR } from './domain/history.js'
 import { streamEvents } from './events.js'
+import { bodyOf, errorHandler, HttpError } from './http.js'
 import { homeFor } from './domain/home.js'
 
 import type { Runtime } from './runtime.js'
@@ -56,5 +59,27 @@ export function createApp(rt: Runtime): Express {
     res.json(home)
   })
 
+  /**
+   * A person moves the sim clock forward, or moves it to the agent's next
+   * date. Never on a timer. The response lists the agent's dates it reached.
+   */
+  app.post('/api/clock', (req, res) => {
+    const move = bodyOf(ClockBody, req)
+    try {
+      const { clock, reached } = advanceClock(rt, move)
+      res.json({ clock: clock.toISOString(), reached })
+    } catch (err) {
+      if (err instanceof ClockError) throw new HttpError(400, err.message)
+      throw err
+    }
+  })
+
+  app.use(errorHandler)
   return app
 }
+
+const ClockBody = z.object({
+  to: z.iso.datetime({ offset: true }).optional(),
+  to_next_date: z.boolean().optional(),
+  source: z.string().trim().min(1, 'say who or what moved the clock'),
+})

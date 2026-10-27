@@ -116,3 +116,19 @@ constant, `PRODUCT_NAME` in `shared/src/product.ts`, and in the README, so a
 later rename touches as little as possible. Package names
 (`@family-health/...`) describe what the code is, not the brand, and do not
 change with it.
+
+### The clock never runs backwards, and can jump to the agent's next date (Proposal)
+
+From the reference's `POST /api/clock` (`server/index.js`): the clock moves
+only when a person moves it, with a source label, never on a timer. Two
+additions: a move to an earlier time is refused, so a wait or a reversal
+window that closed cannot reopen; and `to_next_date` moves it to the start of
+the next date the agent watches (a medicine running out, a test falling due),
+on the family's clock. Each move reports the agent's dates it reached.
+
+### Days of cover count down from when the stock was counted
+
+The stock in onboarding is counted on the sim clock's start date, so the
+run-out date is fixed at that date plus the days of cover, and the days left
+fall as the clock moves. The reference read `pills_left` against the clock
+without moving it, so the figure never changed.

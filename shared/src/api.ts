@@ -21,6 +21,8 @@ export interface HomeMedicine {
   must_not_miss: boolean
   stock: number
   unit: string
+  /** The day the stock was counted. */
+  stock_as_of: string
   days_of_cover: number
   runs_out_on: string
 }
@@ -47,4 +49,27 @@ export interface MemberHomeResponse {
   tests: HomeTest[]
   /** The agent's most recent message to this member, once there is an agent. */
   latest_agent_word: string | null
+}
+
+/** POST /api/clock. Moves the sim clock forward. Only a person or one of the agent's own dates moves it. */
+export interface ClockRequest {
+  /** An ISO timestamp with offset. Omit it and set `to_next_date` to jump to the agent's next date. */
+  to?: string
+  to_next_date?: boolean
+  /** Who or what moved it, in words. Required: every input carries its source. */
+  source: string
+}
+
+/** A date the agent watches: a medicine running out, or a recurring test falling due. */
+export interface AgentDate {
+  kind: 'medicine_runs_out' | 'test_due'
+  id: string
+  member: string
+  date: string
+}
+
+export interface ClockResponse {
+  clock: string
+  /** The agent's dates the clock reached on this move. */
+  reached: AgentDate[]
 }

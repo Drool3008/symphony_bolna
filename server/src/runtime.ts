@@ -1,4 +1,5 @@
 import { OnboardingSchema, type AgentEvent, type Onboarding } from '@family-health/shared'
+import type { ClockListener } from './clock.js'
 import { EventBus } from './events.js'
 import { openDb, type Db } from './store/db.js'
 import { EventLog } from './store/event-log.js'
@@ -19,6 +20,9 @@ export interface Runtime {
   setOnboarding(ob: Onboarding): void
   /** The simulated clock. */
   clock(): Date
+  /** Runs when the sim clock moves: waits and windows past their deadline close. */
+  onClock(listener: ClockListener): () => void
+  clockMoved(now: Date, before: Date): void
   /** Logs an event, then sends it to everyone listening. */
   emit(type: string, payload?: Record<string, unknown>): AgentEvent
   /** What is true right now, for a client that has just caught up. */
@@ -36,6 +40,7 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
   const session = new SessionValues(db)
   const log = new EventLog(db, session)
   const bus = new EventBus()
+  const clockListeners = new Set<ClockListener>()
 
   const rt: Runtime = {
     db,
@@ -53,6 +58,13 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
     },
     clock() {
       return new Date(session.get<string>('clock') ?? rt.onboarding().sim_clock.start)
+    },
+    onClock(listener) {
+      clockListeners.add(listener)
+      return () => clockListeners.delete(listener)
+    },
+    clockMoved(now, before) {
+      for (const listener of clockListeners) listener(now, before)
     },
     emit(type, payload = {}) {
       const event = log.append(type, payload, rt.clock())

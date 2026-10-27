@@ -18,7 +18,9 @@ export function homeFor(
 ): MemberHomeResponse | null {
   const member = ob.family.members.find((m) => m.id === memberId)
   if (!member) return null
-  const today = calendarDate(clock, offsetMinutes(ob.sim_clock.start))
+  const offset = offsetMinutes(ob.sim_clock.start)
+  const today = calendarDate(clock, offset)
+  const asOf = calendarDate(new Date(ob.sim_clock.start), offset)
   const shared = viewLevel(ob, memberId, viewer)
   const base = {
     member: { id: member.id, name: member.name, role: member.role, language: member.language },
@@ -39,7 +41,7 @@ export function homeFor(
         purpose: m.purpose,
         schedule: m.schedule,
         must_not_miss: m.must_not_miss,
-        ...coverOf(m, today),
+        ...coverOf(m, today, asOf),
       })),
     tests: ob.recurring_tests
       .filter((t) => t.member === memberId)
