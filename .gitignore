@@ -1,0 +1,21 @@
+node_modules/
+dist/
+coverage/
+
+# Keys. Any .env variant, because a timestamped backup of one still holds them.
+.env
+.env.*
+!.env.example
+
+# The session store. State lives here, not in the repository.
+data/
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+*.db
+
+# Per-machine Claude Code settings. The shared .claude/settings.json is tracked.
+.claude/settings.local.json
+
+.DS_Store
