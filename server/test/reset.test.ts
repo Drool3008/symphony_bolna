@@ -1,9 +1,9 @@
+import { testApp } from './helpers.js'
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
-import { createApp } from '../src/app.js'
 import { loadOnboarding, ONBOARDING_PATH } from '../src/config/onboarding.js'
 import { createRuntime } from '../src/runtime.js'
 
@@ -12,7 +12,7 @@ function setUp() {
   const path = join(mkdtempSync(join(tmpdir(), 'reset-')), 'onboarding.json')
   writeFileSync(path, readFileSync(ONBOARDING_PATH))
   const rt = createRuntime({ databasePath: ':memory:', loadOnboarding: () => loadOnboarding(path) })
-  return { rt, app: createApp(rt), path }
+  return { rt, app: testApp(rt).app, path }
 }
 
 describe('reset', () => {

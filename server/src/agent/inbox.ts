@@ -21,7 +21,7 @@ export function deliverInput(
   attachment?: unknown,
 ): void {
   const stamped = { ...input, at: rt.clock().toISOString() }
-  rt.history.append({
+  rt.history.addInput({
     role: 'user',
     text: `Simulated clock: ${rt.clock().toISOString()}\n\n${JSON.stringify(stamped, null, 2)}`,
     ...(images.length ? { images } : {}),

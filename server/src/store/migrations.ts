@@ -87,4 +87,33 @@ export const MIGRATIONS: Migration[] = [
       );
     `,
   },
+  {
+    id: 4,
+    name: 'inbox and operator queue',
+    sql: `
+      -- Inputs that arrived while a step was in flight, waiting to go into
+      -- the history after that step's results.
+      CREATE TABLE inbox (
+        seq  INTEGER PRIMARY KEY AUTOINCREMENT,
+        turn TEXT NOT NULL
+      );
+
+      -- Tool calls a person or a fixture answers (reference server/curtain.js).
+      CREATE TABLE operator_queue (
+        seq         INTEGER PRIMARY KEY AUTOINCREMENT,
+        id          TEXT    NOT NULL UNIQUE,
+        call_id     TEXT    NOT NULL,
+        tool        TEXT    NOT NULL,
+        mode        TEXT    NOT NULL,
+        request     TEXT    NOT NULL,
+        fixtures    TEXT    NOT NULL,
+        state       TEXT    NOT NULL,
+        response    TEXT,
+        variant     TEXT,
+        via         TEXT,
+        created_at  TEXT    NOT NULL,
+        resolved_at TEXT
+      );
+    `,
+  },
 ]

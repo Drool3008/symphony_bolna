@@ -2,8 +2,7 @@ import { existsSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
-import { createApp } from '../src/app.js'
-import { testRuntime } from './helpers.js'
+import { testApp } from './helpers.js'
 import { loadOnboarding } from '../src/config/onboarding.js'
 import { fromRoot } from '../src/config/paths.js'
 import { loadFamilyHistory, loadRpHistory, MEDIA_DIR } from '../src/domain/history.js'
@@ -27,7 +26,7 @@ describe('the seeded history', () => {
   })
 
   it('serves that media at the same path', async () => {
-    const app = createApp(testRuntime())
+    const app = testApp().app
     const res = await request(app).get('/media/rx-patient.png')
     expect(res.status).toBe(200)
     expect(res.headers['content-type']).toBe('image/png')

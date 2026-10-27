@@ -1,12 +1,11 @@
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
-import { createApp } from '../src/app.js'
 import { agentDates } from '../src/clock.js'
-import { testRuntime } from './helpers.js'
+import { testApp, testRuntime } from './helpers.js'
 
 function setUp() {
   const rt = testRuntime()
-  return { rt, app: createApp(rt) }
+  return { rt, app: testApp(rt).app }
 }
 
 describe('the simulated clock', () => {
@@ -37,7 +36,9 @@ describe('the simulated clock', () => {
     expect(res.body.reached).toEqual([
       { kind: 'medicine_runs_out', id: 'med_chronic_1', member: 'patient', date: '2026-10-09' },
     ])
-    expect(rt.log.since().at(-1)).toMatchObject({ type: 'clock', source: 'Operator, dry run' })
+    expect(rt.log.since().find((e) => e.type === 'clock')).toMatchObject({ source: 'Operator, dry run' })
+    // A date reached is a trigger, with the clock as its source.
+    expect(rt.log.since().at(-1)).toMatchObject({ type: 'input', input: { kind: 'clock' } })
   })
 
   it('moves to the agent next date, at the start of that day on the family clock', async () => {

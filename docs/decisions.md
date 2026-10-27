@@ -155,3 +155,22 @@ the file from `media/` itself, so a forward can only ever send a record that
 is in the history. The input the model gets is built as the reference built
 it: kind, a source line naming the forwarder, the chat, the type and the
 original date, and the forwarder's caption and note marked as theirs.
+
+### Inputs that arrive mid-step wait for that step's results
+
+A model's tool calls must be followed straight away by their results, or
+Anthropic and Gemini refuse the history. The reference pushed an input onto
+the history whenever it arrived (`server/agent.js`, `feed()`), so an input
+that came while a call was waiting on a person landed between the calls and
+their results. Here it waits in an `inbox` table and goes into the history
+after the step's results. After a restart, calls left without results get one
+saying the server restarted, and the operator items they were waiting on are
+marked abandoned.
+
+### OPERATOR_AUTO answers FIXTURE calls only
+
+The brief defines `OPERATOR_AUTO` as answering FIXTURE calls from fixtures.
+The reference's `CURTAIN_AUTO` also answered the phone call (`place_call`)
+with a canned outcome. Here a PERSON call always waits for a person, which
+keeps the reference's rule that an invented reply is never treated as real.
+A dry run with nobody at the operator page stops at the first call.

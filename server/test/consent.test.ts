@@ -1,7 +1,6 @@
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
-import { createApp } from '../src/app.js'
-import { testRuntime } from './helpers.js'
+import { testApp } from './helpers.js'
 import { loadOnboarding } from '../src/config/onboarding.js'
 import { mayRecordCalls, shareLevel, viewLevel } from '../src/domain/consent.js'
 
@@ -42,7 +41,7 @@ describe('consent per member', () => {
 })
 
 describe('the home route reads consent', () => {
-  const app = createApp(testRuntime())
+  const app = testApp().app
   const get = (id: string, viewer?: string) => {
     const req = request(app).get(`/api/members/${id}/home`)
     return viewer === undefined ? req : req.set('X-Member-Id', viewer)

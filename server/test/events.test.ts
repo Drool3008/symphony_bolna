@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it } from 'vitest'
-import { createApp } from '../src/app.js'
-import { testRuntime } from './helpers.js'
+import { testApp, testRuntime } from './helpers.js'
 import { listen, openStream } from './sse.js'
 
 const closers: (() => unknown)[] = []
@@ -10,7 +9,7 @@ afterEach(async () => {
 
 async function setUp() {
   const rt = testRuntime()
-  const { server, base } = await listen(createApp(rt))
+  const { server, base } = await listen(testApp(rt).app)
   closers.push(() => new Promise((r) => server.close(r)))
   const stream = (headers?: Record<string, string>) => {
     const s = openStream(base, headers)

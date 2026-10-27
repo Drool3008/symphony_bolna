@@ -2,6 +2,7 @@ import type { ChatSendResponse, MembersResponse } from '@family-health/shared'
 import express, { type Express } from 'express'
 import { z } from 'zod'
 import { deliverInput } from './agent/inbox.js'
+import type { OperatorQueue } from './agent/operator.js'
 import { actor } from './auth.js'
 import { advanceClock, ClockError } from './clock.js'
 import { OnboardingError } from './config/onboarding.js'
@@ -13,7 +14,11 @@ import { bodyOf, errorHandler, HttpError } from './http.js'
 import { resetSession } from './reset.js'
 import type { Runtime } from './runtime.js'
 
-export function createApp(rt: Runtime): Express {
+export interface Services {
+  operator: OperatorQueue
+}
+
+export function createApp(rt: Runtime, services: Services): Express {
   const app = express()
   app.use(express.json({ limit: '5mb' }))
 
@@ -83,6 +88,29 @@ export function createApp(rt: Runtime): Express {
   })
 
   /**
+   * A member writes to the agent in their own thread: a real input, labelled
+   * with who sent it and where. Also kept in their thread so their screen
+   * shows what they sent, not just the agent's side.
+   */
+  app.post('/api/input', (req, res) => {
+    const { memberId } = actor(rt, req)
+    const { text } = bodyOf(InputBody, req)
+    const name = rt.onboarding().family.members.find((m) => m.id === memberId)?.name ?? memberId
+    rt.threads.post({ thread: memberId, from: memberId, to: 'agent', text })
+    deliverInput(rt, { kind: 'message', source: `${name}, in the chat with the agent`, from: memberId, text })
+    res.json({ ok: true })
+  })
+
+  /** Calls a person or a fixture answers, waiting (replaces the reference's /api/curtain). */
+  app.get('/api/operator/queue', (_req, res) => {
+    res.json({ pending: services.operator.pending() })
+  })
+
+  app.post('/api/operator/queue/:id', (req, res) => {
+    res.json({ item: services.operator.respond(req.params.id, bodyOf(OperatorAnswerBody, req)) })
+  })
+
+  /**
    * A person moves the sim clock forward, or moves it to the agent's next
    * date. Never on a timer. The response lists the agent's dates it reached.
    */
@@ -91,6 +119,8 @@ export function createApp(rt: Runtime): Express {
     try {
       const { clock, reached } = advanceClock(rt, move)
       res.json({ clock: clock.toISOString(), reached })
+      // A date reached is a trigger, with the clock as its source.
+      if (reached.length) deliverInput(rt, { kind: 'clock', source: `Clock: ${move.source}`, reached })
     } catch (err) {
       if (err instanceof ClockError) throw new HttpError(400, err.message)
       throw err
@@ -111,6 +141,13 @@ export function createApp(rt: Runtime): Express {
   app.use(errorHandler)
   return app
 }
+
+const InputBody = z.object({ text: z.string().trim().min(1, 'say something') })
+
+const OperatorAnswerBody = z.object({
+  variant: z.string().optional(),
+  response: z.record(z.string(), z.unknown()).optional(),
+})
 
 const ChatSendBody = z.object({
   chat_id: z.string().trim().min(1),

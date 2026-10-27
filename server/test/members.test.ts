@@ -1,11 +1,10 @@
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
-import { createApp } from '../src/app.js'
-import { testRuntime } from './helpers.js'
+import { testApp } from './helpers.js'
 
 describe('GET /api/members', () => {
   it('lists the family with roles and languages, and no phone numbers', async () => {
-    const res = await request(createApp(testRuntime())).get('/api/members')
+    const res = await request(testApp().app).get('/api/members')
     expect(res.status).toBe(200)
     expect(res.body.members).toEqual([
       { id: 'patient', name: 'Lakshmi', role: 'patient', language: 'te-IN' },

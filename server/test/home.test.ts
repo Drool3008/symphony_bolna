@@ -1,10 +1,9 @@
 import request from 'supertest'
 import { describe, expect, it } from 'vitest'
-import { createApp } from '../src/app.js'
-import { testRuntime } from './helpers.js'
+import { testApp } from './helpers.js'
 import { addDays, calendarDate, daysBetween, offsetMinutes } from '../src/domain/dates.js'
 
-const app = createApp(testRuntime())
+const app = testApp().app
 const home = async (id: string, viewer = id) =>
   (await request(app).get(`/api/members/${id}/home`).set('X-Member-Id', viewer)).body
 

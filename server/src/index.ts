@@ -1,5 +1,6 @@
 import { PRODUCT_NAME } from '@family-health/shared'
 import { pino } from 'pino'
+import { OperatorQueue } from './agent/operator.js'
 import { createApp } from './app.js'
 import { parseEnv } from './config/env.js'
 import { loadOnboarding, OnboardingError } from './config/onboarding.js'
@@ -19,7 +20,12 @@ function boot() {
     // copy: a broken file on disk would otherwise go unnoticed until a reset.
     const onboarding = loadOnboarding()
     const rt = createRuntime({ databasePath: fromRoot(env.DATABASE_PATH), loadOnboarding: () => onboarding })
-    const app = createApp(rt)
+    const operator = new OperatorQueue(rt, env.OPERATOR_AUTO)
+    // Calls left waiting by a run that died with the last server have nobody
+    // to answer to; the history gets a result for each saying so.
+    operator.abandonAll('the server restarted')
+    rt.history.closeInterruptedStep()
+    const app = createApp(rt, { operator })
     app.listen(env.PORT, () => {
       log.info(
         {
