@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Rejects a commit message that breaks the house rules in CLAUDE.md:
+# no AI attribution, no conventional-commit prefix, no banned words,
+# a subject of at most 72 characters with no trailing full stop.
+# Prints which rule failed.
+
+set -u
+
+file="$1"
+
+# Git leaves comment lines in the file when the editor is used. They are not
+# part of the message, so they are not checked.
+message="$(grep -v '^#' "$file")"
+
+fail() {
+  echo "commit-msg: rejected: $1" >&2
+  exit 1
+}
+
+# Attribution, on any line, case-insensitive.
+while IFS= read -r line; do
+  shopt -s nocasematch
+  if [[ "$line" =~ ^Co-Authored-By: ]]; then fail "Co-Authored-By trailer"; fi
+  if [[ "$line" =~ ^Claude-Session: ]]; then fail "Claude-Session trailer"; fi
+  if [[ "$line" =~ Generated\ with ]]; then fail "'Generated with' line"; fi
+  if [[ "$line" =~ noreply@anthropic\.com ]]; then fail "noreply@anthropic.com"; fi
+  if [[ "$line" =~ claude\.ai/code ]]; then fail "claude.ai/code session link"; fi
+  shopt -u nocasematch
+done <<< "$message"
+
+subject="$(printf '%s\n' "$message" | grep -v '^[[:space:]]*$' | head -n 1)"
+[ -n "$subject" ] || fail "empty subject"
+
+# Case-sensitive on purpose: "Acting: never stop at silence" is a sentence,
+# "feat(api): ..." is a prefix.
+if [[ "$subject" =~ ^[a-z]+(\([^\)]*\))?!?: ]]; then
+  fail "conventional-commit prefix in the subject"
+fi
+
+banned='feat|feature|add|added|adds|adding|chore|refactor|wip|update|updated|bump|misc|msg'
+if printf '%s\n' "$subject" | grep -Eiq "(^|[^[:alnum:]_])($banned)([^[:alnum:]_]|$)"; then
+  word="$(printf '%s\n' "$subject" | grep -Eio "(^|[^[:alnum:]_])($banned)([^[:alnum:]_]|$)" | head -n 1 | tr -cd '[:alnum:]')"
+  fail "banned word in the subject: $word"
+fi
+if printf '%s\n' "$subject" | grep -Eiq "initial commit"; then
+  fail "banned phrase in the subject: initial commit"
+fi
+
+length=${#subject}
+if [ "$length" -gt 72 ]; then fail "subject is $length characters, the limit is 72"; fi
+if [[ "$subject" == *. ]]; then fail "subject ends with a full stop"; fi
+
+exit 0

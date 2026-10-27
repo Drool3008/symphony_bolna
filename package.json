@@ -10,13 +10,14 @@
     "shared"
   ],
   "scripts": {
-    "typecheck": "tsc -p shared --noEmit && tsc -p server --noEmit",
+    "typecheck": "tsc -p shared --noEmit && tsc -p server --noEmit && tsc -p . --noEmit",
     "server": "npm run start -w server",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepare": "git config core.hooksPath .githooks"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.5",
