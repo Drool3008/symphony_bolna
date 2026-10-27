@@ -17,6 +17,8 @@ export interface ModelReply {
   text: string
   /** Gemini gives no call ids; the loop mints any that are missing. */
   toolCalls: (Omit<ToolCall, 'id'> & { id?: string })[]
+  /** The provider's own record of this turn, kept and sent back unchanged. */
+  native?: { provider: string; content: unknown }
 }
 
 /** One shape for every provider: Gemini, Anthropic, OpenCode Go, and the scripted stub. */

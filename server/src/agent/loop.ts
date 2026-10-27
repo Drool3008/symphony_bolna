@@ -119,7 +119,12 @@ export class Agent {
         text: reply.text,
         tool_calls: calls.map(({ id, name, args }) => ({ id, name, args })),
       })
-      this.rt.history.append({ role: 'model', text: reply.text, toolCalls: calls })
+      this.rt.history.append({
+        role: 'model',
+        text: reply.text,
+        toolCalls: calls,
+        ...(reply.native ? { native: reply.native } : {}),
+      })
 
       if (calls.length === 0) {
         this.rt.history.release()

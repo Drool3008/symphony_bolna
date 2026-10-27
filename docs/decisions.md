@@ -174,3 +174,24 @@ The reference's `CURTAIN_AUTO` also answered the phone call (`place_call`)
 with a canned outcome. Here a PERSON call always waits for a person, which
 keeps the reference's rule that an invented reply is never treated as real.
 A dry run with nobody at the operator page stops at the first call.
+
+### The Anthropic provider uses the official SDK, with today's request rules
+
+The reference called Anthropic over raw REST with `temperature: 0.2` and
+defaulted to `claude-sonnet-5`. The rebuild uses `@anthropic-ai/sdk`, which
+also serves OpenCode Go through its `baseURL` and two headers. Three changes
+follow the current API, not the reference:
+
+- No `temperature`: the Messages API now refuses sampling parameters.
+- `MODEL_NAME` defaults to `claude-opus-5-5`, at effort `high`, with the
+  server-side refusal fallback (`fallbacks: "default"`) on Anthropic's own
+  API only. A refusal that survives the fallback stops the run with an error
+  rather than being read as an answer.
+- The assistant's content blocks, thinking included, are stored with the turn
+  and sent back unchanged; an edited thinking block fails the API's check.
+  Gemini's parts are kept the same way, which keeps its thought signatures.
+
+Gemini stays on REST `generateContent` with the reference's retry on 429 and
+5xx and its default model. OpenCode Go keeps the reference's endpoint notes;
+`OPENCODE_BASE_URL` is accepted as the full `/messages` URL, as the reference
+took it, or as a root.

@@ -28,7 +28,17 @@ export interface ToolResult {
 /** One turn of the conversation with the model, provider-neutral (reference server/agent.js, session.history). */
 export type Turn =
   | { role: 'user'; text: string; images?: ImagePart[] }
-  | { role: 'model'; text: string; toolCalls: ToolCall[] }
+  | {
+      role: 'model'
+      text: string
+      toolCalls: ToolCall[]
+      /**
+       * The provider's own record of the turn, replayed unchanged to the same
+       * provider: Anthropic's content blocks (thinking included, which must
+       * not be edited) or Gemini's parts (with their thought signatures).
+       */
+      native?: { provider: string; content: unknown }
+    }
   | { role: 'tool'; results: ToolResult[] }
 
 /**
