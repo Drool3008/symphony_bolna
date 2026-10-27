@@ -115,3 +115,13 @@ export interface ChatSendResponse {
   key: string
   message: ChatMessage
 }
+
+/** POST /api/forward. The forwarder is the member in X-Member-Id. */
+export interface ForwardRequest {
+  /** The chat the record is in, and the message that carries it. */
+  chat_id: string
+  message_id: string
+  /** The forwarder's own words. The agent treats them as theirs, not as fact (R2). */
+  caption?: string
+  note?: string
+}

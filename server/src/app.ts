@@ -1,12 +1,14 @@
 import type { ChatSendResponse, MembersResponse } from '@family-health/shared'
 import express, { type Express } from 'express'
 import { z } from 'zod'
+import { deliverInput } from './agent/inbox.js'
 import { actor } from './auth.js'
 import { advanceClock, ClockError } from './clock.js'
 import { OnboardingError } from './config/onboarding.js'
 import { MEDIA_DIR } from './domain/history.js'
 import { homeFor } from './domain/home.js'
 import { streamEvents } from './events.js'
+import { forwardRecord } from './forward.js'
 import { bodyOf, errorHandler, HttpError } from './http.js'
 import { resetSession } from './reset.js'
 import type { Runtime } from './runtime.js'
@@ -43,7 +45,9 @@ export function createApp(rt: Runtime): Express {
 
   /**
    * A member types into a family chat. Stored and sent to the other handsets,
-   * and that is all: family chat never reaches the agent (R2).
+   * and that is all: family chat never reaches the agent (R2). The one
+   * exception is explicit: in the family group, where the agent is a member,
+   * a line addressed to it with @agent is a real input from a real person.
    */
   app.post('/api/chat/send', (req, res) => {
     const { memberId } = actor(rt, req)
@@ -58,6 +62,24 @@ export function createApp(rt: Runtime): Express {
     const message = rt.chats.post({ from: memberId, chatId: chat_id, text, toAgent: Boolean(ask_agent) })
     const body: ChatSendResponse = { key: message.key, message }
     res.json(body)
+
+    if (message.to_agent) {
+      const name = rt.onboarding().family.members.find((m) => m.id === memberId)?.name ?? memberId
+      deliverInput(rt, {
+        kind: 'message',
+        source: `${name}, in the family group, addressed to the agent`,
+        from: memberId,
+        via: chat_id,
+        text: message.text,
+      })
+    }
+  })
+
+  /** A member forwards a record to the agent: the only way a family document reaches it (R2). */
+  app.post('/api/forward', (req, res) => {
+    const { memberId } = actor(rt, req)
+    forwardRecord(rt, memberId, bodyOf(ForwardBody, req))
+    res.json({ ok: true })
   })
 
   /**
@@ -94,6 +116,13 @@ const ChatSendBody = z.object({
   chat_id: z.string().trim().min(1),
   text: z.string().trim().min(1, 'say something'),
   ask_agent: z.boolean().optional(),
+})
+
+const ForwardBody = z.object({
+  chat_id: z.string().trim().min(1),
+  message_id: z.string().trim().min(1),
+  caption: z.string().optional(),
+  note: z.string().optional(),
 })
 
 const ResetBody = z.object({ reason: z.string().trim().min(1).optional() })

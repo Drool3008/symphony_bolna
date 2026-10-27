@@ -74,4 +74,17 @@ export const MIGRATIONS: Migration[] = [
       CREATE INDEX chat_messages_by_key ON chat_messages (chat_key, seq);
     `,
   },
+  {
+    id: 3,
+    name: 'model history',
+    sql: `
+      -- What the model has been given and has said, turn by turn. The only
+      -- conversation the model reads (R2).
+      CREATE TABLE history (
+        seq  INTEGER PRIMARY KEY AUTOINCREMENT,
+        role TEXT NOT NULL,
+        turn TEXT NOT NULL
+      );
+    `,
+  },
 ]

@@ -145,3 +145,13 @@ an open question until the client is chosen.
 
 The chemist is not a family member, so how a chemist identifies itself is
 still to be settled; it first matters in Stage 5.
+
+### A forward names its record; the server finds the file (Proposal)
+
+The reference's `POST /api/forward` took a media object from the client and
+read the file at the path it gave. Here the client names the chat and the
+message, and the server looks the record up in the seeded history and reads
+the file from `media/` itself, so a forward can only ever send a record that
+is in the history. The input the model gets is built as the reference built
+it: kind, a source line naming the forwarder, the chat, the type and the
+original date, and the forwarder's caption and note marked as theirs.

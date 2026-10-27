@@ -31,7 +31,7 @@ export function resetSession(
     rt.session.set('stage', 1)
     rt.log.nextGeneration()
   })()
-  for (const listener of rt.resetListeners()) listener()
+  rt.hooks.reset.fire()
 
   rt.emit('reset', { reason, clock: fresh.sim_clock.start })
   return { clock: rt.clock().toISOString(), stage: 1, generation: rt.log.generation() }

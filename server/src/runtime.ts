@@ -1,10 +1,11 @@
 import { OnboardingSchema, type AgentEvent, type Onboarding } from '@family-health/shared'
-import type { ClockListener } from './clock.js'
-import { EventBus } from './events.js'
 import { loadFamilyHistory } from './domain/history.js'
+import { EventBus } from './events.js'
+import { Hook, SyncParts } from './hooks.js'
 import { AgentThreads, FamilyChats } from './store/conversations.js'
 import { openDb, type Db } from './store/db.js'
 import { EventLog } from './store/event-log.js'
+import { ModelHistory } from './store/history.js'
 import { SessionValues } from './store/session.js'
 
 /**
@@ -21,19 +22,25 @@ export interface Runtime {
   threads: AgentThreads
   /** What the family says to each other. Never read by the model. */
   chats: FamilyChats
+  /** What the model has been given and has said. */
+  history: ModelHistory
+  hooks: {
+    /** The sim clock moved: waits and windows past their deadline close. */
+    clock: Hook<[now: Date, before: Date]>
+    /** A reset cleared the store: anything held in memory lets go. */
+    reset: Hook
+    /** A real input reached the model's history: the agent has something to read. */
+    input: Hook
+    /** Pieces of the sync event a late client gets. */
+    sync: SyncParts
+  }
   /** The working copy of onboarding. The agent edits it; a reset rereads the file. */
   onboarding(): Onboarding
   setOnboarding(ob: Onboarding): void
-  /** The simulated clock. */
-  clock(): Date
   /** Reads onboarding from disk again and checks it. Throws if the file cannot be used. */
   readOnboardingFromDisk(): Onboarding
-  /** Runs on a reset, after the store is cleared: anything held in memory lets go here. */
-  onReset(listener: () => void): () => void
-  resetListeners(): Iterable<() => void>
-  /** Runs when the sim clock moves: waits and windows past their deadline close. */
-  onClock(listener: ClockListener): () => void
-  clockMoved(now: Date, before: Date): void
+  /** The simulated clock. */
+  clock(): Date
   /** Logs an event, then sends it to everyone listening. */
   emit(type: string, payload?: Record<string, unknown>): AgentEvent
   /** What is true right now, for a client that has just caught up. */
@@ -42,7 +49,7 @@ export interface Runtime {
 
 export interface RuntimeOptions {
   databasePath: string
-  /** Reads onboarding from disk. Called when the store holds none yet. */
+  /** Reads onboarding from disk. Called when the store holds none yet, and on a reset. */
   loadOnboarding: () => Onboarding
 }
 
@@ -51,14 +58,17 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
   const session = new SessionValues(db)
   const log = new EventLog(db, session)
   const bus = new EventBus()
-  const clockListeners = new Set<ClockListener>()
-  const resetListeners = new Set<() => void>()
-
   const groupIds = new Set(
     loadFamilyHistory()
       .chats.filter((c) => c.kind === 'group')
       .map((c) => c.id),
   )
+
+  // The stores need the runtime and the runtime hands out the stores, so they
+  // are made just after it and read through getters.
+  let threads: AgentThreads
+  let chats: FamilyChats
+  let history: ModelHistory
 
   const rt: Runtime = {
     db,
@@ -71,32 +81,21 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
     get chats() {
       return chats
     },
+    get history() {
+      return history
+    },
+    hooks: { clock: new Hook<[Date, Date]>(), reset: new Hook(), input: new Hook(), sync: new SyncParts() },
     onboarding() {
-      const stored = session.get<unknown>('onboarding')
       // Checked on the way out as well as in, so a store written by an older
       // build cannot hand the agent a shape it does not expect.
-      return OnboardingSchema.parse(stored)
+      return OnboardingSchema.parse(session.get<unknown>('onboarding'))
     },
     setOnboarding(ob) {
       session.set('onboarding', ob)
     },
+    readOnboardingFromDisk: loadOnboarding,
     clock() {
       return new Date(session.get<string>('clock') ?? rt.onboarding().sim_clock.start)
-    },
-    readOnboardingFromDisk: loadOnboarding,
-    onReset(listener) {
-      resetListeners.add(listener)
-      return () => resetListeners.delete(listener)
-    },
-    resetListeners() {
-      return resetListeners
-    },
-    onClock(listener) {
-      clockListeners.add(listener)
-      return () => clockListeners.delete(listener)
-    },
-    clockMoved(now, before) {
-      for (const listener of clockListeners) listener(now, before)
     },
     emit(type, payload = {}) {
       const event = log.append(type, payload, rt.clock())
@@ -108,12 +107,13 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
         clock: rt.clock().toISOString(),
         stage: session.get<number>('stage') ?? 1,
         generation: log.generation(),
+        ...rt.hooks.sync.read(),
       }
     },
   }
-
-  const threads = new AgentThreads(rt)
-  const chats = new FamilyChats(rt, groupIds)
+  threads = new AgentThreads(rt)
+  chats = new FamilyChats(rt, groupIds)
+  history = new ModelHistory(rt)
 
   if (session.get('onboarding') === undefined) {
     const ob = loadOnboarding()

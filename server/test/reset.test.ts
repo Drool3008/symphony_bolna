@@ -64,7 +64,7 @@ describe('reset', () => {
   it('lets go of whatever was held in memory', async () => {
     const { rt, app } = setUp()
     let released = false
-    rt.onReset(() => (released = true))
+    rt.hooks.reset.on(() => (released = true))
     await request(app).post('/api/reset').send({})
     expect(released).toBe(true)
   })

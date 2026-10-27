@@ -12,8 +12,6 @@ import type { Runtime } from './runtime.js'
  * passes their deadline.
  */
 
-export type ClockListener = (now: Date, before: Date) => void
-
 /** The dates the agent watches, in date order: medicines running out and tests falling due. */
 export function agentDates(ob: Onboarding, now: Date): AgentDate[] {
   const offset = offsetMinutes(ob.sim_clock.start)
@@ -74,6 +72,6 @@ export function advanceClock(
 
   rt.session.set('clock', to.toISOString())
   rt.emit('clock', { clock: to.toISOString(), source: move.source, reached })
-  rt.clockMoved(to, before)
+  rt.hooks.clock.fire(to, before)
   return { clock: to, reached }
 }

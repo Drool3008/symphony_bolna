@@ -20,6 +20,8 @@ export default tseslint.config(
   {
     rules: {
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      // A store made after the object that hands it out is read through a getter first.
+      'prefer-const': ['error', { ignoreReadBeforeAssign: true }],
     },
   },
   {

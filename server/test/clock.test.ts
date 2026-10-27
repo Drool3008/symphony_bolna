@@ -75,7 +75,7 @@ describe('the simulated clock', () => {
   it('tells whatever is watching it that it moved', async () => {
     const { rt, app } = setUp()
     const seen: string[] = []
-    rt.onClock((now) => seen.push(now.toISOString()))
+    rt.hooks.clock.on((now) => seen.push(now.toISOString()))
     await request(app).post('/api/clock').send({ to: '2026-10-07T09:00:00+05:30', source: 'test' })
     expect(seen).toEqual(['2026-10-07T03:30:00.000Z'])
   })
