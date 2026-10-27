@@ -5,3 +5,4 @@
  */
 export * from './onboarding.js'
 export * from './api.js'
+export * from './product.js'

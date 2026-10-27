@@ -1,9 +1,10 @@
+import { PRODUCT_NAME } from '@family-health/shared'
 import { pino } from 'pino'
 import { createApp } from './app.js'
 import { parseEnv } from './config/env.js'
 import { loadOnboarding, OnboardingError } from './config/onboarding.js'
 
-const log = pino({ name: 'family-health' })
+const log = pino({ name: PRODUCT_NAME })
 
 /**
  * Boot. A bad profile stops the server here, before anything listens, with

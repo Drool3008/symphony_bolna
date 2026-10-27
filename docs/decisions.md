@@ -108,3 +108,11 @@ calls recorded. Requests name the asking member in `X-Member-Id` (brief,
 Section 5.1); it is checked against onboarding, and a request without a known
 member is refused. That says who is asking; it does not prove it, since auth
 is an open question.
+
+### "Vantari" is a working name (owner's answer, Checkpoint 1)
+
+The rebuild keeps "Vantari" as its working name for now. It lives in one
+constant, `PRODUCT_NAME` in `shared/src/product.ts`, and in the README, so a
+later rename touches as little as possible. Package names
+(`@family-health/...`) describe what the code is, not the brand, and do not
+change with it.

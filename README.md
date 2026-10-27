@@ -1,4 +1,4 @@
-# Vantari, the Family Health Agent
+# Vantari (working name), the Family Health Agent
 
 An agent that manages one Indian family's health. It watches medicines and
 recurring tests, takes in a trigger, reaches the right person, listens,
@@ -12,8 +12,11 @@ condition, and never substitutes a medicine.
 This repository is a rebuild, backend first. It ports the rules and the logic
 of a working simulator into a new TypeScript codebase. The client platform (a
 web app, an Expo app, or a wrapped web app) is not decided yet, so the backend
-assumes no particular screen and no product UI lives here. The working name is
-Vantari; whether it stays is an open question.
+assumes no particular screen and no product UI lives here.
+
+"Vantari" is a working name. In code it lives in one constant,
+`PRODUCT_NAME` in `shared/src/product.ts`; a rename is that line and this
+README.
 
 ## Where things are
 
