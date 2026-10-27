@@ -5,6 +5,8 @@ import type { MembersResponse } from '@family-health/shared'
 import { MEDIA_DIR } from './domain/history.js'
 import { streamEvents } from './events.js'
 import { bodyOf, errorHandler, HttpError } from './http.js'
+import { OnboardingError } from './config/onboarding.js'
+import { resetSession } from './reset.js'
 import { homeFor } from './domain/home.js'
 
 import type { Runtime } from './runtime.js'
@@ -74,9 +76,22 @@ export function createApp(rt: Runtime): Express {
     }
   })
 
+  /** A fresh run. Onboarding is reread from disk; a file that cannot be used changes nothing. */
+  app.post('/api/reset', (req, res) => {
+    const { reason } = bodyOf(ResetBody, req)
+    try {
+      res.json(resetSession(rt, reason ?? 'operator reset'))
+    } catch (err) {
+      if (err instanceof OnboardingError) throw new HttpError(422, err.message)
+      throw err
+    }
+  })
+
   app.use(errorHandler)
   return app
 }
+
+const ResetBody = z.object({ reason: z.string().trim().min(1).optional() })
 
 const ClockBody = z.object({
   to: z.iso.datetime({ offset: true }).optional(),

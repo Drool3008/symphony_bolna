@@ -20,6 +20,11 @@ export interface Runtime {
   setOnboarding(ob: Onboarding): void
   /** The simulated clock. */
   clock(): Date
+  /** Reads onboarding from disk again and checks it. Throws if the file cannot be used. */
+  readOnboardingFromDisk(): Onboarding
+  /** Runs on a reset, after the store is cleared: anything held in memory lets go here. */
+  onReset(listener: () => void): () => void
+  resetListeners(): Iterable<() => void>
   /** Runs when the sim clock moves: waits and windows past their deadline close. */
   onClock(listener: ClockListener): () => void
   clockMoved(now: Date, before: Date): void
@@ -41,6 +46,7 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
   const log = new EventLog(db, session)
   const bus = new EventBus()
   const clockListeners = new Set<ClockListener>()
+  const resetListeners = new Set<() => void>()
 
   const rt: Runtime = {
     db,
@@ -58,6 +64,14 @@ export function createRuntime({ databasePath, loadOnboarding }: RuntimeOptions):
     },
     clock() {
       return new Date(session.get<string>('clock') ?? rt.onboarding().sim_clock.start)
+    },
+    readOnboardingFromDisk: loadOnboarding,
+    onReset(listener) {
+      resetListeners.add(listener)
+      return () => resetListeners.delete(listener)
+    },
+    resetListeners() {
+      return resetListeners
     },
     onClock(listener) {
       clockListeners.add(listener)
