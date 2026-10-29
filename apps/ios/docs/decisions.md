@@ -90,3 +90,19 @@ filled in is treated the same way, so a phone that was away during a reset
 never shows the last run. The sim clock and stage come from `sync`, `clock`
 and `stage`; the device's date is never used. Returning to the foreground
 reconnects the stream at once.
+
+## `make fixtures` records against a backend of its own
+
+`scripts/record-fixtures.mjs` resets the backend it talks to, so `make
+fixtures` runs it through `scripts/with-backend.sh` on port 8799 with a fresh
+database, never against a run someone is watching. It drives the default take
+with the dev routes, playing the two chemists with the answers on file
+(`chemist_substitute_only`, `chemist_in_stock_kazipet`), taps Arun's card,
+and keeps a fresh connection's replay as `events.sse`, byte for byte.
+
+## Seeded history is missing, and work carries on (owner's instruction)
+
+Verification 1 found that the seeded family history cannot reach a client
+(`client-contract.md`). The brief says to stop and raise it; the owner's
+instruction for this session says to record it in `backend-asks.md` and
+carry on. The Family tab and forwarding wait on that ask.

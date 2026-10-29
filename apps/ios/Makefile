@@ -3,6 +3,7 @@
 #   make build      build the app for the simulator
 #   make test       run the unit and UI tests on the simulator
 #   make run        build, install and launch on the simulator
+#   make fixtures   record the server's real answers into Tests/Fixtures (own backend)
 #   make lan        point a device build at this Mac's LAN address
 #   make screenshots  save a screenshot of the booted simulator to $(SHOTS)
 
@@ -16,7 +17,7 @@ SCHEME := Vantari
 BUNDLE_ID := org.familyhealth.Vantari
 XCODEBUILD := xcodebuild -project Vantari.xcodeproj -scheme $(SCHEME) -destination '$(DESTINATION)' -derivedDataPath $(DERIVED)
 
-.PHONY: generate build test run lan screenshots
+.PHONY: generate build test run fixtures lan screenshots
 
 generate:
 	xcodegen generate --quiet
@@ -31,6 +32,9 @@ run: build
 	xcrun simctl boot '$(SIMULATOR)' 2>/dev/null || true
 	xcrun simctl install booted "$(DERIVED)/Build/Products/Debug-iphonesimulator/$(SCHEME).app"
 	xcrun simctl launch booted $(BUNDLE_ID)
+
+fixtures:
+	scripts/with-backend.sh $(TEST_PORT) -- node scripts/record-fixtures.mjs http://localhost:$(TEST_PORT)
 
 lan:
 	scripts/lan-xcconfig.sh
