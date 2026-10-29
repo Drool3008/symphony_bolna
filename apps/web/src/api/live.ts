@@ -1,4 +1,5 @@
 import type { QueryClient } from '@tanstack/react-query'
+import { applyThreadEvent } from '../data/agentThread.js'
 import type { StreamEvent } from './events.js'
 
 /** What the stream says is true now: the sim clock, the stage, and which run this is. */
@@ -24,7 +25,16 @@ interface EventSource {
  * one the cache was filled in, which is how a client that was offline during
  * a reset finds out.
  */
-export function connectLive(stream: EventSource, queryClient: QueryClient): () => void {
+export interface LiveOptions {
+  /** The member this phone belongs to, whose thread the stream fills. */
+  memberId?: () => string | null
+}
+
+export function connectLive(
+  stream: EventSource,
+  queryClient: QueryClient,
+  options: LiveOptions = {},
+): () => void {
   const newRun = (state: SessionState) => {
     void queryClient.resetQueries({ predicate: (q) => q.queryKey[0] !== sessionKey[0] })
     queryClient.setQueryData<SessionState>(sessionKey, state)
@@ -32,6 +42,8 @@ export function connectLive(stream: EventSource, queryClient: QueryClient): () =
 
   return stream.on((event) => {
     const known = queryClient.getQueryData<SessionState>(sessionKey)
+    const me = options.memberId?.() ?? null
+    if (me) applyThreadEvent(queryClient, event, me)
     switch (event.type) {
       case 'sync': {
         const state = { clock: event.clock, stage: event.stage, generation: event.generation }

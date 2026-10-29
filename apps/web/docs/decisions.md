@@ -128,3 +128,22 @@ the days of cover down from there (HANDOFF.md section 9). Once the clock has
 moved past that day, home says "6 pills left when counted on 6 Oct" rather
 than a bare "6 pills left", so the count is never read as today's. The
 Telugu wording is a proposal.
+
+## The agent thread comes from one function, rebuilt from the stream for now
+
+Owner's answer: put the stream rebuild behind one function so it can switch
+to the read route without touching a screen. `useAgentThread` in
+`src/data/agentThread.ts` is that function; the stream folds into it through
+`applyThreadEvent`. It keeps only the chosen member's thread and the waits on
+them, because `/events` still carries everyone's (owner's answer: keep this
+filter until the server's per-member stream lands, then remove it). An open
+card is pinned at the top until it is answered or times out; in the timeline
+the message points up to it.
+
+## Card titles and buttons fall back to the reference's, for now
+
+Owner's answer: until the server sends every card's buttons, keep the
+reference's fallback labels, marked as temporary. `src/components/cardLabels.ts`
+holds them, from the reference's `src/components/AgentChat.tsx`, with a note
+to remove them when the server sends labels. A card's own `title` and
+`buttons` win whenever they are there.

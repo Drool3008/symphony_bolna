@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
-import { identityHeaders } from '../api/identity.js'
+import { chosenMember, identityHeaders } from '../api/identity.js'
 import { connectLive, sessionKey, type SessionState } from '../api/live.js'
 import { LiveStream, type StreamStatus } from '../api/stream.js'
 
@@ -16,7 +16,7 @@ export function LiveProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<StreamStatus>('connecting')
   useEffect(() => {
     const stream = new LiveStream({ headers: identityHeaders })
-    const offFeed = connectLive(stream, queryClient)
+    const offFeed = connectLive(stream, queryClient, { memberId: chosenMember })
     const offStatus = stream.onStatus(setStatus)
     stream.start()
     return () => {

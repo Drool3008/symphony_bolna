@@ -6,6 +6,7 @@ import { LiveProvider } from './app/live.js'
 import { MemberApp } from './app/MemberApp.js'
 import { Picker } from './app/Picker.js'
 import { Shell } from './app/Shell.js'
+import { Agent } from './screens/Agent.js'
 import { Family } from './screens/Family.js'
 import { Home } from './screens/Home.js'
 
@@ -26,7 +27,11 @@ export function App() {
                       <Shell
                         me={me}
                         s={s}
-                        screens={{ home: <Home me={me} s={s} />, agent: null, family: <Family s={s} /> }}
+                        screens={{
+                          home: <Home me={me} s={s} />,
+                          agent: <Agent me={me} s={s} />,
+                          family: <Family s={s} />,
+                        }}
                       />
                     </LiveProvider>
                   )}
