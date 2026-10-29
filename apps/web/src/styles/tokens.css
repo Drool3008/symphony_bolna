@@ -1,0 +1,50 @@
+/*
+ * Design tokens for direction A, "Plain page" (docs/design-tokens.md). The
+ * iOS client defines the same names in Vantari/Design/Tokens.swift; change
+ * both together.
+ */
+:root {
+  --color-ink: #111111;
+  --color-ink-2: #4a4a4a;
+  --color-rule: #d6d6d6;
+  --color-paper: #ffffff;
+  --color-wash: #f2f2f2;
+  /* Only "needs your answer". */
+  --color-accent: #b34700;
+  --color-on-accent: #ffffff;
+
+  --type-display: 30px;
+  --type-figure: 44px;
+  --type-title: 20px;
+  --type-body: 18px;
+  --type-meta: 16px;
+  --type-label: 14px;
+  --leading: 1.45;
+  --leading-telugu: 1.7;
+  --font: 'Noto Sans', 'Noto Sans Telugu', system-ui, sans-serif;
+  --font-telugu: 'Noto Sans Telugu', 'Noto Sans', system-ui, sans-serif;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --touch: 48px;
+  --rule-thin: 1px;
+  --rule-thick: 2px;
+  --bar: 4px;
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-ink: #f2f2f2;
+    --color-ink-2: #b5b5b5;
+    --color-rule: #3a3a3a;
+    --color-paper: #111111;
+    --color-wash: #1e1e1e;
+    --color-accent: #ff9e59;
+    --color-on-accent: #111111;
+  }
+}

@@ -1,0 +1,36 @@
+/* Page defaults built only from tokens.css. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font);
+  font-size: var(--type-body);
+  line-height: var(--leading);
+}
+
+:lang(te) {
+  font-family: var(--font-telugu);
+  line-height: var(--leading-telugu);
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: var(--rule-thick) solid var(--color-ink);
+  outline-offset: 2px;
+}

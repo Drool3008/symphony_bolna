@@ -2,6 +2,8 @@ import { PRODUCT_NAME } from '@family-health/shared'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { App } from './App.js'
+import './styles/tokens.css'
+import './styles/base.css'
 
 document.title = PRODUCT_NAME
 
