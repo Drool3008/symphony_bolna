@@ -22,7 +22,7 @@ final class LaunchTests: XCTestCase {
         app.launch()
         let marker = app.otherElements["backend"]
         XCTAssertTrue(marker.waitForExistence(timeout: 10))
-        let reached = NSPredicate(format: "label == 'status 200'")
+        let reached = NSPredicate(format: "label == 'members 3'")
         expectation(for: reached, evaluatedWith: marker)
         waitForExpectations(timeout: 15)
     }

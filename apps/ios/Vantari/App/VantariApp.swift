@@ -21,12 +21,12 @@ struct RootView: View {
             .accessibilityIdentifier("backend")
             .accessibilityLabel(reached)
             .task {
-                let url = Backend.base.appending(path: "api/members")
                 do {
-                    let (_, response) = try await URLSession.shared.data(from: url)
-                    reached = "status \((response as? HTTPURLResponse)?.statusCode ?? 0)"
+                    reached = "members \(try await APIClient().members().members.count)"
+                } catch let error as APIError {
+                    reached = error.message
                 } catch {
-                    reached = "unreachable"
+                    reached = "unreadable"
                 }
             }
     }
