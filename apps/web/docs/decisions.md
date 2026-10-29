@@ -42,3 +42,21 @@ replaced when `shared/` exports them. Listed in `backend-asks.md`.
 A refusal shows the server's own `error` text (`server/src/http.ts`), as the
 brief asks. A request that never reaches the server says the app cannot reach
 the family server and leaves the screen as it was.
+
+## The stream is read with fetch, not EventSource
+
+`/events` needs no header today (`server/src/events.ts`), so `EventSource`
+would work. The client reads it with `fetch` and a stream reader instead
+(`src/api/stream.ts`, `src/api/sse.ts`) so that it owns the backoff
+(0.5 s, 1 s, 2 s, 5 s, 10 s, then every 30 s), resumes with both
+`Last-Event-ID` and `?since=` (the server reads either), and can send
+`X-Member-Id` the day the stream asks for it. The backoff delays are a
+proposal.
+
+## Event types are typed on the client for now
+
+`shared/src/events.ts` names 7 event types and no payloads. The client types
+all 24 that the server emits, plus `sync`, in `src/api/events.ts`, each with
+the file that emits it, and marks the file to be replaced when `shared/`
+types the full set. An event type the client does not know is dropped
+without error.
