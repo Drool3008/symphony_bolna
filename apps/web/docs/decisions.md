@@ -69,3 +69,29 @@ queries on screen fetch again. A `sync` that reports a generation other than
 the cached one is treated the same way, so a client that was offline through
 a reset never shows the last run. The sim clock and stage are kept from
 `sync`, `clock` and `stage` events; the browser's own date is never used.
+
+## Contract checks run against a real server
+
+`npm run test:contract -w @family-health/web` starts the backend on the
+scripted provider, port 8798 and a temporary database
+(`contract/server.ts`), and runs the client's own API code and stream
+against it (`contract/backend.test.ts`): every member route, the stream's
+replay and sync, the default take up to Arun's card and Lakshmi's Telugu
+message, the second tap refused, forwarding, and reset. They also fail if
+the server sends an event type the client does not know.
+
+## Seeded history is missing, and work carries on (owner's instruction)
+
+Verification 1 found that the seeded family history cannot reach a client
+(`client-contract.md`). The web brief says to stop and raise it; the owner's
+instruction for this session says to record it in `backend-asks.md` and
+carry on with what can be built. The Family tab and forwarding wait on that
+ask.
+
+## Each phone keeps only its own member's share of the stream
+
+The stream sends every member's events to every client (verification 2).
+Until the backend filters it, screens show only what belongs to the chosen
+member: their own agent thread (`thread` equal to their id), the family
+group, and direct chats whose key contains their id. This hides; it does not
+protect, which is why it is also a backend ask.

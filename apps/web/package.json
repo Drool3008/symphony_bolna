@@ -10,7 +10,8 @@
     "typecheck": "tsc -p . --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:contract": "vitest run --config vitest.contract.config.ts"
   },
   "dependencies": {
     "@family-health/shared": "*",
