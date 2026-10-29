@@ -47,6 +47,9 @@ final class HomeStore: RunScopedStore {
         case .clock:
             // Days of cover and due dates count down on the server's clock.
             markStale(shown)
+        case let .message(posted):
+            // The agent wrote to someone: that member's home carries its latest word.
+            markStale([posted.message.thread])
         default:
             break
         }

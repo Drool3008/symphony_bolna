@@ -101,6 +101,31 @@ struct HomeStoreTests {
         #expect(book.paths().count == 2)
     }
 
+    @Test func drawsNothingForTheLatestWordWhileTheServerSendsNull() throws {
+        let home = try JSONDecoder().decode(MemberHomeResponse.self, from: Fixtures.data("home-patient-as-patient.json"))
+        #expect(home.latestAgentWord == nil)
+        #expect(LatestWordView.shown(home.latestAgentWord) == nil)
+        #expect(LatestWordView.shown("  ") == nil)
+    }
+
+    @Test func fillsTheLatestWordInWhenTheAgentWritesToThisMember() async throws {
+        book.answer("/api/members/patient/home", try Fixtures.data("home-patient-as-patient.json"))
+        let homes = store()
+        await homes.show(["patient"])
+        #expect(LatestWordView.shown(homes.homes["patient"]?.latestAgentWord) == nil)
+        // The stub script's own message to Lakshmi (config/stub-script.json).
+        book.answer("/api/members/patient/home", try recordedHome("home-patient-as-patient.json") { json in
+            json["latest_agent_word"] = "అమ్మా, మీ మాత్రలు ఆర్డర్ అయ్యాయి. కెమిస్ట్\u{200C}కి పేమెంట్ అయింది. మీకు డెలివరీ చేయించడానికి ప్రయత్నిస్తున్నాను."
+        })
+        // A message in another member's thread is not this home's business.
+        homes.hear(try event(#"{"seq":7,"type":"message","at":"w","clock":"c","message":{"id":"m1","thread":"rp","from":"agent","to":"rp","text":"x","language":"en-IN","kind":null,"card":null,"answer":null,"answered_at":null,"timed_out_at":null,"at":"c"}}"#))
+        await settle { book.paths().count > 1 }
+        #expect(book.paths().count == 1)
+        homes.hear(try event(#"{"seq":8,"type":"message","at":"w","clock":"c","message":{"id":"m2","thread":"patient","from":"agent","to":"patient","text":"y","language":"te-IN","kind":null,"card":null,"answer":null,"answered_at":null,"timed_out_at":null,"at":"c"}}"#))
+        await settle { homes.homes["patient"]?.latestAgentWord != nil }
+        #expect(LatestWordView.shown(homes.homes["patient"]?.latestAgentWord) == "అమ్మా, మీ మాత్రలు ఆర్డర్ అయ్యాయి. కెమిస్ట్\u{200C}కి పేమెంట్ అయింది. మీకు డెలివరీ చేయించడానికి ప్రయత్నిస్తున్నాను.")
+    }
+
     @Test func keepsWhatIsOnScreenAndSaysWhyWhenARefreshFails() async throws {
         book.answer("/api/members/patient/home", try Fixtures.data("home-patient-as-patient.json"))
         let homes = store()

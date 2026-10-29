@@ -66,3 +66,12 @@ extension Strings {
     /// Line spacing for text in this member's language: Telugu needs more room.
     var lineSpacing: CGFloat { isTelugu ? Tokens.teluguLineSpacing : 0 }
 }
+
+extension View {
+    /// The bar down the left of whatever the agent said, so it reads as the
+    /// agent's without a label (docs/design-tokens.md, `bar`).
+    func agentBar() -> some View {
+        padding(.leading, Tokens.space3)
+            .overlay(alignment: .leading) { Rectangle().fill(Tokens.ink).frame(width: Tokens.bar) }
+    }
+}

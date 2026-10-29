@@ -165,6 +165,46 @@ struct RecordView: View {
     }
 }
 
+/// The agent's latest word to this member. The server sends null until the
+/// agent has written to them, and always today (backend ask 3); then the slot
+/// draws nothing: no placeholder.
+struct LatestWordView: View {
+    let word: String?
+    let s: Strings
+
+    /// The words to show, or nil when there is nothing to show.
+    static func shown(_ word: String?) -> String? {
+        guard let word, !word.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+        return word
+    }
+
+    var body: some View {
+        if let word = Self.shown(word) {
+            VStack(alignment: .leading, spacing: 0) {
+                SectionLabel(text: s.t(.latest), s: s)
+                VStack(alignment: .leading, spacing: Tokens.space1) {
+                    Label {
+                        Text(s.t(.agent))
+                    } icon: {
+                        Image(systemName: "diamond.fill").imageScale(.small).accessibilityHidden(true)
+                    }
+                    .font(Tokens.label)
+                    .foregroundStyle(Tokens.ink2)
+                    Text(word)
+                        .font(Tokens.body)
+                        .foregroundStyle(Tokens.ink)
+                        .accessibilityIdentifier("latest-word")
+                }
+                .lineSpacing(s.lineSpacing)
+                .agentBar()
+                .padding(.vertical, Tokens.space3)
+            }
+            .accessibilityElement(children: .contain)
+            .accessibilityIdentifier("latest")
+        }
+    }
+}
+
 /// Home (brief, Stage I3), as the web client's src/screens/Home.tsx: the
 /// member's own record, then each other member's when their consent gives this
 /// member the full view. The server has filtered it already.
@@ -185,6 +225,7 @@ struct HomeScreen: View {
                         .accessibilityIdentifier("home-problem")
                 }
                 if let home = homes.homes[me.id] {
+                    LatestWordView(word: home.latestAgentWord, s: s)
                     RecordView(home: home, s: s, heading: s.t(.medicines), testsHeading: s.t(.tests))
                     ForEach(others) { other in
                         if let theirs = homes.homes[other.id], theirs.shared == .full, !theirs.medicines.isEmpty {
