@@ -60,3 +60,12 @@ all 24 that the server emits, plus `sync`, in `src/api/events.ts`, each with
 the file that emits it, and marks the file to be replaced when `shared/`
 types the full set. An event type the client does not know is dropped
 without error.
+
+## A reset clears the cache; so does a sync from another generation
+
+From the brief (Section 4) and `server/src/reset.ts`: a reset is a new run.
+`src/api/live.ts` resets every cached query except the session state, and
+queries on screen fetch again. A `sync` that reports a generation other than
+the cached one is treated the same way, so a client that was offline through
+a reset never shows the last run. The sim clock and stage are kept from
+`sync`, `clock` and `stage` events; the browser's own date is never used.
