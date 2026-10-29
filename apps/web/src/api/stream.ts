@@ -49,7 +49,9 @@ export class LiveStream {
     backoff = DEFAULT_BACKOFF,
   }: StreamOptions = {}) {
     this.base = base
-    this.send = send
+    // Called through a wrapper: a browser's fetch throws "Illegal invocation" when
+    // `this` is anything but the window, and a method call would make it the stream.
+    this.send = (input, init) => send(input, init)
     this.headers = headers
     this.backoff = backoff.length ? backoff : DEFAULT_BACKOFF
   }

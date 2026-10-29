@@ -84,6 +84,20 @@ describe('the live stream', () => {
     }
   })
 
+  it('calls fetch as a plain function, as a browser requires', async () => {
+    const { fetch } = scripted([sync])
+    const strict = function (this: unknown, url: string, init?: RequestInit) {
+      if (this !== undefined && this !== globalThis) throw new TypeError('Illegal invocation')
+      return (fetch as unknown as (u: string, i?: RequestInit) => Promise<Response>)(url, init)
+    } as unknown as typeof globalThis.fetch
+    stream = new LiveStream({ base: '', fetch: strict, backoff: [10_000] })
+    const seen: string[] = []
+    stream.on((e) => seen.push(e.type))
+    stream.start()
+    await until(() => seen.length === 1)
+    expect(seen).toEqual(['sync'])
+  })
+
   it('ignores an event type it does not know', () => {
     expect(readEvent(JSON.stringify({ seq: 9, type: 'something_new', at: 'a', clock: 'c' }))).toBeNull()
     expect(readEvent('not json')).toBeNull()
