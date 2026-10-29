@@ -80,3 +80,13 @@ backoff (0.5 s, 1 s, 2 s, 5 s, 10 s, then every 30 s) is a proposal.
 all 24 the server emits, plus `sync`, each payload naming the file that emits
 it. A type it does not know decodes as `.unknown` and is dropped. A test
 fails if the recorded take holds a type the app does not know.
+
+## A reset clears every store; so does a sync from another generation
+
+From the brief (Section 4) and `server/src/reset.ts`: a reset is a new run.
+`AppModel` clears every registered store and has each read again what is on
+screen. A `sync` reporting a generation other than the one the stores were
+filled in is treated the same way, so a phone that was away during a reset
+never shows the last run. The sim clock and stage come from `sync`, `clock`
+and `stage`; the device's date is never used. Returning to the foreground
+reconnects the stream at once.
