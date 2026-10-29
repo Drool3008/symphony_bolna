@@ -44,3 +44,21 @@ domain. UI tests use it to reach a backend of their own.
 scripted provider with a fresh temporary database on 8799 (away from 8787 and
 from 8788, the port this session's dry runs use), passes it to the UI tests
 as `TEST_RUNNER_API_BASE`, and stops it afterwards.
+
+## Models are hand-written, field for field, and checked on recorded answers
+
+Swift cannot import `shared/`, so each model file names the TypeScript type
+it mirrors. Snake-case fields map through explicit `CodingKeys`, not the
+decoder's snake-case strategy, which would also rewrite the keys inside a
+card's free-form fields. A card's fields and tool arguments are `JSONValue`,
+as `shared/` types them `unknown`. Bodies `shared/` does not type yet
+(`POST /api/input`, `/api/reply`, `/api/forward`, the error body) are typed
+in `Models/Responses.swift` from `server/src/app.ts` and `server/src/http.ts`.
+
+## The first fixtures came before the script that records them
+
+The brief's commit 4 checks models "on real answers", but the recording
+script is commit 8. Commit 4's fixtures were recorded from a stub server on
+port 8788 with the same steps the script later makes repeatable; commit 8
+commits that script and reruns it. The test that decodes them also fails if a
+fixture appears that no test reads.

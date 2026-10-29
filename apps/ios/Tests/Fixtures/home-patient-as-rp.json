@@ -1,0 +1,38 @@
+{
+  "member": {
+    "id": "patient",
+    "name": "Lakshmi",
+    "role": "patient",
+    "language": "te-IN"
+  },
+  "clock": "2026-10-06T03:42:00.000Z",
+  "today": "2026-10-06",
+  "shared": "full",
+  "medicines": [
+    {
+      "id": "med_chronic_1",
+      "name": "Metoprolol",
+      "strength": "25mg",
+      "purpose": "blood pressure",
+      "schedule": "one tablet morning, one at night, after food",
+      "must_not_miss": true,
+      "stock": 6,
+      "unit": "pills",
+      "stock_as_of": "2026-10-06",
+      "days_of_cover": 3,
+      "runs_out_on": "2026-10-09"
+    }
+  ],
+  "tests": [
+    {
+      "id": "test_1",
+      "name": "BP check",
+      "every_days": 90,
+      "last_done": "2026-06-06",
+      "next_due": "2026-09-04",
+      "days_until_due": -32,
+      "overdue": true
+    }
+  ],
+  "latest_agent_word": null
+}

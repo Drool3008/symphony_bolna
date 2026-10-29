@@ -1,0 +1,60 @@
+{
+  "member": {
+    "id": "rp",
+    "name": "Arun",
+    "role": "responsible_person",
+    "language": "en-IN"
+  },
+  "clock": "2026-10-06T03:42:00.000Z",
+  "today": "2026-10-06",
+  "shared": "full",
+  "medicines": [
+    {
+      "id": "med_chronic_2",
+      "name": "Budesonide + Formoterol",
+      "strength": "200/6 mcg inhaler",
+      "purpose": "asthma control",
+      "schedule": "one puff morning, one at night; extra puffs when needed, max 8 a day",
+      "must_not_miss": false,
+      "stock": 20,
+      "unit": "doses",
+      "stock_as_of": "2026-10-06",
+      "days_of_cover": 10,
+      "runs_out_on": "2026-10-16"
+    },
+    {
+      "id": "med_chronic_3",
+      "name": "Cholecalciferol (Vitamin D3)",
+      "strength": "60,000 IU",
+      "purpose": "vitamin D maintenance",
+      "schedule": "one capsule on the first Sunday of each month, after food",
+      "must_not_miss": false,
+      "stock": 3,
+      "unit": "pills",
+      "stock_as_of": "2026-10-06",
+      "days_of_cover": 90,
+      "runs_out_on": "2027-01-04"
+    }
+  ],
+  "tests": [
+    {
+      "id": "test_2",
+      "name": "Spirometry",
+      "every_days": 365,
+      "last_done": "2026-07-18",
+      "next_due": "2027-07-18",
+      "days_until_due": 285,
+      "overdue": false
+    },
+    {
+      "id": "test_3",
+      "name": "Vitamin D level",
+      "every_days": 180,
+      "last_done": "2026-05-20",
+      "next_due": "2026-11-16",
+      "days_until_due": 41,
+      "overdue": false
+    }
+  ],
+  "latest_agent_word": null
+}

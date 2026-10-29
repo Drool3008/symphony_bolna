@@ -1,0 +1,38 @@
+{
+  "member": {
+    "id": "member_3",
+    "name": "Kavya",
+    "role": "family",
+    "language": "en-IN"
+  },
+  "clock": "2026-10-06T03:42:00.000Z",
+  "today": "2026-10-06",
+  "shared": "full",
+  "medicines": [
+    {
+      "id": "med_chronic_4",
+      "name": "Levothyroxine",
+      "strength": "50 mcg",
+      "purpose": "thyroid hormone replacement",
+      "schedule": "one tablet each morning, empty stomach",
+      "must_not_miss": false,
+      "stock": 15,
+      "unit": "pills",
+      "stock_as_of": "2026-10-06",
+      "days_of_cover": 15,
+      "runs_out_on": "2026-10-21"
+    }
+  ],
+  "tests": [
+    {
+      "id": "test_4",
+      "name": "TSH",
+      "every_days": 90,
+      "last_done": "2026-09-19",
+      "next_due": "2026-12-18",
+      "days_until_due": 73,
+      "overdue": false
+    }
+  ],
+  "latest_agent_word": null
+}

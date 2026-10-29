@@ -1,0 +1,14 @@
+{
+  "member": {
+    "id": "patient",
+    "name": "Lakshmi",
+    "role": "patient",
+    "language": "te-IN"
+  },
+  "clock": "2026-10-06T03:42:00.000Z",
+  "today": "2026-10-06",
+  "shared": "status_only",
+  "medicines": [],
+  "tests": [],
+  "latest_agent_word": null
+}

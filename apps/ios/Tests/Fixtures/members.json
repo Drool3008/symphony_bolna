@@ -1,0 +1,22 @@
+{
+  "members": [
+    {
+      "id": "patient",
+      "name": "Lakshmi",
+      "role": "patient",
+      "language": "te-IN"
+    },
+    {
+      "id": "rp",
+      "name": "Arun",
+      "role": "responsible_person",
+      "language": "en-IN"
+    },
+    {
+      "id": "member_3",
+      "name": "Kavya",
+      "role": "family",
+      "language": "en-IN"
+    }
+  ]
+}

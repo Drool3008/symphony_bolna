@@ -38,6 +38,10 @@ targets:
     platform: iOS
     sources:
       - path: Tests/Unit
+      # A folder reference, so the recorded answers keep their names in the bundle.
+      - path: Tests/Fixtures
+        type: folder
+        buildPhase: resources
     dependencies:
       - target: Vantari
     settings:
