@@ -62,3 +62,21 @@ script is commit 8. Commit 4's fixtures were recorded from a stub server on
 port 8788 with the same steps the script later makes repeatable; commit 8
 commits that script and reruns it. The test that decodes them also fails if a
 fixture appears that no test reads.
+
+## The stream is cut into lines from raw bytes
+
+From the brief: iOS has no SSE client, and `AsyncLineSequence` is not relied
+on. `LiveStream` reads `URLSession.bytes(for:)` and feeds each byte to
+`SSEParser`, which cuts lines on LF, CR or CRLF (even a CRLF split across
+chunks) and decodes UTF-8 only once a line is whole, so a Telugu character
+split across chunks is never broken. The parser is tested on the recorded
+take in chunks of 1, 2, 3, 7, 64 and 1000 bytes. Resume sends both
+`Last-Event-ID` and `?since=` (`server/src/events.ts` reads either). The
+backoff (0.5 s, 1 s, 2 s, 5 s, 10 s, then every 30 s) is a proposal.
+
+## Every event type has a Swift payload, and unknown types are dropped
+
+`shared/src/events.ts` names 7 types and no payloads. `StreamEvent` decodes
+all 24 the server emits, plus `sync`, each payload naming the file that emits
+it. A type it does not know decodes as `.unknown` and is dropped. A test
+fails if the recorded take holds a type the app does not know.
