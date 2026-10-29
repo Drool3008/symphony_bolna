@@ -1,0 +1,46 @@
+.picker {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-4);
+}
+
+.picker h1 {
+  font-size: var(--type-display);
+  line-height: 1.2;
+  margin: var(--space-2) 0;
+}
+
+.picker-dev {
+  font-size: var(--type-label);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.picker-note {
+  color: var(--color-ink-2);
+  font-size: var(--type-meta);
+  margin: 0 0 var(--space-5);
+}
+
+.picker-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: var(--rule-thick) solid var(--color-ink);
+}
+
+.picker-list button {
+  width: 100%;
+  min-height: calc(var(--touch) + var(--space-4));
+  text-align: left;
+  font-size: var(--type-title);
+  font-weight: 600;
+  background: none;
+  border: 0;
+  border-bottom: var(--rule-thin) solid var(--color-rule);
+  padding: var(--space-3) 0;
+  cursor: pointer;
+}
