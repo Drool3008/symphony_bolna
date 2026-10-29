@@ -34,28 +34,11 @@ struct RootView: View {
 
     var body: some View {
         if let me = family.me {
-            MemberView(me: me)
+            MemberShell(me: me)
         } else if family.memberId == nil || !family.members.isEmpty {
             PickerView(family: family)
         } else {
             Tokens.paper.ignoresSafeArea()
         }
-    }
-}
-
-/// The member's app. Their language comes from onboarding, never the device.
-struct MemberView: View {
-    let me: MemberSummary
-
-    var body: some View {
-        let s = Strings(language: me.language)
-        VStack(alignment: .leading) {
-            Text(me.name).font(Tokens.display).accessibilityIdentifier("member-name")
-            Spacer()
-        }
-        .padding(Tokens.space4)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Tokens.paper)
-        .environment(\.locale, s.locale)
     }
 }

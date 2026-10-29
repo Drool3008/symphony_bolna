@@ -135,3 +135,20 @@ the app writes, so the choice is kept under its own key (`chosen-member`) and
 the launch argument is copied into it once at launch
 (`Identity.takeLaunchArgument`). Otherwise a pick made on the picker under
 `-member-id ""` would never reach a request.
+
+## The tab bar mirrors the web's tabs, with a symbol each (Proposal)
+
+`Vantari/App/Tabs.swift` is the web client's `src/app/tabs.ts` in Swift:
+Home, Chat (`tab_agent`, the reference's word) and Family for everyone, and
+the wallet defined for the responsible person only and hidden for everyone
+until the wallet routes exist. A native tab bar wants a symbol beside each
+word, so each tab has one from SF Symbols (house, speech bubble, two people,
+a card for the wallet); the web's tabs are words alone. The bar is tinted
+`ink`, as the accent is kept for "needs your answer". Above the tabs, the
+header shows the member's name and the family's date from the sim clock.
+
+## `-tab <id>` opens the app on a given tab (screenshots and UI tests)
+
+`-tab agent` (or `home`, `family`) in UserDefaults' argument domain picks the
+tab the app opens on. A tab the member does not have falls back to Home. The
+tab is not remembered between launches.

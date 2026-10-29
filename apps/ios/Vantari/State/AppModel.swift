@@ -19,7 +19,8 @@ final class SessionStore {
     var clock: String?
     var stage = 1
     var generation: Int?
-    var connection: LiveStream.Status = .offline
+    /// Connecting until the stream says otherwise, so a launch does not flash "offline".
+    var connection: LiveStream.Status = .connecting
 }
 
 /// Feeds the stream into the stores, so every screen moves when the server does.

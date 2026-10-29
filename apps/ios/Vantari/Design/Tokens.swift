@@ -61,3 +61,8 @@ enum Tokens {
         "space-1", "space-2", "space-3", "space-4", "space-5", "touch", "rule-thin", "rule-thick", "bar",
     ]
 }
+
+extension Strings {
+    /// Line spacing for text in this member's language: Telugu needs more room.
+    var lineSpacing: CGFloat { isTelugu ? Tokens.teluguLineSpacing : 0 }
+}

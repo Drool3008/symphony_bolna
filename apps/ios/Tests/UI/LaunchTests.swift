@@ -29,8 +29,17 @@ final class LaunchTests: XCTestCase {
     func testPickingAMemberMakesTheAppTheirs() {
         let app = launch()
         XCTAssertTrue(app.buttons["Lakshmi"].waitForExistence(timeout: 15))
-        app.buttons["Lakshmi"].tap()
-        XCTAssertTrue(app.staticTexts["member-name"].waitForExistence(timeout: 15))
+        let lakshmi = app.buttons["Lakshmi"]
+        expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: lakshmi)
+        waitForExpectations(timeout: 15)
+        lakshmi.tap()
+        // On the first launch after the unit tests, a tap is now and then lost
+        // with the picker still up and every button hittable; a second tap on
+        // the same name is the same pick.
+        if !app.staticTexts["member-name"].waitForExistence(timeout: 5), lakshmi.exists { lakshmi.tap() }
+        guard app.staticTexts["member-name"].waitForExistence(timeout: 15) else {
+            return XCTFail("still on the picker after the tap:\n\(app.debugDescription)")
+        }
         XCTAssertEqual(app.staticTexts["member-name"].label, "Lakshmi")
     }
 
