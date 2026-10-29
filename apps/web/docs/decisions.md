@@ -95,3 +95,25 @@ Until the backend filters it, screens show only what belongs to the chosen
 member: their own agent thread (`thread` equal to their id), the family
 group, and direct chats whose key contains their id. This hides; it does not
 protect, which is why it is also a backend ask.
+
+## Direction A, with two things from B (owner's answer, Checkpoint A)
+
+Plain page for both clients: ink on paper, rules instead of boxes, one
+deep-orange accent only for "needs your answer". From direction B, only
+these two: what waits on this member's answer is pinned at the top of the
+agent thread until it is answered or times out, and every decision line
+carries a mark saying who made it, the agent or the named person. Tokens,
+type scale and names are shared with iOS (`docs/design-tokens.md`).
+
+## Strings: the reference's wording first, new Telugu as proposals
+
+`src/i18n/strings.ts` takes every label it can from the reference client
+(`src/lib/i18n.ts`), English and Telugu. The agent tab is the reference's
+"Chat" (చాట్). Strings the reference does not have are new; their English
+is plain, and **their Telugu is a proposal awaiting a native speaker**:
+`agent` (మీ సహాయకుడు, built from the reference's own phrase), `you`,
+`if_no_answer`, `answered_by`, `timed_out`, `agent_goes_on`, `offline`,
+`family_waiting`, the five card field labels, and `sending`. The language is
+the member's onboarding `language`, never the browser's. Dates and times are
+on the family's clock (+05:30), and a date shows its year only when it is
+not the year on that clock.
