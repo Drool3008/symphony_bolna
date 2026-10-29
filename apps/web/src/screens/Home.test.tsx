@@ -51,3 +51,19 @@ it('gives a test due next year its year', async () => {
   draw('en-IN')
   expect(await screen.findByText('due 18 Jul 2027')).toBeTruthy()
 })
+
+it('draws nothing for the latest word while the server sends null', async () => {
+  home.current = lakshmiHome
+  draw('en-IN')
+  await screen.findByText('Metoprolol')
+  expect(screen.queryByText('Latest from your agent')).toBeNull()
+  expect(screen.queryByRole('region', { name: 'Latest from your agent' })).toBeNull()
+})
+
+it('fills the latest word in once the server sends one, marked as the agent’s', async () => {
+  home.current = { ...lakshmiHome, latest_agent_word: 'Your tablets are ordered.' }
+  draw('en-IN')
+  const slot = await screen.findByRole('region', { name: 'Latest from your agent' })
+  expect(slot.textContent).toContain('Your tablets are ordered.')
+  expect(slot.textContent).toContain('Your agent')
+})

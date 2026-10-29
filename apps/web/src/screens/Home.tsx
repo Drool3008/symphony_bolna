@@ -106,6 +106,26 @@ function Other({ member, s }: { member: MemberSummary; s: Strings }) {
   return <Record home={data} s={s} heading={s.t('whose', { name: member.name })} />
 }
 
+/**
+ * The agent's latest word to this member. The server always sends null today
+ * (backend ask 3), and then the slot draws nothing: no placeholder.
+ */
+export function LatestWord({ word, s }: { word: string | null; s: Strings }) {
+  if (!word) return null
+  return (
+    <section className="latest" aria-label={s.t('latest')}>
+      <h2 className="section-label">{s.t('latest')}</h2>
+      <p className="latest-word">
+        <span className="who-agent">
+          <span aria-hidden="true">◆ </span>
+          {s.t('agent')}
+        </span>
+        {word}
+      </p>
+    </section>
+  )
+}
+
 export function Home({ me, s }: { me: MemberSummary; s: Strings }) {
   const { data, error } = useHome(me.id)
   const { data: family } = useMembers()
@@ -113,6 +133,7 @@ export function Home({ me, s }: { me: MemberSummary; s: Strings }) {
   if (!data) return null
   return (
     <div className="home">
+      <LatestWord word={data.latest_agent_word} s={s} />
       <Record home={data} s={s} heading={s.t('medicines')} testsHeading={s.t('tests')} />
       {family?.members
         .filter((m) => m.id !== me.id)

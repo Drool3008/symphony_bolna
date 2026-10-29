@@ -74,3 +74,17 @@
 .row-overdue {
   font-weight: 700;
 }
+
+.latest-word {
+  margin: 0;
+  padding-left: var(--space-3);
+  border-left: var(--bar) solid var(--color-ink);
+  font-size: var(--type-body);
+}
+
+.who-agent {
+  display: block;
+  font-size: var(--type-label);
+  font-weight: 600;
+  color: var(--color-ink-2);
+}

@@ -84,3 +84,40 @@ describe('the stream feeding the cache', () => {
     expect(qc.getQueryData<SessionState>(sessionKey)?.generation).toBe(3)
   })
 })
+
+describe('home follows the stream', () => {
+  it('refetches the home of whoever the agent wrote to, and every home when the clock moves', async () => {
+    const qc = new QueryClient()
+    const stream = fakeStream()
+    connectLive(stream, qc)
+    stream.emit(sync(1))
+    const patient = vi.fn(async () => ({ latest_agent_word: null }))
+    const rp = vi.fn(async () => ({ latest_agent_word: null }))
+    const offs = [
+      new QueryObserver(qc, { queryKey: ['home', 'patient'], queryFn: patient }).subscribe(() => {}),
+      new QueryObserver(qc, { queryKey: ['home', 'rp'], queryFn: rp }).subscribe(() => {}),
+    ]
+    await vi.waitFor(() => expect(patient).toHaveBeenCalledTimes(1))
+    await vi.waitFor(() => expect(rp).toHaveBeenCalledTimes(1))
+    const message = {
+      id: 'm1',
+      thread: 'patient',
+      from: 'agent',
+      to: 'patient',
+      text: 't',
+      language: 'te-IN',
+      kind: null,
+      card: null,
+      answer: null,
+      answered_at: null,
+      timed_out_at: null,
+      at: 'c',
+    }
+    stream.emit({ seq: 4, type: 'message', at: 'a', clock: 'c', message })
+    await vi.waitFor(() => expect(patient).toHaveBeenCalledTimes(2))
+    expect(rp).toHaveBeenCalledTimes(1)
+    stream.emit({ seq: 5, type: 'clock', at: 'a', clock: 'c2', source: 's', reached: [] })
+    await vi.waitFor(() => expect(rp).toHaveBeenCalledTimes(2))
+    for (const off of offs) off()
+  })
+})
