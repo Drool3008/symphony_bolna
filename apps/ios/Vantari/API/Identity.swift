@@ -10,7 +10,12 @@ import Foundation
 ///
 /// Only the chosen member id is kept on disk, in UserDefaults, never health data.
 struct Identity: Sendable {
-    static let storageKey = "member-id"
+    /// Where the choice is kept. Never the launch argument's key: UserDefaults'
+    /// argument domain outranks anything the app sets, so a pick made on the
+    /// picker under `-member-id ""` would never reach a request.
+    static let storageKey = "chosen-member"
+    /// The launch argument that sets the starting state: `-member-id rp`, or `-member-id ""` for none.
+    static let launchKey = "member-id"
 
     /// The defaults suite to keep the choice in; tests pass their own.
     let suiteName: String?
@@ -21,6 +26,14 @@ struct Identity: Sendable {
 
     private var defaults: UserDefaults {
         suiteName.flatMap(UserDefaults.init(suiteName:)) ?? .standard
+    }
+
+    /// Takes a `-member-id` launch argument, if there is one, as the choice. Run once at launch.
+    func takeLaunchArgument(
+        _ arguments: [String: Any] = UserDefaults.standard.volatileDomain(forName: UserDefaults.argumentDomain)
+    ) {
+        guard let id = arguments[Self.launchKey] as? String else { return }
+        if id.isEmpty { forget() } else { choose(id) }
     }
 
     /// The member this phone belongs to, or nil before anyone has been picked.

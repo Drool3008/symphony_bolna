@@ -69,4 +69,16 @@ struct APIClientTests {
         identity.forget()
         #expect(identity.headers.isEmpty)
     }
+
+    @Test func takesTheLaunchArgumentOnceAndThenThePickOnThePhone() {
+        identity.takeLaunchArgument(["member-id": "rp"])
+        #expect(identity.memberId == "rp")
+        identity.takeLaunchArgument(["member-id": ""])
+        #expect(identity.memberId == nil)
+        // A pick after launch is what every request names, whatever the launch said.
+        identity.choose("patient")
+        #expect(identity.headers == ["X-Member-Id": "patient"])
+        identity.takeLaunchArgument([:])
+        #expect(identity.memberId == "patient")
+    }
 }

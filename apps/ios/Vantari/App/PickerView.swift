@@ -4,7 +4,8 @@ import SwiftUI
 /// member's and has no switcher (brief, Section 1: one phone, one person).
 /// A development identity: it names the member to the server in X-Member-Id
 /// and proves nothing (HANDOFF.md section 7). Forgetting the pick, to see the
-/// picker again, means deleting the app or launching it with `-member-id ""`.
+/// picker again, means deleting the app or launching it with `-member-id ""`
+/// (Identity.takeLaunchArgument).
 struct PickerView: View {
     let family: FamilyStore
 

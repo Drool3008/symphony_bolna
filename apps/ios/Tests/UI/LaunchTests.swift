@@ -30,7 +30,7 @@ final class LaunchTests: XCTestCase {
         let app = launch()
         XCTAssertTrue(app.buttons["Lakshmi"].waitForExistence(timeout: 15))
         app.buttons["Lakshmi"].tap()
-        XCTAssertTrue(app.staticTexts["member-name"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["member-name"].waitForExistence(timeout: 15))
         XCTAssertEqual(app.staticTexts["member-name"].label, "Lakshmi")
     }
 

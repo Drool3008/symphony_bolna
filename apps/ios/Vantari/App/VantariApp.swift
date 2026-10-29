@@ -3,8 +3,14 @@ import SwiftUI
 @main
 struct VantariApp: App {
     @State private var model = AppModel()
-    @State private var family = FamilyStore()
+    @State private var family: FamilyStore
     @Environment(\.scenePhase) private var scenePhase
+
+    init() {
+        // Before the family store reads who this phone belongs to.
+        Identity().takeLaunchArgument()
+        _family = State(initialValue: FamilyStore())
+    }
 
     var body: some Scene {
         WindowGroup {

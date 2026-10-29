@@ -126,3 +126,12 @@ it shows in Xcode as waiting for a native speaker. The language is the
 member's onboarding `language`, not the device's: `Strings` reads the
 `te.lproj` or `en.lproj` table directly. Dates and times are on the family's
 clock (+05:30), with the year shown only when it differs.
+
+## `-member-id` sets the starting member, once, at launch
+
+UI tests and screenshots start the app as a given member, or as nobody, with
+`-member-id <id>` (or `""`). UserDefaults' argument domain outranks anything
+the app writes, so the choice is kept under its own key (`chosen-member`) and
+the launch argument is copied into it once at launch
+(`Identity.takeLaunchArgument`). Otherwise a pick made on the picker under
+`-member-id ""` would never reach a request.
