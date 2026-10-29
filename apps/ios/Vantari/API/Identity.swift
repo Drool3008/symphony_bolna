@@ -25,7 +25,7 @@ struct Identity: Sendable {
 
     /// The member this phone belongs to, or nil before anyone has been picked.
     var memberId: String? {
-        defaults.string(forKey: Self.storageKey)
+        defaults.string(forKey: Self.storageKey).flatMap { $0.isEmpty ? nil : $0 }
     }
 
     func choose(_ id: String) {
