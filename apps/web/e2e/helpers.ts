@@ -35,8 +35,8 @@ export async function playTakeToArunsCard(request: APIRequestContext) {
   }
 }
 
-/** Reads the stream for a moment from the test runner and returns its events. */
-export async function streamEvents(ms = 800): Promise<Record<string, unknown>[]> {
+/** Reads the stream for a moment from the test runner and returns its bytes as text. */
+export async function streamText(ms = 800): Promise<string> {
   const ctl = new AbortController()
   const res = await fetch(`${BACKEND}/events`, { signal: ctl.signal })
   const reader = res.body?.getReader()
@@ -49,6 +49,11 @@ export async function streamEvents(ms = 800): Promise<Record<string, unknown>[]>
   }
   ctl.abort()
   return text
+}
+
+/** Reads the stream for a moment from the test runner and returns its events. */
+export async function streamEvents(ms = 800): Promise<Record<string, unknown>[]> {
+  return (await streamText(ms))
     .split('\n\n')
     .map((block) => block.split('\n').find((line) => line.startsWith('data: ')))
     .filter((line): line is string => Boolean(line))

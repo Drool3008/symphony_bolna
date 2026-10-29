@@ -1,5 +1,7 @@
 import type { MemberSummary, ThreadMessage } from '@family-health/shared'
 import { CardBody } from '../components/CardBody.js'
+import { Outcome } from '../components/Outcome.js'
+import { PinnedCard } from '../components/PinnedCard.js'
 import { isOpenCard, useAgentThread } from '../data/agentThread.js'
 import type { Strings } from '../i18n/format.js'
 import './agent.css'
@@ -24,6 +26,7 @@ function Line({ m, me, s }: { m: ThreadMessage; me: MemberSummary; s: Strings })
         {m.card && !isOpenCard(m) && (
           <div className="card card-in-line">
             <CardBody message={m} s={s} />
+            <Outcome message={m} answeredBy={me.name} s={s} />
           </div>
         )}
       </li>
@@ -47,13 +50,7 @@ export function Agent({ me, s }: { me: MemberSummary; s: Strings }) {
       {thread.pinnedCards.length + thread.pinnedWaits.length > 0 && (
         <section className="pinned" aria-label={s.t('needs_answer')}>
           {thread.pinnedCards.map((m) => (
-            <div key={m.id} className="card card-open">
-              <p className="card-band">
-                <span aria-hidden="true">● </span>
-                {s.t('needs_answer')}
-              </p>
-              <CardBody message={m} s={s} />
-            </div>
+            <PinnedCard key={m.id} message={m} memberId={me.id} s={s} />
           ))}
           {thread.pinnedWaits.map((w) => (
             <p key={w.id} className="wait">
