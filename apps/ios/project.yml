@@ -1,0 +1,27 @@
+# The Xcode project is generated from this file with XcodeGen (`make generate`).
+# Never edit the generated .xcodeproj; change this file and regenerate.
+name: Vantari
+options:
+  bundleIdPrefix: org.familyhealth
+  deploymentTarget:
+    iOS: '17.0'
+  createIntermediateGroups: true
+settings:
+  base:
+    SWIFT_VERSION: '6.0'
+    SWIFT_STRICT_CONCURRENCY: complete
+    TARGETED_DEVICE_FAMILY: '1'
+    MARKETING_VERSION: '0.1.0'
+    CURRENT_PROJECT_VERSION: '1'
+targets:
+  Vantari:
+    type: application
+    platform: iOS
+    sources:
+      - path: Vantari
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: org.familyhealth.Vantari
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Config/Info.plist
+        SUPPORTED_INTERFACE_ORIENTATIONS: UIInterfaceOrientationPortrait

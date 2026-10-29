@@ -1,0 +1,5 @@
+# Generated from project.yml by XcodeGen. Never committed, never hand-edited.
+*.xcodeproj/
+# Build output, wherever the Makefile puts it inside this folder.
+.build/
+DerivedData/
