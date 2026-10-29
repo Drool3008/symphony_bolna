@@ -71,6 +71,23 @@ describe('the stream feeding the cache', () => {
     off()
   })
 
+  it('leaves alone what a fresh page fetched when the replay opens with the run’s own reset', () => {
+    const qc = new QueryClient()
+    const stream = fakeStream()
+    connectLive(stream, qc)
+    qc.setQueryData(['members'], ['fetched for this run'])
+    stream.emit({
+      seq: 1,
+      type: 'reset',
+      at: 'a',
+      clock: '2026-10-06T03:42:00.000Z',
+      reason: 'operator reset',
+    })
+    stream.emit(sync(4))
+    expect(qc.getQueryData(['members'])).toEqual(['fetched for this run'])
+    expect(qc.getQueryData<SessionState>(sessionKey)?.generation).toBe(4)
+  })
+
   it('treats a sync from another generation as a new run, for a client that missed the reset', () => {
     const qc = new QueryClient()
     const stream = fakeStream()

@@ -67,7 +67,10 @@ From the brief (Section 4) and `server/src/reset.ts`: a reset is a new run.
 `src/api/live.ts` resets every cached query except the session state, and
 queries on screen fetch again. A `sync` that reports a generation other than
 the cached one is treated the same way, so a client that was offline through
-a reset never shows the last run. The sim clock and stage are kept from
+a reset never shows the last run. A connection's replay opens with the reset
+that began the current run; before this app has seen its first `sync`, that
+reset is ignored, because nothing from an older run can be cached yet and
+clearing would blank what the page just fetched. The sim clock and stage are kept from
 `sync`, `clock` and `stage` events; the browser's own date is never used.
 
 ## Contract checks run against a real server

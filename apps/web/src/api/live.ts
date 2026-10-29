@@ -40,7 +40,11 @@ export function connectLive(stream: EventSource, queryClient: QueryClient): () =
         break
       }
       case 'reset':
-        newRun({ clock: event.clock, stage: 1, generation: (known?.generation ?? 0) + 1 })
+        // A connection's replay opens with the reset that began the current run.
+        // Before the first sync this app has seen, there is no older run in the
+        // cache to clear, and clearing would blank what was just fetched.
+        if (!known) break
+        newRun({ clock: event.clock, stage: 1, generation: known.generation + 1 })
         break
       case 'clock':
         if (known) queryClient.setQueryData<SessionState>(sessionKey, { ...known, clock: event.clock })
