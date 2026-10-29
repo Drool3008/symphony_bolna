@@ -34,3 +34,9 @@ textarea {
   outline: var(--rule-thick) solid var(--color-ink);
   outline-offset: 2px;
 }
+
+.screen-note {
+  color: var(--color-ink-2);
+  font-size: var(--type-meta);
+  margin: var(--space-5) 0;
+}

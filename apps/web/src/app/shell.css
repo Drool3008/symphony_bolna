@@ -1,0 +1,98 @@
+.shell {
+  max-width: 560px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: calc(var(--touch) + var(--space-4) + env(safe-area-inset-bottom));
+}
+
+.shell-head {
+  padding: var(--space-5) var(--space-4) var(--space-3);
+  border-bottom: var(--rule-thick) solid var(--color-ink);
+}
+
+.shell-name {
+  font-size: var(--type-display);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.shell-date {
+  margin: var(--space-1) 0 0;
+  font-size: var(--type-meta);
+  color: var(--color-ink-2);
+}
+
+.shell-offline {
+  margin: 0;
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--type-meta);
+  border-bottom: var(--rule-thin) solid var(--color-rule);
+}
+
+.shell-main {
+  padding: 0 var(--space-4);
+}
+
+.shell-tabs {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  background: var(--color-paper);
+  border-top: var(--rule-thick) solid var(--color-ink);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.shell-tab {
+  flex: 1;
+  max-width: 187px;
+  min-height: calc(var(--touch) + var(--space-2));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--type-meta);
+  font-weight: 600;
+  color: var(--color-ink-2);
+  text-decoration: none;
+  border-top: var(--bar) solid transparent;
+  margin-top: calc(-1 * var(--rule-thick));
+}
+
+.shell-tab[aria-current='page'] {
+  color: var(--color-ink);
+  border-top-color: var(--color-ink);
+}
+
+/* A wide window: the same column, with the tabs under the header instead of at the bottom. */
+@media (min-width: 900px) {
+  .shell {
+    padding-bottom: var(--space-5);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .shell-tabs {
+    position: static;
+    order: -1;
+    border-top: 0;
+    border-bottom: var(--rule-thin) solid var(--color-rule);
+    padding: 0;
+  }
+
+  .shell-head {
+    order: -2;
+  }
+
+  .shell-tab {
+    margin-top: 0;
+    border-top: 0;
+    border-bottom: var(--bar) solid transparent;
+  }
+
+  .shell-tab[aria-current='page'] {
+    border-bottom-color: var(--color-ink);
+  }
+}
