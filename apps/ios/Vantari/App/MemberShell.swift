@@ -5,14 +5,17 @@ import SwiftUI
 /// from onboarding, never the device.
 struct MemberShell: View {
     let me: MemberSummary
+    /// The rest of the family, in onboarding order.
+    let others: [MemberSummary]
     @Environment(AppModel.self) private var model
     @State private var tab: TabID
 
     /// `-tab agent` (UserDefaults' argument domain) opens on a given tab, for screenshots and UI tests.
     static let launchTabKey = "tab"
 
-    init(me: MemberSummary) {
+    init(me: MemberSummary, others: [MemberSummary]) {
         self.me = me
+        self.others = others
         let asked = UserDefaults.standard.string(forKey: Self.launchTabKey).flatMap(TabID.init(rawValue:))
         let tabs = AppTab.tabs(for: me.role).map(\.id)
         _tab = State(initialValue: asked.flatMap { tabs.contains($0) ? $0 : nil } ?? .home)
@@ -49,7 +52,9 @@ struct MemberShell: View {
     @ViewBuilder
     private func screen(_ id: TabID, _ s: Strings) -> some View {
         switch id {
-        case .home, .agent:
+        case .home:
+            HomeScreen(me: me, others: others, s: s)
+        case .agent:
             Tokens.paper
         case .family:
             FamilyScreen(s: s)

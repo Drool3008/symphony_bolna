@@ -4,6 +4,7 @@ import SwiftUI
 struct VantariApp: App {
     @State private var model = AppModel()
     @State private var family: FamilyStore
+    @State private var homes = HomeStore()
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
@@ -16,8 +17,10 @@ struct VantariApp: App {
         WindowGroup {
             RootView(family: family)
                 .environment(model)
+                .environment(homes)
                 .task {
                     model.register(family)
+                    model.register(homes)
                     model.connect()
                     await family.load()
                 }
@@ -34,7 +37,7 @@ struct RootView: View {
 
     var body: some View {
         if let me = family.me {
-            MemberShell(me: me)
+            MemberShell(me: me, others: family.members.filter { $0.id != me.id })
         } else if family.memberId == nil || !family.members.isEmpty {
             PickerView(family: family)
         } else {

@@ -9,6 +9,12 @@ protocol RunScopedStore: AnyObject {
     func clear()
     /// Read again what is on screen.
     func refetch() async
+    /// One event from the stream, after AppModel has taken what it keeps.
+    func hear(_ event: StreamEvent)
+}
+
+extension RunScopedStore {
+    func hear(_ event: StreamEvent) {}
 }
 
 /// What the stream says is true now: the sim clock, the stage, which run.
@@ -85,6 +91,7 @@ final class AppModel {
         default:
             break
         }
+        for store in stores { store.hear(event) }
     }
 
     private func newRun() {
