@@ -27,6 +27,30 @@ final class HomeScreenTests: XCTestCase {
     }
 
     @MainActor
+    func testLakshmisBPCheckIsShownAsOverdue() async throws {
+        try await dev.reset()
+        let app = launch(member: "patient")
+        let due = app.staticTexts["due-test_1"]
+        XCTAssertTrue(due.waitForExistence(timeout: 15))
+        XCTAssertTrue(due.label.hasSuffix("నుండి గడువు దాటింది"), due.label)
+    }
+
+    @MainActor
+    func testAMemberPickedOnThePhoneGetsTheirOwnHome() async throws {
+        try await dev.reset()
+        let app = launch(member: "")
+        let lakshmi = app.buttons["Lakshmi"]
+        XCTAssertTrue(lakshmi.waitForExistence(timeout: 15))
+        let hittable = expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: lakshmi)
+        await fulfillment(of: [hittable], timeout: 15)
+        lakshmi.tap()
+        if !app.staticTexts["member-name"].waitForExistence(timeout: 5), lakshmi.exists { lakshmi.tap() }
+        // The pick reaches every request: home answers only a named member.
+        XCTAssertTrue(app.staticTexts["cover-med_chronic_1"].waitForExistence(timeout: 15))
+        XCTAssertFalse(app.staticTexts["home-problem"].exists)
+    }
+
+    @MainActor
     func testArunSeesHisInhalerInDosesAndHisMothersRecord() async throws {
         try await dev.reset()
         let app = launch(member: "rp")

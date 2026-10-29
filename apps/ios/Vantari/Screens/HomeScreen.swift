@@ -20,6 +20,16 @@ enum HomeLines {
             ? s.t(.stockLeft, ["n": n])
             : s.t(.stockCounted, ["n": n, "d": s.date(m.stockAsOf, today: today)])
     }
+
+    /// When a test falls due. Overdue is said as overdue: the server sends a
+    /// negative days_until_due and `overdue` (server/src/domain/home.ts).
+    static func due(_ t: HomeTest, _ s: Strings, today: String) -> String {
+        s.t(t.overdue ? .overdue : .nextDue, ["d": s.date(t.nextDue, today: today)])
+    }
+
+    static func lastDone(_ t: HomeTest, _ s: Strings, today: String) -> String {
+        "\(s.t(.lastDone, ["d": s.date(t.lastDone, today: today)])) · \(s.t(.everyNDays, ["n": s.num(Double(t.everyDays))]))"
+    }
 }
 
 /// A section's label over a thin rule.
@@ -91,11 +101,47 @@ struct MedicineRow: View {
     }
 }
 
+/// A recurring test: when it falls due, or since when it is overdue, and when it was last done.
+struct TestRow: View {
+    let t: HomeTest
+    let s: Strings
+    let today: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: Tokens.space1) {
+            Text(t.name).font(Tokens.title).foregroundStyle(Tokens.ink)
+            if t.overdue {
+                // A shape and a word, never colour alone.
+                Label {
+                    Text(HomeLines.due(t, s, today: today))
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle.fill").accessibilityHidden(true)
+                }
+                .font(Tokens.meta.weight(.semibold))
+                .foregroundStyle(Tokens.ink)
+                .accessibilityIdentifier("due-\(t.id)")
+            } else {
+                Text(HomeLines.due(t, s, today: today))
+                    .font(Tokens.meta).foregroundStyle(Tokens.ink)
+                    .accessibilityIdentifier("due-\(t.id)")
+            }
+            Text(HomeLines.lastDone(t, s, today: today))
+                .font(Tokens.meta).foregroundStyle(Tokens.ink2)
+        }
+        .lineSpacing(s.lineSpacing)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.vertical, Tokens.space3)
+        .overlay(alignment: .bottom) { Rectangle().fill(Tokens.rule).frame(height: Tokens.ruleThin) }
+    }
+}
+
 /// One member's record, as far as consent lets the asking member see it.
+/// Tests are shown for the member's own record only, as on the web.
 struct RecordView: View {
     let home: MemberHomeResponse
     let s: Strings
     let heading: String
+    var testsHeading: String?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -107,6 +153,12 @@ struct RecordView: View {
             } else {
                 ForEach(home.medicines) { m in
                     MedicineRow(m: m, s: s, today: home.today)
+                }
+            }
+            if let testsHeading, !home.tests.isEmpty {
+                SectionLabel(text: testsHeading, s: s).padding(.top, Tokens.space5)
+                ForEach(home.tests) { t in
+                    TestRow(t: t, s: s, today: home.today)
                 }
             }
         }
@@ -133,7 +185,7 @@ struct HomeScreen: View {
                         .accessibilityIdentifier("home-problem")
                 }
                 if let home = homes.homes[me.id] {
-                    RecordView(home: home, s: s, heading: s.t(.medicines))
+                    RecordView(home: home, s: s, heading: s.t(.medicines), testsHeading: s.t(.tests))
                     ForEach(others) { other in
                         if let theirs = homes.homes[other.id], theirs.shared == .full, !theirs.medicines.isEmpty {
                             RecordView(home: theirs, s: s, heading: s.t(.whose, ["name": other.name]))

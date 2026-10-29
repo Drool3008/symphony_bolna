@@ -35,6 +35,21 @@ struct HomeLinesTests {
         let metoprolol = try #require(try home("home-patient-as-patient.json").medicines.first)
         #expect(HomeLines.stock(metoprolol, en, today: "2026-10-07") == "6 pills left when counted on 6 Oct")
     }
+
+    @Test func showsTheBPCheckAsOverdueSinceTheDayItFellDue() throws {
+        let home = try home("home-patient-as-patient.json")
+        let bp = try #require(home.tests.first)
+        #expect(bp.daysUntilDue < 0)
+        #expect(HomeLines.due(bp, en, today: home.today) == "overdue since 4 Sep")
+        #expect(HomeLines.due(bp, te, today: home.today).hasSuffix("నుండి గడువు దాటింది"))
+        #expect(HomeLines.lastDone(bp, en, today: home.today) == "last done 6 Jun · every 90 days")
+    }
+
+    @Test func givesATestDueNextYearItsYear() throws {
+        let home = try home("home-rp-as-rp.json")
+        let spirometry = try #require(home.tests.first { $0.name == "Spirometry" })
+        #expect(HomeLines.due(spirometry, en, today: home.today) == "due 18 Jul 2027")
+    }
 }
 
 @MainActor
