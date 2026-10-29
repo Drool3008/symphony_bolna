@@ -194,3 +194,45 @@
   border: var(--rule-thin) solid var(--color-ink);
   padding: 0 var(--space-2);
 }
+
+.composer {
+  position: sticky;
+  bottom: calc(var(--touch) + var(--space-2) + env(safe-area-inset-bottom));
+  background: var(--color-paper);
+  border-top: var(--rule-thick) solid var(--color-ink);
+  padding: var(--space-3) 0;
+}
+
+.composer-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: stretch;
+}
+
+.composer-field {
+  flex: 1;
+  display: flex;
+}
+
+.composer-field textarea {
+  flex: 1;
+  min-height: var(--touch);
+  resize: none;
+  /* At least 16px, so iOS does not zoom on focus. */
+  font-size: max(16px, var(--type-body));
+  padding: var(--space-2) var(--space-3);
+  border: var(--rule-thin) solid var(--color-ink-2);
+  background: var(--color-paper);
+}
+
+.composer-problem {
+  margin: 0 0 var(--space-2);
+  font-size: var(--type-meta);
+  font-weight: 700;
+}
+
+@media (min-width: 900px) {
+  .composer {
+    bottom: 0;
+  }
+}

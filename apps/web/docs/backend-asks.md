@@ -93,3 +93,22 @@ time as `at` (`server/src/store/conversations.ts`), and clients receive the
 wall time instead. The client reads the sim time from `clock`, which happens
 to match. Ask: keep payloads under their own key, or rename the colliding
 fields (for example `answered_at`).
+
+## 9. A typed reply ends the wait but leaves its card open
+
+`POST /api/input` ends a wait on the member with their typed line
+(`rt.waits.reply`, `server/src/app.ts`), but does not lock the card that
+asked the question, and a settled wait does not mark it timed out either
+(`server/src/domain/waits.ts` marks cards only when nobody answered). So if
+Arun types "yes" instead of tapping, his spend card stays unanswered and
+pinned as "needs your answer" though the agent has moved on. Ask: when a
+typed reply ends a wait, close the cards that wait was for, with the typed
+answer or a state the client can show.
+
+## 10. The stock left is the count from the start of the run
+
+Home sends a medicine's `stock` as counted on `stock_as_of` and counts
+`days_of_cover` down from it (`server/src/domain/home.ts`), so a day later
+it says 6 pills and 2 days. The client now says "when counted on 6 Oct". If
+the server worked out the stock it expects is left today, home could show
+that instead.

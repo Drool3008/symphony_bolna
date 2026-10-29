@@ -84,3 +84,14 @@ test('a second answer is refused, and that screen shows the server’s reason', 
   await stale.getByRole('button', { name: 'Hold unpaid' }).click()
   await expect(stale.getByRole('alert')).toHaveText('that card is already answered')
 })
+
+test('a line Lakshmi types goes to the agent and shows in her thread as hers', async ({ page }) => {
+  await pick(page, 'Lakshmi')
+  await page.getByRole('link', { name: 'చాట్' }).click()
+  await page.getByLabel('సందేశం…').fill('నాకు మాత్రలు అయిపోతున్నాయి')
+  await page.getByRole('button', { name: 'పంపండి' }).click()
+  const line = page.locator('.line-person').filter({ hasText: 'నాకు మాత్రలు అయిపోతున్నాయి' })
+  await expect(line).toBeVisible()
+  await expect(line.locator('.line-who')).toContainText('మీరు')
+  await expect(page.getByLabel('సందేశం…')).toHaveValue('')
+})

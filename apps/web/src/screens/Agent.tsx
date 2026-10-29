@@ -1,5 +1,6 @@
 import type { MemberSummary, ThreadMessage } from '@family-health/shared'
 import { CardBody } from '../components/CardBody.js'
+import { Composer } from '../components/Composer.js'
 import { Outcome } from '../components/Outcome.js'
 import { PinnedCard } from '../components/PinnedCard.js'
 import { isOpenCard, useAgentThread } from '../data/agentThread.js'
@@ -69,6 +70,7 @@ export function Agent({ me, s }: { me: MemberSummary; s: Strings }) {
           ))}
         </ol>
       )}
+      <Composer s={s} />
     </div>
   )
 }
