@@ -42,6 +42,8 @@ targets:
       - path: Tests/Fixtures
         type: folder
         buildPhase: resources
+      - path: docs/design-tokens.md
+        buildPhase: resources
     dependencies:
       - target: Vantari
     settings:
