@@ -15,6 +15,12 @@ test('Lakshmi sees Metoprolol at 3 days, and moving the clock counts it down wit
   await expect(page.getByText('బుధవారం')).toBeVisible()
 })
 
+test('Lakshmi sees her BP check overdue', async ({ page }) => {
+  await pick(page, 'Lakshmi')
+  const row = page.getByRole('listitem').filter({ hasText: 'BP check' })
+  await expect(row.locator('.row-overdue')).toContainText('గడువు దాటింది')
+})
+
 test('Arun sees his inhaler counted in doses, and his mother’s medicines under her consent', async ({
   page,
 }) => {

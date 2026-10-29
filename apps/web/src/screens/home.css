@@ -66,3 +66,11 @@
   font-weight: 600;
   margin-top: var(--space-1) !important;
 }
+
+.row-due {
+  font-size: var(--type-meta);
+}
+
+.row-overdue {
+  font-weight: 700;
+}

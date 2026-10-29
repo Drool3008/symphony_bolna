@@ -1,4 +1,4 @@
-import type { HomeMedicine, MemberHomeResponse, MemberSummary } from '@family-health/shared'
+import type { HomeMedicine, HomeTest, MemberHomeResponse, MemberSummary } from '@family-health/shared'
 import { ApiError } from '../api/index.js'
 import { useHome } from '../data/home.js'
 import { useMembers } from '../data/members.js'
@@ -36,21 +36,66 @@ function MedicineRow({ m, s, today }: { m: HomeMedicine; s: Strings; today: stri
   )
 }
 
-/** One member's record, as far as consent lets the asking member see it. */
-function Record({ home, s, heading }: { home: MemberHomeResponse; s: Strings; heading: string }) {
+/** A recurring test. Overdue is shown as overdue: the server sends a negative days_until_due. */
+function TestRow({ t, s, today }: { t: HomeTest; s: Strings; today: string }) {
   return (
-    <section aria-label={heading}>
-      <h2 className="section-label">{heading}</h2>
-      {home.medicines.length === 0 ? (
-        <p className="row-meta">{s.t('nothing_on_file')}</p>
-      ) : (
-        <ul className="rows">
-          {home.medicines.map((m) => (
-            <MedicineRow key={m.id} m={m} s={s} today={home.today} />
-          ))}
-        </ul>
+    <li className="row row-test">
+      <div className="row-main">
+        <p className="row-title">{t.name}</p>
+        {t.overdue ? (
+          <p className="row-due row-overdue">
+            <span aria-hidden="true">▲ </span>
+            {s.t('overdue', { d: s.date(t.next_due, today) })}
+          </p>
+        ) : (
+          <p className="row-due">{s.t('next_due', { d: s.date(t.next_due, today) })}</p>
+        )}
+        <p className="row-meta">
+          {s.t('last_done', { d: s.date(t.last_done, today) })} ·{' '}
+          {s.t('every_n_days', { n: s.num(t.every_days) })}
+        </p>
+      </div>
+    </li>
+  )
+}
+
+/** One member's record, as far as consent lets the asking member see it. */
+function Record({
+  home,
+  s,
+  heading,
+  testsHeading,
+}: {
+  home: MemberHomeResponse
+  s: Strings
+  heading: string
+  testsHeading?: string
+}) {
+  return (
+    <>
+      <section aria-label={heading}>
+        <h2 className="section-label">{heading}</h2>
+        {home.medicines.length === 0 ? (
+          <p className="row-meta">{s.t('nothing_on_file')}</p>
+        ) : (
+          <ul className="rows">
+            {home.medicines.map((m) => (
+              <MedicineRow key={m.id} m={m} s={s} today={home.today} />
+            ))}
+          </ul>
+        )}
+      </section>
+      {testsHeading && home.tests.length > 0 && (
+        <section aria-label={testsHeading}>
+          <h2 className="section-label">{testsHeading}</h2>
+          <ul className="rows">
+            {home.tests.map((t) => (
+              <TestRow key={t.id} t={t} s={s} today={home.today} />
+            ))}
+          </ul>
+        </section>
       )}
-    </section>
+    </>
   )
 }
 
@@ -68,7 +113,7 @@ export function Home({ me, s }: { me: MemberSummary; s: Strings }) {
   if (!data) return null
   return (
     <div className="home">
-      <Record home={data} s={s} heading={s.t('medicines')} />
+      <Record home={data} s={s} heading={s.t('medicines')} testsHeading={s.t('tests')} />
       {family?.members
         .filter((m) => m.id !== me.id)
         .map((m) => (

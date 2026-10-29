@@ -33,3 +33,21 @@ it("shows Lakshmi's Metoprolol at 3 days, with its run-out date and the must-not
   expect(screen.getByText('తప్పకుండా వేసుకోవాలి')).toBeTruthy()
   expect(screen.getByText('6 మాత్రలు మిగిలాయి')).toBeTruthy()
 })
+
+it('shows the BP check as overdue since the day it fell due, with when it was last done', async () => {
+  home.current = lakshmiHome
+  draw('en-IN')
+  expect(await screen.findByText('BP check')).toBeTruthy()
+  expect(screen.getByText('overdue since 4 Sept')).toBeTruthy()
+  expect(screen.getByText('last done 6 Jun · every 90 days')).toBeTruthy()
+})
+
+it('gives a test due next year its year', async () => {
+  const spirometry = { id: 'test_2', name: 'Spirometry', every_days: 365, last_done: '2026-07-18' }
+  home.current = {
+    ...lakshmiHome,
+    tests: [{ ...spirometry, overdue: false, days_until_due: 285, next_due: '2027-07-18' }],
+  }
+  draw('en-IN')
+  expect(await screen.findByText('due 18 Jul 2027')).toBeTruthy()
+})
