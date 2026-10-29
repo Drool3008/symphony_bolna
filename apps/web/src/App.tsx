@@ -7,6 +7,7 @@ import { MemberApp } from './app/MemberApp.js'
 import { Picker } from './app/Picker.js'
 import { Shell } from './app/Shell.js'
 import { Family } from './screens/Family.js'
+import { Home } from './screens/Home.js'
 
 export function App() {
   const [queryClient] = useState(() => new QueryClient({ defaultOptions: { queries: { retry: 1 } } }))
@@ -22,7 +23,11 @@ export function App() {
                 <MemberApp>
                   {({ me, s }) => (
                     <LiveProvider>
-                      <Shell me={me} s={s} screens={{ home: null, agent: null, family: <Family s={s} /> }} />
+                      <Shell
+                        me={me}
+                        s={s}
+                        screens={{ home: <Home me={me} s={s} />, agent: null, family: <Family s={s} /> }}
+                      />
                     </LiveProvider>
                   )}
                 </MemberApp>

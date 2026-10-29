@@ -25,6 +25,7 @@ const en = {
   overdue: 'overdue since {d}',
   every_n_days: 'every {n} days',
   whose: "{name}'s medicines",
+  stock_left: '{n} left',
   message: 'Message…',
   send: 'Send',
   no_messages: 'No messages yet.',
@@ -45,6 +46,8 @@ const en = {
   card_what: 'What',
   card_wallet_after: 'Wallet after',
   sending: 'Sending…',
+  unit_pills: 'pills',
+  unit_doses: 'doses',
 } as const
 
 export type StringKey = keyof typeof en
@@ -67,6 +70,7 @@ const te: Record<StringKey, string> = {
   overdue: '{d} నుండి గడువు దాటింది',
   every_n_days: 'ప్రతి {n} రోజులకు',
   whose: '{name} మందులు',
+  stock_left: '{n} మిగిలాయి',
   message: 'సందేశం…',
   send: 'పంపండి',
   no_messages: 'ఇంకా సందేశాలు లేవు.',
@@ -87,6 +91,8 @@ const te: Record<StringKey, string> = {
   card_what: 'ఏమిటి',
   card_wallet_after: 'తర్వాత వాలెట్‌లో',
   sending: 'పంపుతోంది…',
+  unit_pills: 'మాత్రలు',
+  unit_doses: 'డోసులు',
 }
 
 export const dictionaries = { en, te } as const

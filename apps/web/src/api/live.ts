@@ -44,6 +44,8 @@ export function connectLive(stream: EventSource, queryClient: QueryClient): () =
         break
       case 'clock':
         if (known) queryClient.setQueryData<SessionState>(sessionKey, { ...known, clock: event.clock })
+        // Days of cover and due dates are computed by the server against the sim clock.
+        void queryClient.invalidateQueries({ queryKey: ['home'] })
         break
       case 'stage':
         if (known) queryClient.setQueryData<SessionState>(sessionKey, { ...known, stage: event.stage })

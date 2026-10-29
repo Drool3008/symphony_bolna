@@ -1,9 +1,7 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
+import { pick, resetBackend } from './helpers.js'
 
-async function pick(page: Page, name: string) {
-  await page.goto('/pick')
-  await page.getByRole('button', { name }).click()
-}
+test.beforeEach(async ({ request }) => resetBackend(request))
 
 test("Lakshmi's tabs are in Telugu, and there is no wallet", async ({ page }) => {
   await pick(page, 'Lakshmi')
