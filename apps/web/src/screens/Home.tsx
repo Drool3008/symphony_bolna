@@ -19,7 +19,14 @@ function MedicineRow({ m, s, today }: { m: HomeMedicine; s: Strings; today: stri
           {m.name} <span className="row-sub">{m.strength}</span>
         </p>
         <p className="row-meta">{m.purpose}</p>
-        <p className="row-meta">{s.t('stock_left', { n: `${s.num(m.stock)} ${unitWord(s, m.unit)}` })}</p>
+        <p className="row-meta">
+          {m.stock_as_of === today
+            ? s.t('stock_left', { n: `${s.num(m.stock)} ${unitWord(s, m.unit)}` })
+            : s.t('stock_counted', {
+                n: `${s.num(m.stock)} ${unitWord(s, m.unit)}`,
+                d: s.date(m.stock_as_of, today),
+              })}
+        </p>
         {m.must_not_miss && (
           <p className="row-flag">
             <span aria-hidden="true">■ </span>

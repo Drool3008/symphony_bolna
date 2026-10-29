@@ -67,3 +67,13 @@ it('fills the latest word in once the server sends one, marked as the agent’s'
   expect(slot.textContent).toContain('Your tablets are ordered.')
   expect(slot.textContent).toContain('Your agent')
 })
+
+it('says the stock is as counted, once the clock has moved past the day it was counted', async () => {
+  home.current = {
+    ...lakshmiHome,
+    today: '2026-10-07',
+    medicines: lakshmiHome.medicines.map((m) => ({ ...m, days_of_cover: 2 })),
+  }
+  draw('en-IN')
+  expect(await screen.findByText('6 pills left when counted on 6 Oct')).toBeTruthy()
+})

@@ -120,3 +120,11 @@ is plain, and **their Telugu is a proposal awaiting a native speaker**:
 the member's onboarding `language`, never the browser's. Dates and times are
 on the family's clock (+05:30), and a date shows its year only when it is
 not the year on that clock.
+
+## Stock left says when it was counted
+
+The server sends a medicine's stock as counted on `stock_as_of` and counts
+the days of cover down from there (HANDOFF.md section 9). Once the clock has
+moved past that day, home says "6 pills left when counted on 6 Oct" rather
+than a bare "6 pills left", so the count is never read as today's. The
+Telugu wording is a proposal.
