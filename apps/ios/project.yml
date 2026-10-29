@@ -25,3 +25,35 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Config/Info.plist
         SUPPORTED_INTERFACE_ORIENTATIONS: UIInterfaceOrientationPortrait
+  VantariTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: Tests/Unit
+    dependencies:
+      - target: Vantari
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: org.familyhealth.VantariTests
+  VantariUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: Tests/UI
+    dependencies:
+      - target: Vantari
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_BUNDLE_IDENTIFIER: org.familyhealth.VantariUITests
+        TEST_TARGET_NAME: Vantari
+schemes:
+  Vantari:
+    build:
+      targets:
+        Vantari: all
+    test:
+      targets:
+        - VantariTests
+        - VantariUITests

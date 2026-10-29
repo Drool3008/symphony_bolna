@@ -1,6 +1,7 @@
 # Every check is one command. The project is generated from project.yml.
 #   make generate   write Vantari.xcodeproj from project.yml (XcodeGen)
 #   make build      build the app for the simulator
+#   make test       run the unit and UI tests on the simulator
 #   make run        build, install and launch on the simulator
 #   make screenshots  save a screenshot of the booted simulator to $(SHOTS)
 
@@ -12,13 +13,16 @@ SCHEME := Vantari
 BUNDLE_ID := org.familyhealth.Vantari
 XCODEBUILD := xcodebuild -project Vantari.xcodeproj -scheme $(SCHEME) -destination '$(DESTINATION)' -derivedDataPath $(DERIVED)
 
-.PHONY: generate build run screenshots
+.PHONY: generate build test run screenshots
 
 generate:
 	xcodegen generate --quiet
 
 build: generate
 	$(XCODEBUILD) -quiet build
+
+test: generate
+	$(XCODEBUILD) -quiet test
 
 run: build
 	xcrun simctl boot '$(SIMULATOR)' 2>/dev/null || true
