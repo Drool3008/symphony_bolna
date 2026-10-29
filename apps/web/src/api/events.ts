@@ -7,8 +7,9 @@
  *
  * On the wire (server/src/events.ts) every logged event is one JSON object:
  * `seq`, `type`, `at` (wall time), `clock` (sim time) and its payload's
- * fields at the top level. `sync` is the exception: sent to one client on
- * connect, not logged, with no `seq` and no `id:` line.
+ * fields at the top level. A payload field named `seq`, `type`, `at` or
+ * `clock` is overwritten by the envelope's. `sync` is the exception: sent to
+ * one client on connect, not logged, with no `seq` and no `id:` line.
  */
 import type { AgentDate, AgentEvent, ChatMessage, Decision, ThreadMessage } from '@family-health/shared'
 
@@ -84,8 +85,13 @@ export type StreamEvent =
   | Logged<'message', { message: ThreadMessage }>
   /** server/src/store/conversations.ts, FamilyChats.post */
   | Logged<'chat_message', { key: string; message: ChatMessage }>
-  /** server/src/store/conversations.ts, answerCard */
-  | Logged<'card_answered', { message_id: string; answer: string; at: string }>
+  /**
+   * server/src/store/conversations.ts, answerCard. Its payload's own `at` (sim
+   * time) is overwritten by the envelope's wall-time `at`
+   * (server/src/store/event-log.ts spreads the payload first), so the sim time
+   * of the answer is the envelope's `clock`.
+   */
+  | Logged<'card_answered', { message_id: string; answer: string }>
   /** server/src/domain/waits.ts */
   | Logged<'card_timed_out', { message_id: string; reason: string }>
   /** server/src/domain/waits.ts */

@@ -92,8 +92,12 @@ None of these reads `X-Member-Id`.
   `id:` line and is not logged. No `event:` field is used; the type is in
   the JSON.
 - Every logged event is one object: `seq`, `type`, `at` (wall time),
-  `clock` (sim time, absent on `reset`), and its payload's fields at the
-  top level (not under `payload`).
+  `clock` (sim time), and its payload's fields at the top level (not under
+  `payload`). **A payload field named `seq`, `type`, `at` or `clock` is
+  overwritten by the envelope's** (`server/src/store/event-log.ts`,
+  `append` spreads the payload first). This bites `card_answered`: the
+  server passes the answer's sim time as `at`, and the wall time replaces it.
+  Read the sim time of any event from its `clock`.
 
 ### Event types and payloads
 

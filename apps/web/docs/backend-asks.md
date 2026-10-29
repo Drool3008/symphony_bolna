@@ -83,3 +83,13 @@ the card's own recipient may answer (`server/src/app.ts`), so the client can
 infer it. The brief asks that a card "show who answered", and the design must
 show "what has been decided and by whom". If anyone else may ever answer, the
 server needs to record it.
+
+## 8. Payload fields are overwritten by the event envelope
+
+`EventLog.append` (`server/src/store/event-log.ts`) returns
+`{ ...payload, seq, type, at: wall, clock }`, so a payload field with one of
+those names is silently replaced. `card_answered` passes the answer's sim
+time as `at` (`server/src/store/conversations.ts`), and clients receive the
+wall time instead. The client reads the sim time from `clock`, which happens
+to match. Ask: keep payloads under their own key, or rename the colliding
+fields (for example `answered_at`).
