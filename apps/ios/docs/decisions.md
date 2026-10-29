@@ -106,3 +106,23 @@ Verification 1 found that the seeded family history cannot reach a client
 (`client-contract.md`). The brief says to stop and raise it; the owner's
 instruction for this session says to record it in `backend-asks.md` and
 carry on. The Family tab and forwarding wait on that ask.
+
+## Direction A, with two things from B (owner's answer, Checkpoint A)
+
+Plain page for both clients: ink on paper, rules instead of boxes, one
+deep-orange accent only for "needs your answer". From direction B, only
+these two: what waits on this member's answer is pinned at the top of the
+agent thread until it is answered or times out, and every decision line
+carries a mark saying who made it, the agent or the named person. Tokens,
+type scale and names are shared with the web client (`docs/design-tokens.md`).
+
+## A String Catalog, looked up in the member's language
+
+`Vantari/Strings/Localizable.xcstrings` holds the same keys and wording as the
+web client's `src/i18n/strings.ts`: the reference client's own labels
+(`src/lib/i18n.ts`) wherever it had them, and plain new English otherwise.
+New Telugu is marked `needs_review` in the catalog itself, with a comment, so
+it shows in Xcode as waiting for a native speaker. The language is the
+member's onboarding `language`, not the device's: `Strings` reads the
+`te.lproj` or `en.lproj` table directly. Dates and times are on the family's
+clock (+05:30), with the year shown only when it differs.

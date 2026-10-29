@@ -1,0 +1,708 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "tab_home": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Home"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "హోమ్"
+          }
+        }
+      }
+    },
+    "tab_agent": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chat"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "చాట్"
+          }
+        }
+      }
+    },
+    "tab_family": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Family"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "కుటుంబం"
+          }
+        }
+      }
+    },
+    "tab_wallet": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wallet"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "వాలెట్"
+          }
+        }
+      }
+    },
+    "medicines": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medicines"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "మందులు"
+          }
+        }
+      }
+    },
+    "tests": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tests"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "పరీక్షలు"
+          }
+        }
+      }
+    },
+    "latest": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Latest from your agent"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "మీ సహాయకుడి నుండి తాజా సమాచారం"
+          }
+        }
+      }
+    },
+    "nothing_on_file": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing on file."
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ఏమీ నమోదు కాలేదు."
+          }
+        }
+      }
+    },
+    "must_not_miss": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Must not be missed"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "తప్పకుండా వేసుకోవాలి"
+          }
+        }
+      }
+    },
+    "days_left_label": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "days left"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "రోజులకు సరిపోతాయి"
+          }
+        }
+      }
+    },
+    "runs_out": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "runs out {d}"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{d}న అయిపోతాయి"
+          }
+        }
+      }
+    },
+    "last_done": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "last done {d}"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "చివరిసారి {d}"
+          }
+        }
+      }
+    },
+    "next_due": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "due {d}"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "తదుపరి {d}"
+          }
+        }
+      }
+    },
+    "overdue": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "overdue since {d}"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{d} నుండి గడువు దాటింది"
+          }
+        }
+      }
+    },
+    "every_n_days": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "every {n} days"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ప్రతి {n} రోజులకు"
+          }
+        }
+      }
+    },
+    "whose": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{name}'s medicines"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{name} మందులు"
+          }
+        }
+      }
+    },
+    "stock_left": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{n} left"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{n} మిగిలాయి"
+          }
+        }
+      }
+    },
+    "stock_counted": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{n} left when counted on {d}"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "{d}న లెక్కించినప్పుడు {n} మిగిలాయి"
+          }
+        }
+      }
+    },
+    "message": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Message…"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "సందేశం…"
+          }
+        }
+      }
+    },
+    "send": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Send"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "పంపండి"
+          }
+        }
+      }
+    },
+    "no_messages": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No messages yet."
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ఇంకా సందేశాలు లేవు."
+          }
+        }
+      }
+    },
+    "needs_answer": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Needs your answer"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "మీ సమాధానం కావాలి"
+          }
+        }
+      }
+    },
+    "working": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Working on it…"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "పని జరుగుతోంది…"
+          }
+        }
+      }
+    },
+    "agent": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your agent"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మీ సహాయకుడు"
+          }
+        }
+      }
+    },
+    "you": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మీరు"
+          }
+        }
+      }
+    },
+    "if_no_answer": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If you do not answer"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మీరు సమాధానం ఇవ్వకపోతే"
+          }
+        }
+      }
+    },
+    "answered_by": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Answered by {name}"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "{name} సమాధానం ఇచ్చారు"
+          }
+        }
+      }
+    },
+    "timed_out": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nobody answered in time"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "సమయానికి ఎవరూ సమాధానం ఇవ్వలేదు"
+          }
+        }
+      }
+    },
+    "agent_goes_on": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your agent goes on by its rules"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మీ సహాయకుడు తన నియమాల ప్రకారం కొనసాగుతాడు"
+          }
+        }
+      }
+    },
+    "offline": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The app cannot reach the family server right now."
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ఇప్పుడు యాప్ కుటుంబ సర్వర్‌ను చేరుకోలేకపోతోంది."
+          }
+        }
+      }
+    },
+    "family_waiting": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Family chats open here once the server can send them."
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "సర్వర్ పంపగలిగినప్పుడు కుటుంబ చాట్‌లు ఇక్కడ తెరుచుకుంటాయి."
+          }
+        }
+      }
+    },
+    "card_amount": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Amount"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మొత్తం"
+          }
+        }
+      }
+    },
+    "card_to": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ఎవరికి"
+          }
+        }
+      }
+    },
+    "card_for": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ఎవరి కోసం"
+          }
+        }
+      }
+    },
+    "card_what": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ఏమిటి"
+          }
+        }
+      }
+    },
+    "card_wallet_after": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wallet after"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "తర్వాత వాలెట్‌లో"
+          }
+        }
+      }
+    },
+    "sending": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sending…"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "పంపుతోంది…"
+          }
+        }
+      }
+    },
+    "unit_pills": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "pills"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మాత్రలు"
+          }
+        }
+      }
+    },
+    "unit_doses": {
+      "comment": "New. The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "doses"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "డోసులు"
+          }
+        }
+      }
+    }
+  },
+  "version": "1.0"
+}
