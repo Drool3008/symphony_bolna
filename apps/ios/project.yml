@@ -6,6 +6,9 @@ options:
   deploymentTarget:
     iOS: '17.0'
   createIntermediateGroups: true
+configFiles:
+  Debug: Config/Base.xcconfig
+  Release: Config/Base.xcconfig
 settings:
   base:
     SWIFT_VERSION: '6.0'
@@ -25,6 +28,11 @@ targets:
         GENERATE_INFOPLIST_FILE: NO
         INFOPLIST_FILE: Config/Info.plist
         SUPPORTED_INTERFACE_ORIENTATIONS: UIInterfaceOrientationPortrait
+      configs:
+        # Cleartext HTTP to the LAN is a Debug-only exception. Release keeps
+        # App Transport Security fully on.
+        Debug:
+          INFOPLIST_FILE: Config/Info-Debug.plist
   VantariTests:
     type: bundle.unit-test
     platform: iOS

@@ -1,0 +1,11 @@
+// Build settings every configuration shares.
+//
+// API_BASE is the family server's address, written into Info.plist and read
+// by Backend.swift. "//" starts a comment in an xcconfig, so the scheme's
+// slashes are split with $(). The default is the backend's own port on this
+// Mac, which the simulator reaches as localhost.
+API_BASE = http:/$()/localhost:8787
+
+// A phone needs this Mac's LAN address instead. scripts/lan-xcconfig.sh
+// writes it to Local.xcconfig, which git ignores; it overrides the line above.
+#include? "Local.xcconfig"

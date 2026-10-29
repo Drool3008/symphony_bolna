@@ -3,3 +3,5 @@
 # Build output, wherever the Makefile puts it inside this folder.
 .build/
 DerivedData/
+# This Mac's LAN address for a device build, written by scripts/lan-xcconfig.sh.
+Config/Local.xcconfig
