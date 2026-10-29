@@ -7,7 +7,8 @@
   },
   "workspaces": [
     "server",
-    "shared"
+    "shared",
+    "apps/web"
   ],
   "scripts": {
     "typecheck": "tsc -p shared --noEmit && tsc -p server --noEmit && tsc -p . --noEmit",
