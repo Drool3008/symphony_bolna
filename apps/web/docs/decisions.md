@@ -111,15 +111,32 @@ type scale and names are shared with iOS (`docs/design-tokens.md`).
 ## Strings: the reference's wording first, new Telugu as proposals
 
 `src/i18n/strings.ts` takes every label it can from the reference client
-(`src/lib/i18n.ts`), English and Telugu. The agent tab is the reference's
-"Chat" (చాట్). Strings the reference does not have are new; their English
-is plain, and **their Telugu is a proposal awaiting a native speaker**:
-`agent` (మీ సహాయకుడు, built from the reference's own phrase), `you`,
-`if_no_answer`, `answered_by`, `timed_out`, `agent_goes_on`, `offline`,
-`family_waiting`, the five card field labels, and `sending`. The language is
-the member's onboarding `language`, never the browser's. Dates and times are
-on the family's clock (+05:30), and a date shows its year only when it is
-not the year on that clock.
+(`src/lib/i18n.ts`), English and Telugu: the tabs, home's labels, the
+header's `working`, `here` and `stage.0`–`stage.9`, `days_left`, `book_it`,
+`waiting_on_you`. The agent tab is the reference's "Chat" (చాట్).
+
+Some English is the reference's wording from files other than `i18n.ts`,
+which had no Telugu for it; **their Telugu is a proposal awaiting a native
+speaker**:
+
+- from `src/PhoneApp.tsx`: `unread`, `tap_refill`;
+- from `src/components/AgentChat.tsx`: `decisions_one`, `decisions_many`,
+  `your_decision`, `human`, `card_done`, `no_answer`, `no_answer_then`,
+  `you_chose`, `you_chose_at`, `why`, `wallet_after`, `receipt`, `total`,
+  and the nine fact labels `fact_medicine` to `fact_payee`;
+- from `src/main.tsx` (the phone picker): `who_is_using`, `role_patient`,
+  `role_responsible`, `role_family`. The picker itself shows English, since
+  no member is chosen yet.
+
+Strings the reference does not have at all are new; their English is plain,
+and their Telugu is a proposal too: `you`, `if_no_answer`, `agent_goes_on`,
+`offline`, `family_waiting`, `sending`, `unit_pills`, `unit_doses`,
+`stock_counted`. The answer labels on cards and their past tense (`Approved`,
+`Held unpaid`…) stay English, because they are the labels the server and the
+agent read (`src/components/cardLabels.ts`). The language is the member's
+onboarding `language`, never the browser's. Dates and times are on the
+family's clock (+05:30), and a date shows its year only when it is not the
+year on that clock.
 
 ## Stock left says when it was counted
 
