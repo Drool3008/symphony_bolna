@@ -15,7 +15,7 @@ describe('the strings', () => {
 
   it('fills in values', () => {
     expect(stringsFor('en-IN').t('runs_out', { d: '9 Oct' })).toBe('runs out 9 Oct')
-    expect(stringsFor('en-IN').t('answered_by', { name: 'Arun' })).toBe('Answered by Arun')
+    expect(stringsFor('en-IN').t('days_left', { n: 3 })).toBe('3 days left')
   })
 
   it('shows the year only when it is not the year on the family clock', () => {

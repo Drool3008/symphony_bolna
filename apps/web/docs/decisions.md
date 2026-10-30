@@ -136,9 +136,9 @@ to the read route without touching a screen. `useAgentThread` in
 `src/data/agentThread.ts` is that function; the stream folds into it through
 `applyThreadEvent`. It keeps only the chosen member's thread and the waits on
 them, because `/events` still carries everyone's (owner's answer: keep this
-filter until the server's per-member stream lands, then remove it). An open
-card is pinned at the top until it is answered or times out; in the timeline
-the message points up to it.
+filter until the server's per-member stream lands, then remove it). Open
+cards stay inline in the thread, and a bar under the header counts them and
+scrolls to the first (since the reference look was adopted on 2026-10-30).
 
 ## Card titles and buttons fall back to the reference's, for now
 
@@ -206,3 +206,20 @@ The reference showed "25mg · 2 a day". `GET /api/members/:id/home` sends
 `schedule` as words and no daily figure (`shared/src/api.ts`, HomeMedicine),
 and working one out from stock and days of cover would be inventing it. Home
 shows the strength and the purpose instead. Listed in `backend-asks.md`.
+
+## A card nobody answered wears the agent's tag (Proposal)
+
+The reference put the Human tag on every card that is not a record, including
+one that timed out. Here a card nobody answered in time says "No answer" with
+the AI tag, because the agent then goes on by its rules
+(`server/src/domain/waits.ts`), so the band still says who decided. The
+answered states keep the Human tag and the reference's past-tense band
+(`src/components/AgentChat.tsx`, PAST), with "You chose … at …" below.
+
+## Receipt fields the server does not send yet
+
+The card's receipt panel (receipt number, item lines, total) and the
+`order_receipt` record kind follow the reference's `AgentChat.tsx`. The
+server's card description (`server/src/agent/tools.ts`, send_message) names
+none of them today, so the panel draws only if they arrive; nothing stands in
+for them.

@@ -1,3 +1,6 @@
+import type { ThreadMessage } from '@family-health/shared'
+import { isRecordCard } from '../data/agentThread.js'
+
 /**
  * TEMPORARY FALLBACK. Remove when the server sends every card's title and
  * buttons (owner's answer at Checkpoint A: the backend session is making
@@ -51,4 +54,54 @@ export function cardButtons(card: Record<string, unknown> | null): string[] {
   const own = card.buttons
   if (Array.isArray(own) && own.every((b) => typeof b === 'string')) return own as string[]
   return FALLBACK_BUTTONS[String(card.kind ?? '')] ?? []
+}
+
+/**
+ * Answers that say yes, and how an answer reads once given, from the
+ * reference client's src/components/AgentChat.tsx (YES and PAST). They match
+ * the English labels above and the server's, so they stay English.
+ */
+const YES = new Set([
+  'approve',
+  'yes',
+  'act',
+  'treat as urgent',
+  'top up',
+  'ok',
+  'ask the doctor',
+  'yes, book it',
+  'go ahead',
+])
+
+const PAST: Record<string, string> = {
+  approve: 'Approved',
+  yes: 'Confirmed',
+  no: 'Declined',
+  hold: 'Held',
+  'hold unpaid': 'Held unpaid',
+  decline: 'Declined',
+  act: 'Go ahead',
+  "don't act": 'Do not act',
+  later: 'Later',
+  'yes, book it': 'Booking it',
+  'not now': 'Not now',
+}
+
+export const isYes = (answer: string) => YES.has(answer.trim().toLowerCase())
+
+/** An answer in the past tense, for the band of an answered card; the answer itself when there is none. */
+export const pastTense = (answer: string) => PAST[answer.trim().toLowerCase()] ?? answer
+
+/**
+ * How a card reads at a glance (the reference's AgentChat.tsx, DecisionCard):
+ * a record of something done, open and waiting on the member, answered yes,
+ * answered otherwise, or left without an answer.
+ */
+export type CardTone = 'record' | 'open' | 'yes' | 'other' | 'timed_out'
+
+export function cardTone(m: ThreadMessage): CardTone {
+  if (isRecordCard(m)) return 'record'
+  if (m.answer !== null) return isYes(m.answer) ? 'yes' : 'other'
+  if (m.timed_out_at !== null) return 'timed_out'
+  return 'open'
 }

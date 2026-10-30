@@ -21,7 +21,7 @@ it('sends a typed line to /api/input and lets the server decide what it is', asy
   fireEvent.change(box, { target: { value: '  Yes, go ahead  ' } })
   fireEvent.click(screen.getByRole('button', { name: 'Send' }))
   await vi.waitFor(() => expect(input).toHaveBeenCalledWith({ text: 'Yes, go ahead' }))
-  await vi.waitFor(() => expect((box as HTMLTextAreaElement).value).toBe(''))
+  await vi.waitFor(() => expect((box as HTMLInputElement).value).toBe(''))
 })
 
 it('keeps the line and shows the server’s reason when it is refused', async () => {
@@ -31,7 +31,7 @@ it('keeps the line and shows the server’s reason when it is refused', async ()
   fireEvent.change(box, { target: { value: 'నమస్తే' } })
   fireEvent.click(screen.getByRole('button', { name: 'పంపండి' }))
   expect((await screen.findByRole('alert')).textContent).toBe('text: say something')
-  expect((box as HTMLTextAreaElement).value).toBe('నమస్తే')
+  expect((box as HTMLInputElement).value).toBe('నమస్తే')
 })
 
 it('sends nothing for an empty line', () => {

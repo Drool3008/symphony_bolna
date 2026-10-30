@@ -3,15 +3,27 @@ import { arunsCardId, BACKEND, pick, playTakeToArunsCard, resetBackend, streamTe
 
 test.beforeEach(async ({ request }) => resetBackend(request))
 
-test("Arun's thread fills as the take happens, with his card pinned on top", async ({ page, request }) => {
+test("Arun's thread fills as the take happens, with his card inline and counted in the bar", async ({
+  page,
+  request,
+}) => {
   await pick(page, 'Arun')
   await page.getByRole('link', { name: 'Chat' }).click()
   await expect(page.getByText('No messages yet.')).toBeVisible()
   await playTakeToArunsCard(request)
-  const pinned = page.getByRole('region', { name: 'Needs your answer' })
-  await expect(pinned.getByText('Spend needs your OK')).toBeVisible()
-  await expect(pinned.getByText('Kazipet Pharmacy')).toBeVisible()
+  await expect(page.locator('.decisions-bar')).toHaveText('1 decision waiting for you')
+  const card = page.locator('.dc-open')
+  await expect(card.getByText('Spend needs your OK')).toBeVisible()
+  await expect(card.getByText('Kazipet Pharmacy')).toBeVisible()
   await expect(page.getByText('OK to pay?')).toBeVisible()
+})
+
+test('a card reaching Arun while he is on Home opens Chat', async ({ page, request }) => {
+  await pick(page, 'Arun')
+  await expect(page).toHaveURL(/\/home$/)
+  await playTakeToArunsCard(request)
+  await expect(page).toHaveURL(/\/agent$/)
+  await expect(page.locator('.dc-open')).toBeVisible()
 })
 
 test("Lakshmi's thread gets the agent's Telugu message once Arun has answered", async ({
@@ -48,9 +60,9 @@ test("Arun's card answers once and locks on his screen and on a second browser o
   await first.getByRole('button', { name: 'Approve' }).click()
   for (const page of [first, second]) {
     await expect(page.getByRole('button', { name: 'Approve' })).toHaveCount(0)
-    await expect(page.getByRole('region', { name: 'Needs your answer' })).toHaveCount(0)
-    await expect(page.locator('.outcome')).toContainText('Approve')
-    await expect(page.locator('.outcome .mark')).toHaveText('● Arun')
+    await expect(page.locator('.decisions-bar')).toHaveCount(0)
+    await expect(page.locator('.dc-yes .dc-band')).toContainText('Approved')
+    await expect(page.locator('.dc-yes .dc-outcome')).toContainText('You chose Approve')
   }
 })
 
@@ -80,7 +92,7 @@ test('a second answer is refused, and that screen shows the server’s reason', 
     await expect(page.getByRole('button', { name: 'Approve' })).toBeVisible()
   }
   await fresh.getByRole('button', { name: 'Approve' }).click()
-  await expect(fresh.locator('.outcome')).toContainText('Approve')
+  await expect(fresh.locator('.dc-outcome')).toContainText('You chose Approve')
   await stale.getByRole('button', { name: 'Hold unpaid' }).click()
   await expect(stale.getByRole('alert')).toHaveText('that card is already answered')
 })
@@ -90,8 +102,8 @@ test('a line Lakshmi types goes to the agent and shows in her thread as hers', a
   await page.getByRole('link', { name: 'చాట్' }).click()
   await page.getByLabel('సందేశం…').fill('నాకు మాత్రలు అయిపోతున్నాయి')
   await page.getByRole('button', { name: 'పంపండి' }).click()
-  const line = page.locator('.line-person').filter({ hasText: 'నాకు మాత్రలు అయిపోతున్నాయి' })
+  const line = page.locator('.row-mine').filter({ hasText: 'నాకు మాత్రలు అయిపోతున్నాయి' })
   await expect(line).toBeVisible()
-  await expect(line.locator('.line-who')).toContainText('మీరు')
+  await expect(line.locator('.visually-hidden')).toContainText('మీరు')
   await expect(page.getByLabel('సందేశం…')).toHaveValue('')
 })
