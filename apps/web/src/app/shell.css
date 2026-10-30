@@ -1,98 +1,208 @@
+/* The member app's frame, after the reference's src/PhoneApp.tsx: header, screen, tabs. */
 .shell {
   max-width: 560px;
   margin: 0 auto;
-  min-height: 100vh;
-  padding-bottom: calc(var(--touch) + var(--space-4) + env(safe-area-inset-bottom));
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
 }
 
-.shell-head {
-  padding: var(--space-5) var(--space-4) var(--space-3);
-  border-bottom: 2px solid var(--color-ink);
+/* The header: brand gradient, white text kept on the violet and indigo part. */
+.head {
+  flex-shrink: 0;
+  background: var(--brand-gradient);
+  color: var(--color-on-brand);
+  padding: calc(10px + env(safe-area-inset-top)) var(--space-4) var(--space-3);
 }
 
-.shell-name {
-  font-size: var(--type-app);
-  font-weight: 700;
-  line-height: 1.2;
+.head p {
   margin: 0;
 }
 
-.shell-date {
-  margin: var(--space-1) 0 0;
+.head-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.head-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.head-logo {
+  display: inline-flex;
+  border-radius: 9px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.head-logo .logo-mark {
+  border-radius: 9px;
+}
+
+.head-name {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--type-brand);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.head-date {
+  font-size: var(--type-badge);
+  font-weight: 500;
+  line-height: 16px;
+}
+
+.head-member {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: var(--space-1) 10px var(--space-1) var(--space-1);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.15);
   font-size: var(--type-meta);
-  color: var(--color-muted);
+  font-weight: 600;
+}
+
+.head-member .person-avatar {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.head-member-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.head-status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-top: var(--space-2) !important;
+  padding: 6px 10px;
+  border-radius: var(--radius-control);
+  background: rgba(255, 255, 255, 0.15);
+  font-size: var(--type-meta);
+  font-weight: 600;
+}
+
+.head-spark {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-pill);
+  background: var(--color-on-brand);
+  color: var(--color-brand-1);
+}
+
+.head-spark-working {
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+.head-status-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .shell-offline {
+  flex-shrink: 0;
   margin: 0;
   padding: var(--space-2) var(--space-4);
   font-size: var(--type-meta);
+  font-weight: 600;
+  color: var(--color-decision);
+  background: var(--color-decision-bg);
   border-bottom: 1px solid var(--color-line);
 }
 
 .shell-main {
-  padding: 0 var(--space-4);
-}
-
-.shell-tabs {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  background: var(--color-card);
-  border-top: 2px solid var(--color-ink);
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-.shell-tab {
   flex: 1;
-  max-width: 187px;
-  min-height: calc(var(--touch) + var(--space-2));
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+/* The tabs: an icon in a pill over its label; the active pill is filled. */
+.tabs {
+  flex-shrink: 0;
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  background: var(--color-card);
+  border-top: 1px solid var(--color-line);
+  padding: 6px var(--space-1) calc(var(--space-1) + env(safe-area-inset-bottom));
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-height: var(--touch);
+  padding: var(--space-1) 0;
+  font-size: var(--type-meta);
+  color: var(--color-muted);
+  text-decoration: none;
+}
+
+.tab-pill {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--type-meta);
-  font-weight: 600;
-  color: var(--color-muted);
-  text-decoration: none;
-  border-top: 4px solid transparent;
-  margin-top: calc(-1 * 2px);
+  width: 56px;
+  height: 32px;
+  border-radius: var(--radius-pill);
 }
 
-.shell-tab[aria-current='page'] {
-  color: var(--color-ink);
-  border-top-color: var(--color-ink);
+.tab[aria-current='page'] .tab-pill {
+  background: var(--color-stage);
+  color: var(--color-on-strong);
 }
 
-/* A wide window: the same column, with the tabs under the header instead of at the bottom. */
-@media (min-width: 900px) {
-  .shell {
-    padding-bottom: var(--space-5);
-    display: flex;
-    flex-direction: column;
-  }
+.tab[aria-current='page'] .tab-label {
+  font-weight: 700;
+  color: var(--color-stage);
+}
 
-  .shell-tabs {
-    position: static;
-    order: -1;
-    border-top: 0;
-    border-bottom: 1px solid var(--color-line);
-    padding: 0;
-  }
+.tab-badge {
+  position: absolute;
+  top: -4px;
+  right: -2px;
+  min-width: 18px;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-pill);
+  background: var(--color-decision);
+  color: var(--color-on-strong);
+  font-size: var(--type-badge);
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  box-shadow: 0 0 0 2px var(--color-card);
+}
 
-  .shell-head {
-    order: -2;
-  }
-
-  .shell-tab {
-    margin-top: 0;
-    border-top: 0;
-    border-bottom: 4px solid transparent;
-  }
-
-  .shell-tab[aria-current='page'] {
-    border-bottom-color: var(--color-ink);
-  }
+.tab-nudge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-human);
+  box-shadow: 0 0 0 2px var(--color-card);
 }

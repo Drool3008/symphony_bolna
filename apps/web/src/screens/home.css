@@ -1,3 +1,7 @@
+.home {
+  padding: 0 var(--space-4) var(--space-5);
+}
+
 .section-label {
   font-size: var(--type-meta);
   font-weight: 600;

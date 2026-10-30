@@ -1,7 +1,7 @@
 import { QueryClient, QueryObserver } from '@tanstack/react-query'
 import { describe, expect, it, vi } from 'vitest'
 import type { StreamEvent } from './events.js'
-import { connectLive, sessionKey, type SessionState } from './live.js'
+import { cardArrivalKey, connectLive, sessionKey, type SessionState } from './live.js'
 
 function fakeStream() {
   const listeners = new Set<(e: StreamEvent) => void>()
@@ -43,7 +43,35 @@ describe('the stream feeding the cache', () => {
       clock: '2026-10-08T18:30:00.000Z',
       stage: 6,
       generation: 1,
+      thinking: false,
     })
+  })
+
+  it('says the agent is working from thinking until idle, and stops on an error or a reset', () => {
+    const qc = new QueryClient()
+    const stream = fakeStream()
+    connectLive(stream, qc)
+    const thinking = () => qc.getQueryData<SessionState>(sessionKey)?.thinking
+    stream.emit(sync(1))
+    expect(thinking()).toBe(false)
+    stream.emit({ seq: 2, type: 'thinking', at: 'a', clock: 'c', step: 0 })
+    expect(thinking()).toBe(true)
+    stream.emit({ seq: 3, type: 'idle', at: 'a', clock: 'c', reason: 'the model made no tool calls' })
+    expect(thinking()).toBe(false)
+    stream.emit({ seq: 4, type: 'thinking', at: 'a', clock: 'c', step: 0 })
+    stream.emit({ seq: 5, type: 'error', at: 'a', clock: 'c', error: 'provider down' })
+    expect(thinking()).toBe(false)
+    stream.emit({ seq: 6, type: 'thinking', at: 'a', clock: 'c', step: 0 })
+    stream.emit({ seq: 7, type: 'reset', at: 'a', clock: 'c', reason: 'operator reset' })
+    expect(thinking()).toBe(false)
+  })
+
+  it('takes a run already going on from sync, for a phone that connects mid-run', () => {
+    const qc = new QueryClient()
+    const stream = fakeStream()
+    connectLive(stream, qc)
+    stream.emit({ ...sync(1), running: true } as StreamEvent)
+    expect(qc.getQueryData<SessionState>(sessionKey)?.thinking).toBe(true)
   })
 
   it('clears what every screen holds on a reset, and fetches again what is on screen', async () => {
@@ -99,6 +127,53 @@ describe('the stream feeding the cache', () => {
     stream.emit(sync(3))
     expect(qc.getQueryData(['thread', 'patient'])).toBeUndefined()
     expect(qc.getQueryData<SessionState>(sessionKey)?.generation).toBe(3)
+  })
+})
+
+describe('a card arriving while the app is live', () => {
+  const card = (id: string, fields: Record<string, unknown> = {}) => ({
+    seq: 9,
+    type: 'message' as const,
+    at: 'a',
+    clock: 'c',
+    message: {
+      id,
+      thread: 'rp',
+      from: 'agent',
+      to: 'rp',
+      text: 'OK to pay?',
+      language: 'en-IN',
+      kind: null,
+      card: { kind: 'spend_above_threshold' },
+      answer: null,
+      answered_at: null,
+      timed_out_at: null,
+      at: 'c',
+      ...fields,
+    },
+  })
+
+  it('is noted for the shell, but not one from the replay before the first sync', () => {
+    const qc = new QueryClient()
+    const stream = fakeStream()
+    connectLive(stream, qc, { memberId: () => 'rp' })
+    stream.emit(card('old'))
+    stream.emit(sync(1))
+    expect(qc.getQueryData(cardArrivalKey('rp'))).toBeUndefined()
+    stream.emit(card('new'))
+    expect(qc.getQueryData(cardArrivalKey('rp'))).toBe('new')
+  })
+
+  it('is not noted when it is another member’s, a receipt, or one this phone already had', () => {
+    const qc = new QueryClient()
+    const stream = fakeStream()
+    connectLive(stream, qc, { memberId: () => 'rp' })
+    stream.emit(card('seen'))
+    stream.emit(sync(1))
+    stream.emit(card('seen'))
+    stream.emit(card('lakshmis', { thread: 'patient', to: 'patient' }))
+    stream.emit(card('receipt', { card: { kind: 'order_receipt' } }))
+    expect(qc.getQueryData(cardArrivalKey('rp'))).toBeUndefined()
   })
 })
 

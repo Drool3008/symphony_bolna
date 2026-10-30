@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { chosenMember, identityHeaders } from '../api/identity.js'
-import { connectLive, sessionKey, type SessionState } from '../api/live.js'
+import { cardArrivalKey, connectLive, sessionKey, type SessionState } from '../api/live.js'
 import { LiveStream, type StreamStatus } from '../api/stream.js'
 
 const StatusContext = createContext<StreamStatus>('connecting')
@@ -41,5 +41,17 @@ export function useSession(): SessionState | undefined {
       enabled: false,
       staleTime: Infinity,
     }).data ?? undefined
+  )
+}
+
+/** The id of the last card that reached this member while the app was live (src/api/live.ts). */
+export function useCardArrival(memberId: string): string | null {
+  return (
+    useQuery<string | null>({
+      queryKey: cardArrivalKey(memberId),
+      queryFn: () => null,
+      enabled: false,
+      staleTime: Infinity,
+    }).data ?? null
   )
 }

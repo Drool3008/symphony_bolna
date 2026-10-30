@@ -1,3 +1,7 @@
+.agent {
+  padding: 0 var(--space-4);
+}
+
 .lines {
   list-style: none;
   margin: 0;
@@ -197,7 +201,7 @@
 
 .composer {
   position: sticky;
-  bottom: calc(var(--touch) + var(--space-2) + env(safe-area-inset-bottom));
+  bottom: 0;
   background: var(--color-card);
   border-top: 2px solid var(--color-ink);
   padding: var(--space-3) 0;
