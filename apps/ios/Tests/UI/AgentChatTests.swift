@@ -61,6 +61,24 @@ final class AgentChatTests: XCTestCase {
         XCTAssertFalse(app.buttons["decisions-waiting"].exists)
     }
 
+    /// A typed line goes to POST /api/input and comes back on the stream as
+    /// the member's own bubble; the keyboard never covers the composer.
+    @MainActor
+    func testATypedLineComesBackAsTheMembersOwnBubble() async throws {
+        try await dev.reset()
+        let app = launch(member: "member_3", tab: "agent")
+        let field = app.textFields["composer-field"]
+        XCTAssertTrue(field.waitForExistence(timeout: 15))
+        field.tap()
+        field.typeText("Typed in a UI test: is Amma all right?")
+        XCTAssertTrue(field.isHittable)
+        XCTAssertTrue(app.buttons["composer-send"].isHittable)
+        app.buttons["composer-send"].tap()
+        let line = app.staticTexts["Typed in a UI test: is Amma all right?"]
+        XCTAssertTrue(line.waitForExistence(timeout: 15))
+        XCTAssertEqual(field.value as? String, "Message…")
+    }
+
     @MainActor
     func testLakshmiSeesTheAgentsTeluguAndNotArunsCard() async throws {
         try await dev.reset()

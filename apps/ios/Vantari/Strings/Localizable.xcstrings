@@ -1314,6 +1314,24 @@
           }
         }
       }
+    },
+    "waiting_on_you": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Waiting on you:"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "మీ కోసం వేచి ఉంది:"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

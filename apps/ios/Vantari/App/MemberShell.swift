@@ -11,6 +11,9 @@ struct MemberShell: View {
     @Environment(AppModel.self) private var model
     @Environment(AgentThreadStore.self) private var threads
     @State private var tab: TabID
+    /// The keyboard is up: the tab bar steps aside so the composer and the
+    /// thread keep the room (the keyboard never covers either).
+    @State private var keyboardUp = false
 
     /// `-tab agent` (UserDefaults' argument domain) opens on a given tab, for screenshots and UI tests.
     static let launchTabKey = "tab"
@@ -46,11 +49,19 @@ struct MemberShell: View {
             screen(tab, s)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .background(Tokens.surface)
-            TabBar(
-                tabs: AppTab.tabs(for: me.role), selection: $tab, s: s,
-                unread: tab == .agent ? 0 : threads.unread(for: me.id),
-                nudge: threads.waitsOnAnswer(from: me.id)
-            )
+            if !keyboardUp {
+                TabBar(
+                    tabs: AppTab.tabs(for: me.role), selection: $tab, s: s,
+                    unread: tab == .agent ? 0 : threads.unread(for: me.id),
+                    nudge: threads.waitsOnAnswer(from: me.id)
+                )
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { _ in
+            keyboardUp = true
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+            keyboardUp = false
         }
         .background(Tokens.surface)
         .environment(\.locale, s.locale)

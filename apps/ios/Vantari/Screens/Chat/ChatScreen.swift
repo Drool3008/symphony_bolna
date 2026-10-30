@@ -4,13 +4,15 @@ import SwiftUI
 /// as the reference's AgentChat (src/components/AgentChat.tsx,
 /// UI Components/07-arun-chat-receipts.png): the agent's lines on the left
 /// with its sparkle avatar, the member's own on the right in green, on the
-/// chat wall. Only this member's thread is shown; the server has no read
+/// chat wall, and under it what the agent waits on them for and the
+/// composer. Only this member's thread is shown; the server has no read
 /// route yet, so it is the stream's (AgentThreadStore).
 struct ChatScreen: View {
     let me: MemberSummary
     let s: Strings
     @Environment(AgentThreadStore.self) private var threads
     @Environment(AppModel.self) private var model
+    @FocusState private var typing: Bool
 
     var body: some View {
         let messages = threads.messages(for: me.id)
@@ -50,6 +52,18 @@ struct ChatScreen: View {
                 .background { ChatWall() }
                 .onChange(of: messages.count) { proxy.scrollTo(Self.bottom, anchor: .bottom) }
                 .onChange(of: model.session.thinking) { proxy.scrollTo(Self.bottom, anchor: .bottom) }
+                // The keyboard shortens the thread rather than covering it; the newest line stays in view.
+                .onChange(of: typing) {
+                    guard typing else { return }
+                    Task {
+                        try? await Task.sleep(for: .milliseconds(350))
+                        withAnimation { proxy.scrollTo(Self.bottom, anchor: .bottom) }
+                    }
+                }
+                if let wait = threads.waits(on: me.id).first {
+                    WaitingStrip(whatFor: wait.whatFor, s: s)
+                }
+                Composer(s: s, send: { await threads.say($0) }, focused: $typing)
             }
         }
         // Chat is open: what the agent has said is seen, and stays seen as more arrives.

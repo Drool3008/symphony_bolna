@@ -278,3 +278,23 @@ pinning them at the top gives way to the reference's amber bar under the
 header, "{n} decisions waiting for you", which brings the first open card into
 view. A card nobody answered in time wears the AI tag rather than the Human
 one, as on the web: what happens next is the agent's, by its rules.
+
+## Typing goes to POST /api/input, and the keyboard never covers it
+
+The composer is the reference's (`src/components/AgentChat.tsx`): a white
+bar, a pill-shaped field on `surface` saying "Message…", and a round send
+button in `stage`, faded to 40% while there is nothing to send. Every line
+goes to `POST /api/input` with `{ text }` and the server decides whether it
+ends a wait on this member or starts something new (`server/src/app.ts`,
+verification 3); the line comes back on the stream as the member's own
+bubble. A refusal keeps what was typed in the field and shows the server's
+words above it. While the agent waits on the member, the reference's amber
+strip above the composer says "Waiting on you:" and what for. No "Talk to the
+agent", "Answer out loud" or suggestions: voice and the sample sentences are
+not built.
+
+The keyboard shortens the screen rather than covering it: SwiftUI's keyboard
+avoidance shrinks the thread, the tab bar steps aside while the keyboard is
+up, and the thread scrolls to its newest line when the field is focused, so
+neither the composer nor a card is ever under the keyboard. Dragging the
+thread down puts the keyboard away.
