@@ -25,6 +25,8 @@ final class SessionStore {
     var clock: String?
     var stage = 1
     var generation: Int?
+    /// The agent is working: from a `thinking` event until `idle` (server/src/agent/loop.ts).
+    var thinking = false
     /// Connecting until the stream says otherwise, so a launch does not flash "offline".
     var connection: LiveStream.Status = .connecting
 }
@@ -78,16 +80,26 @@ final class AppModel {
             session.clock = event.clock
             session.stage = sync.stage
             session.generation = sync.generation
+            // Sent after the replay, so it overrides whatever the replay's thinking events said.
+            if let running = sync.running { session.thinking = running }
             if let known, known != sync.generation { newRun() }
         case .reset:
             session.clock = event.clock
             session.stage = 1
+            session.thinking = false
             session.generation = (session.generation ?? 0) + 1
             newRun()
         case .clock:
             session.clock = event.clock
         case let .stage(change):
             session.stage = change.stage
+        case .thinking:
+            session.thinking = true
+        case .idle, .error:
+            // A run ends with `idle`, or with `error` when the model call fails or
+            // runs out of steps (server/src/agent/loop.ts). A run cut short by a
+            // reset sends neither; the reset itself clears it.
+            session.thinking = false
         default:
             break
         }

@@ -15,9 +15,11 @@ final class ShellTests: XCTestCase {
         return app
     }
 
+    /// The tab bar is drawn as the reference's (src/PhoneApp.tsx, Nav), not a
+    /// system tab bar, so its buttons are found by their `tab-` identifiers.
     @MainActor
     private func tabs(_ app: XCUIApplication) -> [String] {
-        app.tabBars.firstMatch.buttons.allElementsBoundByIndex.map(\.label)
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH 'tab-'")).allElementsBoundByIndex.map(\.label)
     }
 
     @MainActor
@@ -31,7 +33,7 @@ final class ShellTests: XCTestCase {
     func testArunReadsEnglishAndTheWalletStaysHiddenUntilItsRoutesExist() {
         let app = launch(member: "rp")
         XCTAssertEqual(tabs(app), ["Home", "Chat", "Family"])
-        XCTAssertFalse(app.tabBars.buttons["Wallet"].exists)
+        XCTAssertFalse(app.buttons["tab-wallet"].exists)
     }
 
     @MainActor

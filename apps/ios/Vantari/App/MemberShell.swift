@@ -1,8 +1,8 @@
 import SwiftUI
 
-/// The member's app: their name and the family's date on top, the tabs below
-/// (as the web client's apps/web/src/app/Shell.tsx). Their language comes
-/// from onboarding, never the device.
+/// The member's app, laid out as the reference's PhoneApp (src/PhoneApp.tsx):
+/// the gradient header with what the agent is doing, the open tab, and the
+/// tab bar. Their language comes from onboarding, never the device.
 struct MemberShell: View {
     let me: MemberSummary
     /// The rest of the family, in onboarding order.
@@ -24,26 +24,27 @@ struct MemberShell: View {
     var body: some View {
         let s = Strings(language: me.language)
         VStack(spacing: 0) {
-            ShellHeader(me: me, s: s, clock: model.session.clock)
+            ShellHeader(
+                me: me, s: s,
+                clock: model.session.clock,
+                stage: model.session.generation == nil ? nil : model.session.stage,
+                thinking: model.session.thinking
+            )
             if model.session.connection == .offline {
                 Text(s.t(.offline))
                     .font(Tokens.Fonts.meta).bold()
+                    .foregroundStyle(Tokens.decision)
                     .lineSpacing(s.lineSpacing)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, Tokens.space4)
                     .padding(.vertical, Tokens.space2)
+                    .background(Tokens.decisionBg)
                     .accessibilityIdentifier("offline")
             }
-            TabView(selection: $tab) {
-                ForEach(AppTab.tabs(for: me.role)) { item in
-                    screen(item.id, s)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                        .background(Tokens.surface)
-                        .tabItem { Label(s.t(item.label), systemImage: item.symbol) }
-                        .tag(item.id)
-                }
-            }
-            .tint(Tokens.ink)
+            screen(tab, s)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                .background(Tokens.surface)
+            TabBar(tabs: AppTab.tabs(for: me.role), selection: $tab, s: s)
         }
         .background(Tokens.surface)
         .environment(\.locale, s.locale)
@@ -65,45 +66,32 @@ struct MemberShell: View {
     }
 }
 
-/// The member's name and the family's date, on the sim clock.
-struct ShellHeader: View {
-    let me: MemberSummary
-    let s: Strings
-    let clock: String?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: Tokens.space1) {
-            Text(me.name)
-                .font(Tokens.Fonts.pane)
-                .foregroundStyle(Tokens.ink)
-                .accessibilityIdentifier("member-name")
-            if let clock {
-                Text(s.longDate(clock))
-                    .font(Tokens.Fonts.meta)
-                    .foregroundStyle(Tokens.muted)
-                    .lineSpacing(s.lineSpacing)
-                    .accessibilityIdentifier("family-date")
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, Tokens.space4)
-        .padding(.top, Tokens.space2)
-        .padding(.bottom, Tokens.space3)
-        .overlay(alignment: .bottom) { Rectangle().fill(Tokens.ink).frame(height: 2) }
-    }
-}
-
 /// Waits on the backend's read routes for chats and seeded history
 /// (docs/backend-asks.md, ask 1; owner's answer: do not work around it).
+/// A centred note on the screen, under the two-people sign of the tab.
 struct FamilyScreen: View {
     let s: Strings
 
     var body: some View {
-        Text(s.t(.familyWaiting))
-            .font(Tokens.Fonts.body)
-            .foregroundStyle(Tokens.muted)
-            .lineSpacing(s.lineSpacing)
-            .padding(Tokens.space4)
-            .accessibilityIdentifier("family-waiting")
+        VStack(spacing: Tokens.space3) {
+            Image(systemName: "person.2")
+                .font(.system(size: 28, weight: .medium))
+                .foregroundStyle(Tokens.stage)
+                .frame(width: 56, height: 56)
+                .background(Tokens.stageBg, in: Circle())
+                .accessibilityHidden(true)
+            Text(s.t(.familyWaiting))
+                .font(Tokens.Fonts.body)
+                .foregroundStyle(Tokens.muted)
+                .multilineTextAlignment(.center)
+                .lineSpacing(s.lineSpacing)
+                .accessibilityIdentifier("family-waiting")
+        }
+        .padding(Tokens.space5)
+        .frame(maxWidth: .infinity)
+        .background(Tokens.card, in: RoundedRectangle(cornerRadius: Tokens.radiusCard))
+        .cardShadow()
+        .padding(Tokens.space4)
+        .frame(maxHeight: .infinity)
     }
 }

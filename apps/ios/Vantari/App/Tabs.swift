@@ -20,7 +20,7 @@ struct AppTab: Identifiable, Equatable, Sendable {
         AppTab(id: .home, label: .tabHome, symbol: "house", available: true),
         AppTab(id: .agent, label: .tabAgent, symbol: "bubble.left", available: true),
         AppTab(id: .family, label: .tabFamily, symbol: "person.2", available: true),
-        AppTab(id: .wallet, label: .tabWallet, symbol: "creditcard", role: .responsiblePerson, available: false),
+        AppTab(id: .wallet, label: .tabWallet, symbol: "wallet.pass", role: .responsiblePerson, available: false),
     ]
 
     static func tabs(for role: Role, from tabs: [AppTab] = all) -> [AppTab] {

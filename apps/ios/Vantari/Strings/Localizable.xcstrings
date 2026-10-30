@@ -702,6 +702,222 @@
           }
         }
       }
+    },
+    "here": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Here if you need me"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "అవసరమైతే నేను ఇక్కడే ఉన్నాను"
+          }
+        }
+      }
+    },
+    "stage.0": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Setting things up"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "సిద్ధం చేస్తున్నాను"
+          }
+        }
+      }
+    },
+    "stage.1": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watching your medicines and test dates"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "మీ మందులు, పరీక్ష తేదీలు గమనిస్తున్నాను"
+          }
+        }
+      }
+    },
+    "stage.2": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something needs attention"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ఏదో గమనించాల్సి ఉంది"
+          }
+        }
+      }
+    },
+    "stage.3": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trying to reach someone"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ఎవరినైనా సంప్రదిస్తున్నాను"
+          }
+        }
+      }
+    },
+    "stage.4": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Listening"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "వింటున్నాను"
+          }
+        }
+      }
+    },
+    "stage.5": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Working out how urgent this is"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ఎంత అత్యవసరమో చూస్తున్నాను"
+          }
+        }
+      }
+    },
+    "stage.6": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sorting it out now"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ఇప్పుడే చూసుకుంటున్నాను"
+          }
+        }
+      }
+    },
+    "stage.7": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keeping everyone posted"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "అందరికీ తెలియజేస్తున్నాను"
+          }
+        }
+      }
+    },
+    "stage.8": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sharing your record with the doctor"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "మీ రికార్డును డాక్టర్‌తో పంచుకుంటున్నాను"
+          }
+        }
+      }
+    },
+    "stage.9": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wrapping up"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ముగిస్తున్నాను"
+          }
+        }
+      }
+    },
+    "unread": {
+      "comment": "English from the reference client (src/PhoneApp.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{n} unread"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "{n} చదవనివి"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

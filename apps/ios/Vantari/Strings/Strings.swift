@@ -42,6 +42,23 @@ enum StringKey: String, CaseIterable, Sendable {
     case sending = "sending"
     case unitPills = "unit_pills"
     case unitDoses = "unit_doses"
+    case here = "here"
+    case stage0 = "stage.0"
+    case stage1 = "stage.1"
+    case stage2 = "stage.2"
+    case stage3 = "stage.3"
+    case stage4 = "stage.4"
+    case stage5 = "stage.5"
+    case stage6 = "stage.6"
+    case stage7 = "stage.7"
+    case stage8 = "stage.8"
+    case stage9 = "stage.9"
+    case unread = "unread"
+
+    /// What the agent is doing at a stage it set (0 to 9, server/src/agent/tools.ts, set_stage).
+    static func stage(_ n: Int) -> StringKey? {
+        StringKey(rawValue: "stage.\(n)")
+    }
 }
 
 /// The app's strings in one member's language: the language set for them at

@@ -137,16 +137,33 @@ the launch argument is copied into it once at launch
 (`Identity.takeLaunchArgument`). Otherwise a pick made on the picker under
 `-member-id ""` would never reach a request.
 
-## The tab bar mirrors the web's tabs, with a symbol each (Proposal)
+## The header and the tab bar are the reference's
 
-`Vantari/App/Tabs.swift` is the web client's `src/app/tabs.ts` in Swift:
-Home, Chat (`tab_agent`, the reference's word) and Family for everyone, and
-the wallet defined for the responsible person only and hidden for everyone
-until the wallet routes exist. A native tab bar wants a symbol beside each
-word, so each tab has one from SF Symbols (house, speech bubble, two people,
-a card for the wallet); the web's tabs are words alone. The bar is tinted
-`ink`, as the accent is kept for "needs your answer". Above the tabs, the
-header shows the member's name and the family's date from the sim clock.
+The header is the reference's (`src/PhoneApp.tsx`, Header): the brand
+gradient, the mark in a rounded square with a thin white ring, the product's
+name from the one Swift constant, and the member's avatar and name in a
+translucent pill. The pill opens nothing and has no chevron: Profile waits on
+`GET /api/session`. Under the name, small, is the family's date on the sim
+clock, which the header already showed; the reference's `Logo` in
+`src/components/brand.tsx` has the same sub-line. The status line says
+"Working on it…" from a `thinking` event until `idle` or `error`
+(`server/src/agent/loop.ts`; a run cut short by a reset sends neither, and
+the reset clears it), otherwise the stage the agent set (`stage.0` to
+`stage.9`, `set_stage` in `server/src/agent/tools.ts`), otherwise "Here if
+you need me", in the reference's words (`src/lib/i18n.ts`). The `sync` after
+a replay says whether a run is going now (`running`), so a replay's old
+`thinking` events do not leave it on. Its sparkle pulses while the agent
+works, and stands still under Reduce Motion.
+
+The tab bar is the reference's (`Nav`): a bar on `card` with a line on top,
+each tab an icon in a 56 by 32 pill, filled `stage` when open, over its word.
+The icons are SF Symbols (`house`, `bubble.left`, `person.2`, `wallet.pass`,
+filled when open). Home, Chat (`tab_agent`, the reference's word) and Family
+for everyone; the wallet is defined for the responsible person only and
+hidden for everyone until the wallet routes exist. The header grows with
+text size up to the first accessibility size and the tab bar up to the
+largest standard size, so the screen keeps its room; the screens themselves
+scale all the way.
 
 ## `-tab <id>` opens the app on a given tab (screenshots and UI tests)
 
