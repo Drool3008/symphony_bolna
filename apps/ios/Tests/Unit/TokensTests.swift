@@ -22,6 +22,16 @@ struct TokensTests {
     }
 
     @Test func keepsTheSizesTheDocumentGives() {
-        #expect(Tokens.touch == 48 && Tokens.space4 == 16 && Tokens.bar == 4 && Tokens.figureSize == 44)
+        #expect(Tokens.touch == 44 && Tokens.space4 == 16 && Tokens.space5 == 20)
+        #expect(Tokens.radiusCard == 16 && Tokens.radiusControl == 12 && Tokens.radiusTail == 6)
+    }
+
+    /// brand.tsx picks a person's colour by the sum of their name's character
+    /// codes; the reference's screens show Lakshmi green and Arun and Kavya brown.
+    @MainActor @Test func givesEachPersonTheReferencesAvatarColour() {
+        #expect(PersonAvatar.toneIndex("Lakshmi") == 5 && PersonAvatar.tones[5] == 0x15803D)
+        #expect(PersonAvatar.toneIndex("Arun") == 4 && PersonAvatar.tones[4] == 0x7C2D12)
+        #expect(PersonAvatar.toneIndex("Kavya") == 4)
+        #expect(PersonAvatar.initials("Lakshmi") == "L")
     }
 }

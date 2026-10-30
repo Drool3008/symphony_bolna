@@ -39,12 +39,12 @@ struct SectionLabel: View {
 
     var body: some View {
         Text(text)
-            .font(Tokens.label)
-            .foregroundStyle(Tokens.ink2)
+            .font(Tokens.Fonts.badge)
+            .foregroundStyle(Tokens.muted)
             .lineSpacing(s.lineSpacing)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.bottom, Tokens.space2)
-            .overlay(alignment: .bottom) { Rectangle().fill(Tokens.rule).frame(height: Tokens.ruleThin) }
+            .overlay(alignment: .bottom) { Rectangle().fill(Tokens.line).frame(height: 1) }
             .accessibilityAddTraits(.isHeader)
     }
 }
@@ -56,7 +56,7 @@ struct MedicineRow: View {
     let s: Strings
     let today: String
     @Environment(\.dynamicTypeSize) private var typeSize
-    @ScaledMetric(relativeTo: .body) private var figure = Tokens.figureSize
+    @ScaledMetric(relativeTo: .body) private var figure = 44
 
     var body: some View {
         let layout = typeSize.isAccessibilitySize
@@ -64,10 +64,10 @@ struct MedicineRow: View {
             : AnyLayout(HStackLayout(alignment: .top, spacing: Tokens.space3))
         layout {
             VStack(alignment: .leading, spacing: Tokens.space1) {
-                Text("\(Text(m.name).font(Tokens.title).foregroundStyle(Tokens.ink))  \(Text(m.strength).font(Tokens.meta).foregroundStyle(Tokens.ink2))")
-                Text(m.purpose).font(Tokens.meta).foregroundStyle(Tokens.ink2)
+                Text("\(Text(m.name).font(Tokens.Fonts.card).foregroundStyle(Tokens.ink))  \(Text(m.strength).font(Tokens.Fonts.meta).foregroundStyle(Tokens.muted))")
+                Text(m.purpose).font(Tokens.Fonts.meta).foregroundStyle(Tokens.muted)
                 Text(HomeLines.stock(m, s, today: today))
-                    .font(Tokens.meta).foregroundStyle(Tokens.ink2)
+                    .font(Tokens.Fonts.meta).foregroundStyle(Tokens.muted)
                     .accessibilityIdentifier("stock-\(m.id)")
                 if m.mustNotMiss {
                     // A shape and a word, never colour alone.
@@ -76,7 +76,7 @@ struct MedicineRow: View {
                     } icon: {
                         Image(systemName: "exclamationmark.square.fill").accessibilityHidden(true)
                     }
-                    .font(Tokens.label)
+                    .font(Tokens.Fonts.badge)
                     .foregroundStyle(Tokens.ink)
                     .padding(.top, Tokens.space1)
                 }
@@ -87,9 +87,9 @@ struct MedicineRow: View {
                 Text(s.num(Double(m.daysOfCover)))
                     .font(.system(size: figure, weight: .bold))
                     .foregroundStyle(Tokens.ink)
-                Text(s.t(.daysLeftLabel)).font(Tokens.label).foregroundStyle(Tokens.ink)
+                Text(s.t(.daysLeftLabel)).font(Tokens.Fonts.badge).foregroundStyle(Tokens.ink)
                 Text(s.t(.runsOut, ["d": s.date(m.runsOutOn, today: today)]))
-                    .font(Tokens.meta).foregroundStyle(Tokens.ink2)
+                    .font(Tokens.Fonts.meta).foregroundStyle(Tokens.muted)
             }
             .multilineTextAlignment(typeSize.isAccessibilitySize ? .leading : .trailing)
             .lineSpacing(s.lineSpacing)
@@ -97,7 +97,7 @@ struct MedicineRow: View {
             .accessibilityIdentifier("cover-\(m.id)")
         }
         .padding(.vertical, Tokens.space3)
-        .overlay(alignment: .bottom) { Rectangle().fill(Tokens.rule).frame(height: Tokens.ruleThin) }
+        .overlay(alignment: .bottom) { Rectangle().fill(Tokens.line).frame(height: 1) }
     }
 }
 
@@ -109,7 +109,7 @@ struct TestRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: Tokens.space1) {
-            Text(t.name).font(Tokens.title).foregroundStyle(Tokens.ink)
+            Text(t.name).font(Tokens.Fonts.card).foregroundStyle(Tokens.ink)
             if t.overdue {
                 // A shape and a word, never colour alone.
                 Label {
@@ -117,21 +117,21 @@ struct TestRow: View {
                 } icon: {
                     Image(systemName: "exclamationmark.triangle.fill").accessibilityHidden(true)
                 }
-                .font(Tokens.meta.weight(.semibold))
+                .font(Tokens.Fonts.meta.weight(.semibold))
                 .foregroundStyle(Tokens.ink)
                 .accessibilityIdentifier("due-\(t.id)")
             } else {
                 Text(HomeLines.due(t, s, today: today))
-                    .font(Tokens.meta).foregroundStyle(Tokens.ink)
+                    .font(Tokens.Fonts.meta).foregroundStyle(Tokens.ink)
                     .accessibilityIdentifier("due-\(t.id)")
             }
             Text(HomeLines.lastDone(t, s, today: today))
-                .font(Tokens.meta).foregroundStyle(Tokens.ink2)
+                .font(Tokens.Fonts.meta).foregroundStyle(Tokens.muted)
         }
         .lineSpacing(s.lineSpacing)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, Tokens.space3)
-        .overlay(alignment: .bottom) { Rectangle().fill(Tokens.rule).frame(height: Tokens.ruleThin) }
+        .overlay(alignment: .bottom) { Rectangle().fill(Tokens.line).frame(height: 1) }
     }
 }
 
@@ -148,7 +148,7 @@ struct RecordView: View {
             SectionLabel(text: heading, s: s)
             if home.medicines.isEmpty {
                 Text(s.t(.nothingOnFile))
-                    .font(Tokens.meta).foregroundStyle(Tokens.ink2)
+                    .font(Tokens.Fonts.meta).foregroundStyle(Tokens.muted)
                     .padding(.vertical, Tokens.space3)
             } else {
                 ForEach(home.medicines) { m in
@@ -188,15 +188,15 @@ struct LatestWordView: View {
                     } icon: {
                         Image(systemName: "diamond.fill").imageScale(.small).accessibilityHidden(true)
                     }
-                    .font(Tokens.label)
-                    .foregroundStyle(Tokens.ink2)
+                    .font(Tokens.Fonts.badge)
+                    .foregroundStyle(Tokens.muted)
                     Text(word)
-                        .font(Tokens.body)
+                        .font(Tokens.Fonts.body)
                         .foregroundStyle(Tokens.ink)
                         .accessibilityIdentifier("latest-word")
                 }
                 .lineSpacing(s.lineSpacing)
-                .agentBar()
+                .padding(.leading, Tokens.space3)
                 .padding(.vertical, Tokens.space3)
             }
             .accessibilityElement(children: .contain)
@@ -219,7 +219,7 @@ struct HomeScreen: View {
             VStack(alignment: .leading, spacing: Tokens.space5) {
                 if let problem = homes.problems[me.id] {
                     Text(problem == .offline ? s.t(.offline) : problem.message)
-                        .font(Tokens.meta).bold()
+                        .font(Tokens.Fonts.meta).bold()
                         .foregroundStyle(Tokens.ink)
                         .lineSpacing(s.lineSpacing)
                         .accessibilityIdentifier("home-problem")

@@ -41,7 +41,7 @@ struct RootView: View {
         } else if family.memberId == nil || !family.members.isEmpty {
             PickerView(family: family)
         } else {
-            Tokens.paper.ignoresSafeArea()
+            Tokens.surface.ignoresSafeArea()
         }
     }
 }

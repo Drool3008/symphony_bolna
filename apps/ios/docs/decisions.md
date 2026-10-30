@@ -115,6 +115,7 @@ these two: what waits on this member's answer is pinned at the top of the
 agent thread until it is answered or times out, and every decision line
 carries a mark saying who made it, the agent or the named person. Tokens,
 type scale and names are shared with the web client (`docs/design-tokens.md`).
+Superseded for the look by the owner's decision of 2026-10-30 (below).
 
 ## A String Catalog, looked up in the member's language
 
@@ -152,3 +153,37 @@ header shows the member's name and the family's date from the sim clock.
 `-tab agent` (or `home`, `family`) in UserDefaults' argument domain picks the
 tab the app opens on. A tab the member does not have falls back to Home. The
 tab is not remembered between launches.
+
+## The reference look, adopted (owner's decision, 2026-10-30)
+
+The owner overrode the brief's "the reference UI is not ported" (rule 5 and
+Section 5) and direction A, "Plain page", for the look of both member apps:
+they take the reference simulator's visual design, with its shield mark and
+brand gradient. iOS stays native SwiftUI, restyled to match. What is built is
+re-skinned; Wallet, Profile and Calls stay unbuilt until their routes exist,
+with no stand-in figures. Everything else holds: the code is written here,
+never copied; data comes only from the backend.
+
+The tokens (`docs/design-tokens.md`) are read off the reference's
+`tailwind.config.js` and `src/index.css`, with dark values of our own; the
+shield mark, avatars and AI and Human tags are drawn in
+`Vantari/Design/Brand.swift` from the reference's
+`src/components/brand.tsx`. The mark keeps its own gradient start
+(`#7C3AED`) and amber dot (`#FDE68A`), as brand.tsx gives them. Type keeps
+Dynamic Type: each token maps to a text style, so every size scales, and the
+reference's sizes are raised so body text is at least 16 (the brief). Touch
+targets are 44 points, the reference's `h-11`. The picker keeps its
+"Development identity" label and note, and gives each member's role in the
+reference's words (`src/main.tsx`), in English, since no language is known
+before a pick.
+
+## Two contrast gaps the reference look brings
+
+White on the brand gradient's teal end (`brand-3`, `#0EA5A4`) is 3.0:1,
+below AA for small text. As in the reference, the header keeps its words on
+the violet and indigo part (7.1:1 and 6.3:1) and on the translucent white
+chips; nothing is written over the teal corner alone. The open card's band
+writes `human` on `human-soft` at 4.2:1 in light mode; its words are bold and
+the band is never the only sign that a card is open (the hand icon, the
+Human tag and the amber border say it too). Both are recorded rather than
+fixed, because fixing them changes the look the owner chose.

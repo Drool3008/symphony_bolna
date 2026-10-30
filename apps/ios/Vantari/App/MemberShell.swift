@@ -27,7 +27,7 @@ struct MemberShell: View {
             ShellHeader(me: me, s: s, clock: model.session.clock)
             if model.session.connection == .offline {
                 Text(s.t(.offline))
-                    .font(Tokens.meta).bold()
+                    .font(Tokens.Fonts.meta).bold()
                     .lineSpacing(s.lineSpacing)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, Tokens.space4)
@@ -38,14 +38,14 @@ struct MemberShell: View {
                 ForEach(AppTab.tabs(for: me.role)) { item in
                     screen(item.id, s)
                         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                        .background(Tokens.paper)
+                        .background(Tokens.surface)
                         .tabItem { Label(s.t(item.label), systemImage: item.symbol) }
                         .tag(item.id)
                 }
             }
             .tint(Tokens.ink)
         }
-        .background(Tokens.paper)
+        .background(Tokens.surface)
         .environment(\.locale, s.locale)
     }
 
@@ -55,7 +55,7 @@ struct MemberShell: View {
         case .home:
             HomeScreen(me: me, others: others, s: s)
         case .agent:
-            Tokens.paper
+            Tokens.surface
         case .family:
             FamilyScreen(s: s)
         case .wallet:
@@ -74,13 +74,13 @@ struct ShellHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: Tokens.space1) {
             Text(me.name)
-                .font(Tokens.display)
+                .font(Tokens.Fonts.pane)
                 .foregroundStyle(Tokens.ink)
                 .accessibilityIdentifier("member-name")
             if let clock {
                 Text(s.longDate(clock))
-                    .font(Tokens.meta)
-                    .foregroundStyle(Tokens.ink2)
+                    .font(Tokens.Fonts.meta)
+                    .foregroundStyle(Tokens.muted)
                     .lineSpacing(s.lineSpacing)
                     .accessibilityIdentifier("family-date")
             }
@@ -89,7 +89,7 @@ struct ShellHeader: View {
         .padding(.horizontal, Tokens.space4)
         .padding(.top, Tokens.space2)
         .padding(.bottom, Tokens.space3)
-        .overlay(alignment: .bottom) { Rectangle().fill(Tokens.ink).frame(height: Tokens.ruleThick) }
+        .overlay(alignment: .bottom) { Rectangle().fill(Tokens.ink).frame(height: 2) }
     }
 }
 
@@ -100,8 +100,8 @@ struct FamilyScreen: View {
 
     var body: some View {
         Text(s.t(.familyWaiting))
-            .font(Tokens.body)
-            .foregroundStyle(Tokens.ink2)
+            .font(Tokens.Fonts.body)
+            .foregroundStyle(Tokens.muted)
             .lineSpacing(s.lineSpacing)
             .padding(Tokens.space4)
             .accessibilityIdentifier("family-waiting")
