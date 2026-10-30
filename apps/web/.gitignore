@@ -1,1 +1,4 @@
 dist/
+
+# The root ignores data/ for the session store; this folder is source.
+!src/data/
