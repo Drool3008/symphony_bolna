@@ -18,7 +18,8 @@ const en = {
   latest: 'Latest from your agent',
   nothing_on_file: 'Nothing on file.',
   must_not_miss: 'Must not be missed',
-  days_left_label: 'days left',
+  days_left: '{n} days left',
+  book_it: 'Book this check-up',
   runs_out: 'runs out {d}',
   last_done: 'last done {d}',
   next_due: 'due {d}',
@@ -45,6 +46,7 @@ const en = {
   'stage.9': 'Wrapping up',
   // reference wording from src/PhoneApp.tsx (not in i18n.ts); Telugu is a proposal
   unread: '{n} unread',
+  tap_refill: 'Tap to order refill',
   // new
   agent: 'Your agent',
   you: 'You',
@@ -77,7 +79,8 @@ const te: Record<StringKey, string> = {
   latest: 'మీ సహాయకుడి నుండి తాజా సమాచారం',
   nothing_on_file: 'ఏమీ నమోదు కాలేదు.',
   must_not_miss: 'తప్పకుండా వేసుకోవాలి',
-  days_left_label: 'రోజులకు సరిపోతాయి',
+  days_left: '{n} రోజులకు సరిపోతాయి',
+  book_it: 'ఈ పరీక్ష బుక్ చేయండి',
   runs_out: '{d}న అయిపోతాయి',
   last_done: 'చివరిసారి {d}',
   next_due: 'తదుపరి {d}',
@@ -104,6 +107,7 @@ const te: Record<StringKey, string> = {
   'stage.9': 'ముగిస్తున్నాను',
   // proposal: Telugu for reference wording from src/PhoneApp.tsx
   unread: '{n} చదవనివి',
+  tap_refill: 'రీఫిల్ ఆర్డర్ చేయడానికి నొక్కండి',
   // proposal: new Telugu, to be reviewed
   agent: 'మీ సహాయకుడు',
   you: 'మీరు',

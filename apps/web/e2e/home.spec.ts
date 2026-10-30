@@ -9,16 +9,16 @@ test('Lakshmi sees Metoprolol at 3 days, and moving the clock counts it down wit
 }) => {
   await pick(page, 'Lakshmi')
   const row = page.getByRole('listitem').filter({ hasText: 'Metoprolol' })
-  await expect(row.locator('.figure')).toHaveText('3')
+  await expect(row.locator('.chip-low')).toHaveText('3 రోజులకు సరిపోతాయి')
   await moveClock(request, '2026-10-07T10:00:00+05:30')
-  await expect(row.locator('.figure')).toHaveText('2')
+  await expect(row.locator('.chip-low')).toHaveText('2 రోజులకు సరిపోతాయి')
   await expect(page.getByText('బుధవారం')).toBeVisible()
 })
 
 test('Lakshmi sees her BP check overdue', async ({ page }) => {
   await pick(page, 'Lakshmi')
   const row = page.getByRole('listitem').filter({ hasText: 'BP check' })
-  await expect(row.locator('.row-overdue')).toContainText('గడువు దాటింది')
+  await expect(row.locator('.test-overdue')).toContainText('గడువు దాటింది')
 })
 
 test('Arun sees his inhaler counted in doses, and his mother’s medicines under her consent', async ({

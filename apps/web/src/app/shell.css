@@ -70,6 +70,7 @@
   background: rgba(255, 255, 255, 0.15);
   font-size: var(--type-meta);
   font-weight: 600;
+  line-height: 1.2;
 }
 
 .head-member .person-avatar {

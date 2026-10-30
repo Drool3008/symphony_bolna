@@ -184,3 +184,25 @@ small is set over the teal end on its own. Two smaller gaps of the same kind:
 `human` on the open card's band is about 4.3:1 (the band text is 14px bold),
 and the Human tag's text uses the reference's darker amber (`human-deep`)
 because `human` on `human-soft` is 4.2:1.
+
+## Home's two taps, ported from the reference
+
+From the reference's `src/PhoneApp.tsx` (Home): tapping a medicine card asks
+the agent for a refill and opens Chat, and tapping a test asks it to book
+the check-up. Each tap is the member saying something, so it goes through
+the same path as typing, `POST /api/input` with `{ text }` only: the server
+takes `text` and `sample_id`, and this client has no sample ids. The words
+are the reference's, in English for every member: "Please refill {name}
+{strength} for {owner}" and "Please book my {test}." Chat opens only when the
+server took the line; a refusal shows the server's reason on home. A medicine
+at five days of cover or fewer shows a red chip and "Tap to order refill",
+and the cover bar fills against thirty days; both thresholds are the
+reference's presentation, read off the server's `days_of_cover`, never the
+device clock. Every test has a due date, so every test offers to book it.
+
+## No daily dose on home
+
+The reference showed "25mg · 2 a day". `GET /api/members/:id/home` sends
+`schedule` as words and no daily figure (`shared/src/api.ts`, HomeMedicine),
+and working one out from stock and days of cover would be inventing it. Home
+shows the strength and the purpose instead. Listed in `backend-asks.md`.

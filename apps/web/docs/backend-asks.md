@@ -112,3 +112,11 @@ Home sends a medicine's `stock` as counted on `stock_as_of` and counts
 it says 6 pills and 2 days. The client now says "when counted on 6 Oct". If
 the server worked out the stock it expects is left today, home could show
 that instead.
+
+## 11. A daily dose on home
+
+The reference home showed a medicine's daily dose ("2 a day"). Home sends
+`schedule` as words and no number (`server/src/domain/medicines.ts`,
+`shared/src/api.ts`), so the client shows the purpose in its place rather
+than working a figure out. Ask: send the daily dose the server already uses
+to count days of cover (`daily_dose`).

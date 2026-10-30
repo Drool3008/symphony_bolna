@@ -1,24 +1,36 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, expect, it, vi } from 'vitest'
+import { ApiError } from '../api/client.js'
 import { stringsFor } from '../i18n/format.js'
 import { lakshmiHome } from '../test/homes.js'
 import { Home } from './Home.js'
 
 const home = vi.hoisted(() => ({ current: null as unknown }))
+const input = vi.hoisted(() => vi.fn())
 vi.mock('../api/index.js', async (original) => ({
   ...(await original<typeof import('../api/index.js')>()),
   api: {
     home: async () => home.current,
     members: async () => ({ members: [lakshmiHome.member] }),
+    input,
   },
 }))
-afterEach(cleanup)
+afterEach(() => {
+  cleanup()
+  input.mockReset()
+})
 
 function draw(language = 'te-IN') {
   return render(
     <QueryClientProvider client={new QueryClient()}>
-      <Home me={lakshmiHome.member} s={stringsFor(language)} />
+      <MemoryRouter initialEntries={['/home']}>
+        <Routes>
+          <Route path="/home" element={<Home me={lakshmiHome.member} s={stringsFor(language)} />} />
+          <Route path="/agent" element={<h1>Chat</h1>} />
+        </Routes>
+      </MemoryRouter>
     </QueryClientProvider>,
   )
 }
@@ -27,9 +39,8 @@ it("shows Lakshmi's Metoprolol at 3 days, with its run-out date and the must-not
   home.current = lakshmiHome
   draw()
   expect(await screen.findByText('Metoprolol')).toBeTruthy()
-  expect(screen.getByText('3')).toBeTruthy()
-  expect(screen.getByText('రోజులకు సరిపోతాయి')).toBeTruthy()
-  expect(screen.getByText(/అయిపోతాయి$/)).toBeTruthy()
+  expect(screen.getByText('3 రోజులకు సరిపోతాయి')).toBeTruthy()
+  expect(screen.getByText(/అయిపోతాయి$/, { selector: '.med-runs-out' })).toBeTruthy()
   expect(screen.getByText('తప్పకుండా వేసుకోవాలి')).toBeTruthy()
   expect(screen.getByText('6 మాత్రలు మిగిలాయి')).toBeTruthy()
 })
@@ -39,7 +50,8 @@ it('shows the BP check as overdue since the day it fell due, with when it was la
   draw('en-IN')
   expect(await screen.findByText('BP check')).toBeTruthy()
   expect(screen.getByText('overdue since 4 Sept')).toBeTruthy()
-  expect(screen.getByText('last done 6 Jun · every 90 days')).toBeTruthy()
+  expect(screen.getByText('last done 6 Jun')).toBeTruthy()
+  expect(screen.getByText('every 90 days')).toBeTruthy()
 })
 
 it('gives a test due next year its year', async () => {
@@ -65,7 +77,34 @@ it('fills the latest word in once the server sends one, marked as the agent’s'
   draw('en-IN')
   const slot = await screen.findByRole('region', { name: 'Latest from your agent' })
   expect(slot.textContent).toContain('Your tablets are ordered.')
-  expect(slot.textContent).toContain('Your agent')
+  expect(slot.querySelector('.tag-ai')?.textContent).toBe('AI')
+})
+
+it('marks three days of cover as low and offers a refill', async () => {
+  home.current = lakshmiHome
+  draw('en-IN')
+  expect((await screen.findByText('3 days left')).className).toContain('chip-low')
+  expect(screen.getByText('Tap to order refill')).toBeTruthy()
+})
+
+it('asks the agent for a refill in the reference’s words when a medicine is tapped, then opens Chat', async () => {
+  input.mockResolvedValue({ ok: true, as: 'input' })
+  home.current = lakshmiHome
+  draw('en-IN')
+  fireEvent.click((await screen.findByText('Metoprolol')).closest('button') as HTMLButtonElement)
+  await vi.waitFor(() =>
+    expect(input).toHaveBeenCalledWith({ text: 'Please refill Metoprolol 25mg for Lakshmi' }),
+  )
+  expect(await screen.findByRole('heading', { name: 'Chat' })).toBeTruthy()
+})
+
+it('asks the agent to book a test, and shows the server’s reason when it is refused', async () => {
+  input.mockRejectedValue(new ApiError('refused', 'text: say something', 400))
+  home.current = lakshmiHome
+  draw('en-IN')
+  fireEvent.click(await screen.findByText('Book this check-up'))
+  await vi.waitFor(() => expect(input).toHaveBeenCalledWith({ text: 'Please book my BP check.' }))
+  expect((await screen.findByRole('alert')).textContent).toBe('text: say something')
 })
 
 it('says the stock is as counted, once the clock has moved past the day it was counted', async () => {
