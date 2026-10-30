@@ -156,16 +156,13 @@ struct AITag: View {
 struct HumanTag: View {
     let label: String
 
-    /// brand.tsx sets the tag's text darker than `human`, for contrast on `human-soft`.
-    private static let text = Tokens.dynamic(0x7C3A06, 0xFDE7C3)
-
     var body: some View {
         HStack(spacing: Tokens.space1) {
             Image(systemName: "person.fill").imageScale(.small).accessibilityHidden(true)
             Text(label)
         }
         .font(Tokens.Fonts.badge)
-        .foregroundStyle(Self.text)
+        .foregroundStyle(Tokens.humanDeep)
         .padding(.horizontal, Tokens.space2)
         .padding(.vertical, 2)
         .background(Tokens.humanSoft, in: Capsule())

@@ -52,6 +52,13 @@ enum Tokens {
     /// Enough stock, approved.
     static let ok = dynamic(0x15803D, 0x4ADE80)
     static let okBg = dynamic(0xF0FDF4, 0x0F2E1A)
+    /// Text on the Human tag, darker than `human` for contrast on `human-soft` (brand.tsx).
+    static let humanDeep = dynamic(0x7C3A06, 0xFDE7C3)
+    /// The band of a card answered yes (the reference's `#DCFCE7`).
+    static let okBand = dynamic(0xDCFCE7, 0x14532D)
+    /// The tests section's chip (the reference's home, `text-[#0F766E] bg-[#E6FFFB]`).
+    static let test = dynamic(0x0F766E, 0x5EEAD4)
+    static let testBg = dynamic(0xE6FFFB, 0x0F2E2B)
     /// The chat's wall, under a faint dot grid.
     static let chatWall = dynamic(0xEFEAE2, 0x12161F)
     /// The member's own bubbles.
@@ -117,6 +124,7 @@ enum Tokens {
         "ink", "muted", "line", "surface", "card", "secondary", "stage", "stage-bg",
         "ai", "ai-bg", "ai-soft", "ai-deep", "human", "human-bg", "human-soft",
         "decision", "decision-bg", "ok", "ok-bg", "chat-wall", "chat-mine", "on-strong",
+        "human-deep", "ok-band", "test", "test-bg",
         "brand-1", "brand-2", "brand-3", "on-brand",
         "app", "pane", "brand", "body", "meta", "badge", "leading-telugu",
         "radius-card", "radius-control", "radius-pill", "radius-tail",

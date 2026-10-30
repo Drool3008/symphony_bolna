@@ -26,13 +26,10 @@ struct DecisionCard: View {
         let bandText: Color
     }
 
-    /// The band of an approved card: green-100 in light, green-900 in dark (the reference's `#DCFCE7`).
-    private static let yesBand = Tokens.dynamic(0xDCFCE7, 0x14532D)
-
     private var tone: Tone {
         switch state {
         case .open: Tone(border: Tokens.human.opacity(0.6), body: Tokens.humanBg, band: Tokens.humanSoft, bandText: Tokens.human)
-        case .yes: Tone(border: Tokens.ok, body: Tokens.okBg, band: Self.yesBand, bandText: Tokens.ok)
+        case .yes: Tone(border: Tokens.ok, body: Tokens.okBg, band: Tokens.okBand, bandText: Tokens.ok)
         case .other, .timedOut: Tone(border: Tokens.line, body: Tokens.secondary, band: Tokens.secondary, bandText: Tokens.muted)
         case .record: Tone(border: Tokens.ai.opacity(0.2), body: Tokens.aiBg.opacity(0.5), band: Tokens.aiBg, bandText: Tokens.ai)
         }

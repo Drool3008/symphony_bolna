@@ -50,6 +50,15 @@ each client checks that every name below is defined there.
 | `brand-3`     | `#0EA5A4` | `#0EA5A4` | Brand gradient end                                   |
 | `on-brand`    | `#FFFFFF` | `#FFFFFF` | Text and icons on the brand gradient                 |
 
+Four values the spec gives inline sit outside the shared table, under the
+same names on both clients: the text on the Human tag (`human-deep`,
+`#7C3A06` / `#FDE7C3`, from the reference's `brand.tsx`, because `human` on
+`human-soft` is 4.2:1), the answered-yes card band (`ok-band`, `#DCFCE7` /
+`#14532D`), and the tests section chip (`test` `#0F766E` / `#5EEAD4` on
+`test-bg` `#E6FFFB` / `#0F2E2B`, from the reference's home; the dark pairs
+are proposals). iOS defines them in `Tokens.swift` as `humanDeep`, `okBand`,
+`test` and `testBg`.
+
 Person avatars are a flat colour with white initials, the colour picked by
 the sum of the name's character codes modulo 6 (the reference's
 `src/components/brand.tsx`): `#0F766E`, `#B45309`, `#BE185D`, `#1D4ED8`,
