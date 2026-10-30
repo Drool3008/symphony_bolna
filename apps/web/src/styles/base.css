@@ -24,8 +24,12 @@ h2 {
   font-family: var(--font-display);
 }
 
+/*
+ * Telugu takes more line height. Its glyphs come from Noto Sans Telugu
+ * through the font stack, so Latin words on a Telugu screen (names,
+ * medicines) stay in Inter, as in the reference.
+ */
 :lang(te) {
-  font-family: var(--font-telugu);
   line-height: var(--leading-telugu);
 }
 
