@@ -39,7 +39,7 @@ final class StubURLProtocol: URLProtocol {
     override func stopLoading() {}
 }
 
-private extension Data {
+extension Data {
     init(reading stream: InputStream) {
         self.init()
         stream.open()

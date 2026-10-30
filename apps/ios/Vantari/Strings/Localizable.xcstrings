@@ -1278,6 +1278,42 @@
           }
         }
       }
+    },
+    "decisions_waiting_one": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{n} decision waiting for you"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "{n} నిర్ణయం మీ కోసం వేచి ఉంది"
+          }
+        }
+      }
+    },
+    "decisions_waiting": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{n} decisions waiting for you"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "{n} నిర్ణయాలు మీ కోసం వేచి ఉన్నాయి"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -39,6 +39,29 @@ final class AgentChatTests: XCTestCase {
     }
 
     @MainActor
+    func testArunsCardAnswersOnceAndLocks() async throws {
+        try await dev.reset()
+        let app = launch(member: "rp", tab: "agent")
+        try await driveToArunsCard()
+        let approve = app.buttons["answer-Approve"]
+        XCTAssertTrue(approve.waitForExistence(timeout: 20))
+        XCTAssertTrue(app.buttons["decisions-waiting"].exists)
+        let hittable = expectation(for: NSPredicate(format: "isHittable == true"), evaluatedWith: approve)
+        await fulfillment(of: [hittable], timeout: 10)
+        approve.tap()
+        let outcome = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH 'card-outcome-'")).firstMatch
+        guard outcome.waitForExistence(timeout: 15) else {
+            return XCTFail("the card did not lock after the tap:\n\(app.debugDescription)")
+        }
+        XCTAssertTrue(outcome.label.hasPrefix("You chose Approve"), outcome.label)
+        let band = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH 'card-band-'")).firstMatch
+        XCTAssertEqual(band.label, "APPROVED")
+        // Locked: no button is left to tap, and nothing waits on him.
+        XCTAssertFalse(app.buttons["answer-Approve"].exists)
+        XCTAssertFalse(app.buttons["decisions-waiting"].exists)
+    }
+
+    @MainActor
     func testLakshmiSeesTheAgentsTeluguAndNotArunsCard() async throws {
         try await dev.reset()
         try await driveToArunsCard()

@@ -10,6 +10,12 @@ import SwiftUI
 struct DecisionCard: View {
     let message: ThreadMessage
     let s: Strings
+    /// Sends a label as this member's answer (POST /api/reply).
+    var onAnswer: (String) -> Void = { _ in }
+    /// The label on its way to the server, if any.
+    var sending: String?
+    /// The server's reason for not taking a tap, in its own words.
+    var refusal: String?
 
     private var state: CardState { message.cardState ?? .open }
 
@@ -73,7 +79,8 @@ struct DecisionCard: View {
             .tracking(0.6)
             .foregroundStyle(tone.bandText)
             Spacer(minLength: Tokens.space1)
-            if state == .record {
+            // A record, and a card nobody answered in time, are the agent's to act on.
+            if state == .record || state == .timedOut {
                 AITag()
             } else {
                 HumanTag(label: s.t(.humanTag))
@@ -214,8 +221,68 @@ struct DecisionCard: View {
             )
         case .timedOut:
             locked(s.t(.noAnswerThen, ["x": message.cardText("on_timeout") ?? s.t(.agentGoesOn)]), yes: false)
-        case .open, .record:
+        case .open:
+            answers
+        case .record:
             EmptyView()
+        }
+        if let refusal {
+            Text(refusal)
+                .font(Tokens.Fonts.meta.weight(.semibold))
+                .foregroundStyle(Tokens.decision)
+                .accessibilityIdentifier("card-refusal-\(message.id)")
+                .accessibilityAddTraits(.updatesFrequently)
+        }
+    }
+
+    /// One button per label: the first filled amber, with a tick when it says
+    /// yes, the others outlined. Side by side when they fit, else stacked.
+    /// Under them, what the agent does if nobody answers.
+    @ViewBuilder
+    private var answers: some View {
+        let labels = CardLabels.buttons(message)
+        if !labels.isEmpty {
+            ViewThatFits(in: .horizontal) {
+                HStack(spacing: Tokens.space2) { buttons(labels) }
+                VStack(spacing: Tokens.space2) { buttons(labels) }
+            }
+            .padding(.top, Tokens.space1)
+        }
+        if let onTimeout = message.cardText("on_timeout") {
+            Text("\(Text("\(s.t(.ifNoAnswer)):").bold()) \(onTimeout)")
+                .font(Tokens.Fonts.meta)
+                .foregroundStyle(Tokens.muted)
+        }
+    }
+
+    private func buttons(_ labels: [String]) -> some View {
+        ForEach(Array(labels.enumerated()), id: \.offset) { index, label in
+            let first = index == 0
+            Button {
+                onAnswer(label)
+            } label: {
+                HStack(spacing: 6) {
+                    if first, CardLabels.isYes(label) {
+                        Image(systemName: "checkmark").font(.body.weight(.bold)).accessibilityHidden(true)
+                    }
+                    Text(sending == label ? s.t(.sending) : label).lineLimit(1)
+                }
+                .font(Tokens.Fonts.body.weight(.bold))
+                .foregroundStyle(first ? Tokens.onStrong : Tokens.human)
+                .padding(.horizontal, Tokens.space3)
+                .frame(maxWidth: .infinity, minHeight: Tokens.touch)
+                .background(first ? Tokens.human : Tokens.card, in: RoundedRectangle(cornerRadius: Tokens.radiusControl))
+                .overlay {
+                    if !first {
+                        RoundedRectangle(cornerRadius: Tokens.radiusControl).strokeBorder(Tokens.human, lineWidth: 2)
+                    }
+                }
+                .contentShape(RoundedRectangle(cornerRadius: Tokens.radiusControl))
+            }
+            .buttonStyle(.plain)
+            .disabled(sending != nil)
+            .accessibilityLabel(label)
+            .accessibilityIdentifier("answer-\(label)")
         }
     }
 

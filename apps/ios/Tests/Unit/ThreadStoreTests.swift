@@ -123,6 +123,58 @@ struct ThreadStoreTests {
         #expect(threads.arrivedCard?.id == "new" && threads.arrivedCard?.thread == "rp")
     }
 
+    /// A tap answers through POST /api/reply with the card's id and the label
+    /// pressed, and the card locks with that answer until the stream brings its time.
+    @Test func answersACardWithTheLabelPressedAndLocksIt() async throws {
+        let book = PathStubProtocol.Book()
+        book.answer("/api/reply", try Fixtures.data("reply-card.json"))
+        let identity = Identity(suiteName: "ThreadStoreTests")
+        identity.choose("rp")
+        let threads = AgentThreadStore(api: APIClient(base: book.base, session: book.session, identity: identity))
+        threads.hear(try message("card", seq: 1, card: spend))
+        let card = try #require(threads.openCards(for: "rp").first)
+        #expect(CardLabels.buttons(card) == ["Approve", "Hold unpaid"])
+        await threads.answer(card, with: "Approve")
+        let sent = try #require(book.requests.first)
+        #expect(sent.value(forHTTPHeaderField: "X-Member-Id") == "rp")
+        let bytes = try #require(sent.httpBody ?? sent.httpBodyStream.map { Data(reading: $0) })
+        let body = try #require(try JSONSerialization.jsonObject(with: bytes) as? [String: String])
+        #expect(body == ["message_id": "card", "action": "Approve"])
+        #expect(threads.openCards(for: "rp").isEmpty)
+        #expect(threads.messages(for: "rp").first?.cardState == .yes)
+        #expect(threads.sending.isEmpty && threads.refusals.isEmpty)
+    }
+
+    /// A second tap, from this phone or another, is refused in the server's own words.
+    @Test func keepsTheServersReasonWhenATapIsRefused() async throws {
+        let book = PathStubProtocol.Book()
+        book.answer("/api/reply", status: 409, try Fixtures.data("error-card-answered.json"))
+        let identity = Identity(suiteName: "ThreadStoreTests")
+        identity.choose("rp")
+        let threads = AgentThreadStore(api: APIClient(base: book.base, session: book.session, identity: identity))
+        threads.hear(try message("card", seq: 1, card: spend))
+        let card = try #require(threads.openCards(for: "rp").first)
+        await threads.answer(card, with: "Approve")
+        #expect(threads.refusals["card"] == .refused(status: 409, reason: "that card is already answered"))
+        #expect(threads.messages(for: "rp").first?.answer == nil)
+        // The stream then brings the answer that won, and the refusal goes with the lock.
+        threads.hear(try event(#"{"seq":2,"type":"card_answered","at":"w","clock":"c","message_id":"card","answer":"Approve"}"#))
+        #expect(threads.refusals["card"] == nil)
+        #expect(threads.messages(for: "rp").first?.cardState == .yes)
+    }
+
+    @Test func letsACardsOwnButtonsWinAndGivesARecordNone() throws {
+        let threads = store()
+        threads.hear(try message("own", seq: 1, card: #"{"kind":"test_due","buttons":["Book Friday","Not now"]}"#))
+        threads.hear(try message("fallback", seq: 2, card: #"{"kind":"test_due"}"#))
+        threads.hear(try message("record", seq: 3, card: #"{"kind":"order_receipt","buttons":["Undo"]}"#))
+        let thread = threads.messages(for: "rp")
+        #expect(CardLabels.buttons(thread[0]) == ["Book Friday", "Not now"])
+        #expect(CardLabels.buttons(thread[1]) == ["Yes, book it", "Not now"])
+        #expect(CardLabels.buttons(thread[2]).isEmpty)
+        #expect(CardLabels.title(thread[1]) == "A check-up is due")
+    }
+
     @Test func forgetsEverythingOnANewRun() throws {
         let threads = store()
         threads.hear(try message("a", seq: 1, card: spend))

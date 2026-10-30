@@ -14,8 +14,14 @@ struct ChatScreen: View {
 
     var body: some View {
         let messages = threads.messages(for: me.id)
+        let open = threads.openCards(for: me.id)
         ScrollViewReader { proxy in
             VStack(spacing: 0) {
+                if let first = open.first {
+                    DecisionsBar(count: open.count, s: s) {
+                        withAnimation { proxy.scrollTo(first.id, anchor: .center) }
+                    }
+                }
                 ScrollView {
                     VStack(spacing: 0) {
                         if messages.isEmpty {
@@ -27,7 +33,7 @@ struct ChatScreen: View {
                         }
                         ForEach(Array(messages.enumerated()), id: \.element.id) { index, message in
                             let first = index == 0 || messages[index - 1].from != message.from
-                            MessageRow(message: message, me: me, s: s, firstOfRun: first)
+                            MessageRow(message: message, me: me, s: s, firstOfRun: first, threads: threads)
                                 .padding(.top, first ? Tokens.space3 : Tokens.space1)
                                 .id(message.id)
                         }
@@ -63,6 +69,7 @@ struct MessageRow: View {
     let me: MemberSummary
     let s: Strings
     let firstOfRun: Bool
+    let threads: AgentThreadStore
 
     private var mine: Bool { message.from != "agent" }
     private static let avatar: CGFloat = 28
@@ -113,8 +120,13 @@ struct MessageRow: View {
                     .accessibilityIdentifier("line-\(message.id)")
             }
             if message.card != nil {
-                DecisionCard(message: message, s: s)
-                    .padding(.top, 6)
+                DecisionCard(
+                    message: message, s: s,
+                    onAnswer: { label in Task { await threads.answer(message, with: label) } },
+                    sending: threads.sending[message.id],
+                    refusal: threads.refusals[message.id].map { $0 == .offline ? s.t(.offline) : $0.message }
+                )
+                .padding(.top, 6)
             }
             Text(s.time(message.at))
                 .font(.caption)
@@ -130,6 +142,37 @@ struct MessageRow: View {
         }
         .bubbleShadow()
         .accessibilityElement(children: .contain)
+    }
+}
+
+/// How many cards wait on this member, in an amber bar under the header; a
+/// tap brings the first into view (the reference's bar, AgentChat.tsx). The
+/// cards stay where they are in the thread.
+struct DecisionsBar: View {
+    let count: Int
+    let s: Strings
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: Tokens.space2) {
+                Image(systemName: "hand.raised.fill").accessibilityHidden(true)
+                Text(s.t(count == 1 ? .decisionsWaitingOne : .decisionsWaiting, ["n": s.num(Double(count))]))
+                    .lineLimit(2)
+                Spacer(minLength: 0)
+                Image(systemName: "arrow.down").accessibilityHidden(true)
+            }
+            .font(Tokens.Fonts.meta.weight(.bold))
+            .foregroundStyle(Tokens.human)
+            .padding(.horizontal, Tokens.space3)
+            .padding(.vertical, Tokens.space2)
+            .frame(maxWidth: .infinity, minHeight: Tokens.touch, alignment: .leading)
+            .background(Tokens.humanBg)
+            .overlay(alignment: .bottom) { Rectangle().fill(Tokens.human.opacity(0.3)).frame(height: 1) }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityIdentifier("decisions-waiting")
     }
 }
 

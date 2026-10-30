@@ -252,3 +252,29 @@ cards in a replay are history, and would pull every launch onto Chat.
 A record card (`order_receipt`) is never counted as waiting, though the
 reference's count included it: it has no buttons, so it cannot be answered.
 (Proposal.)
+
+## Cards answer through POST /api/reply, and a bar points to them
+
+A tap on a card sends its label as the answer: `POST /api/reply` with
+`message_id` and `action` (`server/src/app.ts`), as the web client's
+`PinnedCard` does. While it is with the server the buttons are disabled and
+the pressed one says "Sending…"; once taken, the card locks with that answer
+and `card_answered` brings its sim time to every phone. A refusal, such as
+"that card is already answered" when another phone got there first, is shown
+under the card in the server's own words, and goes when the stream locks the
+card. The buttons follow the reference's `DecisionCard`: the first filled
+amber with a tick when it says yes, the rest outlined, 44 points high.
+
+Until the server sends every card's buttons (backend ask 4), a card that
+names none gets the reference's fallback labels and titles
+(`Vantari/Models/Cards.swift`, marked temporary, rewritten from
+`src/components/AgentChat.tsx` as the web client's `cardLabels.ts` is).
+The answered band's past tense (`Approved`, `Held unpaid`) is the reference's
+`PAST` map, in English like the labels, because the label is the answer the
+agent reads.
+
+Cards stay where they are in the thread; the owner's direction-B choice of
+pinning them at the top gives way to the reference's amber bar under the
+header, "{n} decisions waiting for you", which brings the first open card into
+view. A card nobody answered in time wears the AI tag rather than the Human
+one, as on the web: what happens next is the agent's, by its rules.
