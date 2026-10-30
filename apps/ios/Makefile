@@ -26,7 +26,9 @@ build: generate
 	$(XCODEBUILD) -quiet build
 
 test: generate
-	TEST_RUNNER_API_BASE=http://localhost:$(TEST_PORT) scripts/with-backend.sh $(TEST_PORT) -- $(XCODEBUILD) -quiet test
+	# No simulator diagnostics in the result bundle: a system log archive is
+	# gigabytes, and writing it to a nearly full disk crashed the run.
+	TEST_RUNNER_API_BASE=http://localhost:$(TEST_PORT) scripts/with-backend.sh $(TEST_PORT) -- $(XCODEBUILD) -quiet -collect-test-diagnostics never test
 
 run: build
 	xcrun simctl boot '$(SIMULATOR)' 2>/dev/null || true
