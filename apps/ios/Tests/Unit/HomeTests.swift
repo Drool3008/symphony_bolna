@@ -45,6 +45,28 @@ struct HomeLinesTests {
         #expect(HomeLines.lastDone(bp, en, today: home.today) == "last done 6 Jun · every 90 days")
     }
 
+    /// The reference's presentation (src/PhoneApp.tsx): red at five days or
+    /// fewer, the bar full at a month and never under 4%.
+    @Test func coloursTheCoverRedAtFiveDaysOrFewerAndScalesTheBarToAMonth() throws {
+        let home = try home("home-rp-as-rp.json")
+        let inhaler = try #require(home.medicines.first { $0.unit == "doses" })
+        let vitaminD = try #require(home.medicines.first { $0.unit == "pills" })
+        let metoprolol = try #require(try self.home("home-patient-as-patient.json").medicines.first)
+        #expect(HomeLines.isLow(metoprolol) && !HomeLines.isLow(inhaler))
+        #expect(HomeLines.coverFraction(metoprolol) == 0.1)
+        #expect(HomeLines.coverFraction(vitaminD) == 1)
+        #expect(en.t(.daysLeft, ["n": "3"]) == "3 days left")
+        #expect(te.t(.daysLeft, ["n": "3"]) == "3 రోజులకు సరిపోతాయి")
+    }
+
+    /// The two taps say what the reference's taps said, as plain text (src/PhoneApp.tsx).
+    @Test func asksForARefillOrABookingInTheReferencesWords() throws {
+        let metoprolol = try #require(try home("home-patient-as-patient.json").medicines.first)
+        #expect(HomeLines.refillRequest(metoprolol, owner: "Lakshmi") == "Please refill Metoprolol 25mg for Lakshmi")
+        let bp = try #require(try home("home-patient-as-patient.json").tests.first)
+        #expect(HomeLines.bookingRequest(bp) == "Please book my BP check.")
+    }
+
     @Test func givesATestDueNextYearItsYear() throws {
         let home = try home("home-rp-as-rp.json")
         let spirometry = try #require(home.tests.first { $0.name == "Spirometry" })

@@ -77,6 +77,9 @@ enum StringKey: String, CaseIterable, Sendable {
     case decisionsWaitingOne = "decisions_waiting_one"
     case decisionsWaiting = "decisions_waiting"
     case waitingOnYou = "waiting_on_you"
+    case daysLeft = "days_left"
+    case bookIt = "book_it"
+    case tapToRefill = "tap_to_refill"
 
     /// What the agent is doing at a stage it set (0 to 9, server/src/agent/tools.ts, set_stage).
     static func stage(_ n: Int) -> StringKey? {

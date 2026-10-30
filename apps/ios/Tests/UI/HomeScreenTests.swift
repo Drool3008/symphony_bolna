@@ -67,6 +67,20 @@ final class HomeScreenTests: XCTestCase {
         XCTAssertFalse(app.staticTexts["Lakshmi's medicines"].exists)
     }
 
+    /// Ported from the reference (src/PhoneApp.tsx): a tap on a medicine asks
+    /// the agent for a refill in plain words and opens Chat, where the line shows.
+    @MainActor
+    func testTappingAMedicineAsksForARefillAndOpensChat() async throws {
+        try await dev.reset()
+        let app = launch(member: "member_3")
+        let stock = app.staticTexts["15 pills left"]
+        XCTAssertTrue(stock.waitForExistence(timeout: 15))
+        stock.tap()
+        let line = app.staticTexts.matching(NSPredicate(format: "label BEGINSWITH 'Please refill' AND label ENDSWITH 'for Kavya'")).firstMatch
+        XCTAssertTrue(line.waitForExistence(timeout: 15))
+        XCTAssertTrue(app.buttons["tab-agent"].isSelected)
+    }
+
     @MainActor
     func testMovingTheClockCountsTheDaysDownWithoutARelaunch() async throws {
         try await dev.reset()

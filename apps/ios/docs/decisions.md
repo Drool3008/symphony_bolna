@@ -298,3 +298,39 @@ avoidance shrinks the thread, the tab bar steps aside while the keyboard is
 up, and the thread scrolls to its newest line when the field is focused, so
 neither the composer nor a card is ever under the keyboard. Dragging the
 thread down puts the keyboard away.
+
+## Home in the reference's look, with the reference's two taps (ported)
+
+Home follows the reference's `Home` (`src/PhoneApp.tsx`,
+`UI Components/01-lakshmi-home.png`), from `GET /api/members/:id/home`
+only. An amber "Needs your answer" card opens Chat when something waits on
+this member, saying what the open wait is for, or else the open card's
+title. The agent's latest word is a white card with the agent's avatar and
+the AI tag, drawn only when the server sends one. Each section has its
+rounded-square chip (pills on `stage-bg`, a flask on `test-bg`). A medicine
+card shows its name, `strength · purpose` (the server sends no daily dose,
+backend ask 10; nothing is worked out of `schedule`), the server's days of
+cover in a chip, a bar for how full it is, the must-not-miss chip, and the
+stock line with the day it was counted and when it runs out. Red at five
+days or fewer and the bar's month scale (`clamp(4%, days/30, 100%)`) are the
+reference's presentation; the figures are always the server's. A test card
+shows when it was last done and how often, then its due date, overdue in bold
+red with a warning sign and a faint red ring. Other members' medicines sit
+under their small avatar and "{name}'s medicines" when their consent gives
+the full view. No Profile button and no SOS: both are blocked, and SOS was
+off in the reference too.
+
+Two taps are ported from `src/PhoneApp.tsx`, as plain text through the
+composer's path (`POST /api/input` with `{ text }` only; the server takes
+only `text` and `sample_id`, and the app has no sample ids):
+
+- tapping a medicine says "Please refill {name} {strength} for {owner}" and
+  opens Chat; a low one also shows "› Tap to order refill";
+- every test shows a "Book this check-up ›" row with a calendar sign (`book_it`), since the server
+  gives each one a due date and has no booked date to hide it by, and tapping
+  it says "Please book my {test name}." and stays on home, as the reference
+  did.
+
+The words are the reference's English for every member, as on the web, since
+they are what the agent reads. A refusal shows the server's words on the
+card that was tapped. What the agent does with the words is the agent's.

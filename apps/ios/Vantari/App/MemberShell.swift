@@ -78,7 +78,7 @@ struct MemberShell: View {
     private func screen(_ id: TabID, _ s: Strings) -> some View {
         switch id {
         case .home:
-            HomeScreen(me: me, others: others, s: s)
+            HomeScreen(me: me, others: others, s: s, openChat: { tab = .agent })
         case .agent:
             ChatScreen(me: me, s: s)
         case .family:

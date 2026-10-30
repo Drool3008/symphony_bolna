@@ -1332,6 +1332,60 @@
           }
         }
       }
+    },
+    "days_left": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{n} days left"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "{n} రోజులకు సరిపోతాయి"
+          }
+        }
+      }
+    },
+    "book_it": {
+      "comment": "Wording from the reference client, src/lib/i18n.ts.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Book this check-up"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ఈ పరీక్ష బుక్ చేయండి"
+          }
+        }
+      }
+    },
+    "tap_to_refill": {
+      "comment": "English from the reference client (src/PhoneApp.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to order refill"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "రీఫిల్ ఆర్డర్ చేయడానికి నొక్కండి"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

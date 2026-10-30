@@ -104,3 +104,13 @@ Swift cannot import `shared/`, so every model is written by hand and kept
 honest only by recorded fixtures. A machine-readable contract (an OpenAPI
 document, or JSON Schema generated from the zod schemas the server already
 has) would let the app generate its models and catch drift at build time.
+
+## 10. A daily dose on home
+
+The reference's home shows each medicine as `strength · {n} a day`
+(`src/PhoneApp.tsx`, `per_day`), from a daily dose the reference kept on the
+medicine. `GET /api/members/:id/home` sends `schedule` as free text and no
+daily dose (`server/src/domain/home.ts`), and the app does not work one out
+of the text. Until the server sends one, home shows `strength · purpose`, as
+the web client does (its ask 11). Ask: send the daily dose the server
+already uses for days of cover.
