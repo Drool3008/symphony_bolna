@@ -25,6 +25,12 @@ struct StringsTests {
         #expect(en.t(.answeredBy, ["name": "Arun"]) == "Answered by Arun")
     }
 
+    @Test func groupsRupeesAsIndiaWritesThem() {
+        #expect(en.rupees(4680) == "₹4,680")
+        #expect(te.rupees(320) == "₹320")
+        #expect(en.rupees(125000) == "₹1,25,000")
+    }
+
     @Test func showsTheYearOnlyWhenItIsNotTheYearOnTheFamilyClock() {
         #expect(en.date("2026-10-09", today: "2026-10-06") == "9 Oct")
         #expect(en.date("2027-07-18", today: "2026-10-06") == "18 Jul 2027")

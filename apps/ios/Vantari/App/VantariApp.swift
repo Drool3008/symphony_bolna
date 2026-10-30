@@ -5,6 +5,7 @@ struct VantariApp: App {
     @State private var model = AppModel()
     @State private var family: FamilyStore
     @State private var homes = HomeStore()
+    @State private var threads = AgentThreadStore()
     @Environment(\.scenePhase) private var scenePhase
 
     init() {
@@ -18,9 +19,11 @@ struct VantariApp: App {
             RootView(family: family)
                 .environment(model)
                 .environment(homes)
+                .environment(threads)
                 .task {
                     model.register(family)
                     model.register(homes)
+                    model.register(threads)
                     model.connect()
                     await family.load()
                 }

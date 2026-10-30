@@ -129,10 +129,12 @@ extension Strings {
     var lineSpacing: CGFloat { isTelugu ? Tokens.teluguLineSpacing : 0 }
 }
 
-/// Line spacing for text in a language named only by its own tag, such as a
-/// message the agent wrote in Telugu to a member who reads English.
-func lineSpacing(forLanguage language: String?) -> CGFloat {
-    (language ?? "").lowercased().hasPrefix("te") ? Tokens.teluguLineSpacing : 0
+extension Tokens {
+    /// Line spacing for text in a language named only by its own tag, such as
+    /// a message the agent wrote in Telugu to a member who reads English.
+    static func lineSpacing(forLanguage language: String?) -> CGFloat {
+        (language ?? "").lowercased().hasPrefix("te") ? teluguLineSpacing : 0
+    }
 }
 
 /// The reference's shadows (tailwind.config.js `shadow-card`, `shadow-bubble`).

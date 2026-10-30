@@ -204,3 +204,51 @@ writes `human` on `human-soft` at 4.2:1 in light mode; its words are bold and
 the band is never the only sign that a card is open (the hand icon, the
 Human tag and the amber border say it too). Both are recorded rather than
 fixed, because fixing them changes the look the owner chose.
+
+## The agent thread is rebuilt from the stream, in one store
+
+There is no read route for a thread (backend ask 1), so `AgentThreadStore`
+folds the stream as the web client's `src/data/agentThread.ts` does:
+`message` adds or replaces a line, `card_answered` locks a card with its
+answer at the envelope's sim clock (backend ask 8), `card_timed_out` marks
+one nobody answered, `awaiting_reply` and `reply_settled` open and close the
+waits on a member, and `sync` gives the waits open now. The stream carries
+every member's events (ask 2); the store keeps them by thread, so a member
+picked after the replay still finds their own, and every screen asks for one
+member's share and shows nothing else. When a read route lands, `refetch`
+reads it and no screen changes.
+
+A connection's replay opens with the reset that began the current run. Taken
+as a new run, it cleared the thread the replay then refilled, and the `sync`
+after it, reporting the server's generation, cleared it again, so a launch
+showed an empty chat. Before the first `sync` there is no older run on screen,
+so that reset is now passed over, as the web client does (`src/api/live.ts`).
+A phone that was away during resets learns of the new run from `sync` alone,
+after the replay; it clears what it holds and asks the stream for the whole
+run again from its start.
+
+## Chat in the reference's look, with its unread count and its pull to Chat
+
+The thread is laid out as the reference's `AgentChat`
+(`src/components/AgentChat.tsx`, `UI Components/07-arun-chat-receipts.png`):
+the chat wall with its dot grid, the agent's bubbles on the left with the
+sparkle avatar on the first of a run and a "Vantari · AI" label, the member's
+own on the right in green with their avatar, the time under each, and three
+bouncing dots while the agent works (still under Reduce Motion). A card sits
+inside its bubble in the reference's `DecisionCard` states, its fields shown
+only when the card carries them; amounts and the wallet line appear only
+inside cards in the member's own thread, which the server sends only to the
+responsible person, and never on home or in the header. Fields the backend
+has never sent (`receipt_no`, `items`, `total_inr`, `options`) are drawn when
+present, as the spec asks, and tested on nothing invented.
+
+As in the reference's `PhoneApp.tsx`, the Chat tab counts the agent's
+messages since the member last had Chat open (in memory, so a relaunch counts
+the run's messages again, as the reference did) and, with none unseen, shows
+an amber dot while something waits on them. A card that arrives for this
+member opens Chat on its own (`lastCard`), but only one that arrives live:
+cards in a replay are history, and would pull every launch onto Chat.
+
+A record card (`order_receipt`) is never counted as waiting, though the
+reference's count included it: it has no buttons, so it cannot be answered.
+(Proposal.)

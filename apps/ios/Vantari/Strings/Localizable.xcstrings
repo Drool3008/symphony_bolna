@@ -918,6 +918,366 @@
           }
         }
       }
+    },
+    "your_decision": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your decision"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మీ నిర్ణయం"
+          }
+        }
+      }
+    },
+    "done": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Done"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "పూర్తయింది"
+          }
+        }
+      }
+    },
+    "no_answer": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No answer"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "సమాధానం రాలేదు"
+          }
+        }
+      }
+    },
+    "you_chose": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You chose {a}"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మీరు {a} ఎంచుకున్నారు"
+          }
+        }
+      }
+    },
+    "you_chose_at": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You chose {a} at {t}"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మీరు {t}కి {a} ఎంచుకున్నారు"
+          }
+        }
+      }
+    },
+    "no_answer_then": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No answer: {x}"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "సమాధానం రాలేదు: {x}"
+          }
+        }
+      }
+    },
+    "why": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Why:"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ఎందుకు:"
+          }
+        }
+      }
+    },
+    "wallet_after_this": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wallet after this:"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "దీని తర్వాత వాలెట్‌లో:"
+          }
+        }
+      }
+    },
+    "receipt_no": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Receipt {n}"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "రసీదు {n}"
+          }
+        }
+      }
+    },
+    "total": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Total"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మొత్తం"
+          }
+        }
+      }
+    },
+    "fact_medicine": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx, FACTS). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Medicine"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మందు"
+          }
+        }
+      }
+    },
+    "fact_strength": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx, FACTS). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strength"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "మోతాదు"
+          }
+        }
+      }
+    },
+    "fact_quantity": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx, FACTS). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quantity"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "పరిమాణం"
+          }
+        }
+      }
+    },
+    "fact_test": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx, FACTS). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Check-up"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "పరీక్ష"
+          }
+        }
+      }
+    },
+    "fact_doctor": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx, FACTS). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Doctor"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "డాక్టర్"
+          }
+        }
+      }
+    },
+    "fact_clinic": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx, FACTS). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clinic"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "క్లినిక్"
+          }
+        }
+      }
+    },
+    "fact_when": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx, FACTS). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "When"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ఎప్పుడు"
+          }
+        }
+      }
+    },
+    "fact_for": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx, FACTS). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "ఎవరి కోసం"
+          }
+        }
+      }
+    },
+    "fact_payee": {
+      "comment": "English from the reference client (src/components/AgentChat.tsx, FACTS). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chemist"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "కెమిస్ట్"
+          }
+        }
+      }
+    },
+    "human_tag": {
+      "comment": "English from the reference client (src/components/brand.tsx). The Telugu is a proposal awaiting a native speaker.",
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Human"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "needs_review",
+            "value": "వ్యక్తి"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

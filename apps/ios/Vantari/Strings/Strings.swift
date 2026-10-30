@@ -54,6 +54,26 @@ enum StringKey: String, CaseIterable, Sendable {
     case stage8 = "stage.8"
     case stage9 = "stage.9"
     case unread = "unread"
+    case yourDecision = "your_decision"
+    case done = "done"
+    case noAnswer = "no_answer"
+    case youChose = "you_chose"
+    case youChoseAt = "you_chose_at"
+    case noAnswerThen = "no_answer_then"
+    case why = "why"
+    case walletAfterThis = "wallet_after_this"
+    case receiptNo = "receipt_no"
+    case total = "total"
+    case factMedicine = "fact_medicine"
+    case factStrength = "fact_strength"
+    case factQuantity = "fact_quantity"
+    case factTest = "fact_test"
+    case factDoctor = "fact_doctor"
+    case factClinic = "fact_clinic"
+    case factWhen = "fact_when"
+    case factFor = "fact_for"
+    case factPayee = "fact_payee"
+    case humanTag = "human_tag"
 
     /// What the agent is doing at a stage it set (0 to 9, server/src/agent/tools.ts, set_stage).
     static func stage(_ n: Int) -> StringKey? {
@@ -127,6 +147,15 @@ struct Strings: Sendable {
     /// A sim-time instant as the time on the family's clock.
     func time(_ iso: String) -> String {
         Self.instant(iso).map { formatter("h:mm a", zone: Self.familyZone).string(from: $0) } ?? iso
+    }
+
+    /// An amount in rupees, grouped as India writes it: ₹4,680.
+    func rupees(_ value: Double) -> String {
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "en_IN")
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        return "₹" + (formatter.string(from: NSNumber(value: value)) ?? String(value))
     }
 
     func num(_ value: Double) -> String {

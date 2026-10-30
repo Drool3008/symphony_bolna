@@ -2,12 +2,14 @@ import SwiftUI
 
 /// The member's app, laid out as the reference's PhoneApp (src/PhoneApp.tsx):
 /// the gradient header with what the agent is doing, the open tab, and the
-/// tab bar. Their language comes from onboarding, never the device.
+/// tab bar, whose Chat tab counts the agent's unseen lines. Their language
+/// comes from onboarding, never the device.
 struct MemberShell: View {
     let me: MemberSummary
     /// The rest of the family, in onboarding order.
     let others: [MemberSummary]
     @Environment(AppModel.self) private var model
+    @Environment(AgentThreadStore.self) private var threads
     @State private var tab: TabID
 
     /// `-tab agent` (UserDefaults' argument domain) opens on a given tab, for screenshots and UI tests.
@@ -44,10 +46,21 @@ struct MemberShell: View {
             screen(tab, s)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                 .background(Tokens.surface)
-            TabBar(tabs: AppTab.tabs(for: me.role), selection: $tab, s: s)
+            TabBar(
+                tabs: AppTab.tabs(for: me.role), selection: $tab, s: s,
+                unread: tab == .agent ? 0 : threads.unread(for: me.id),
+                nudge: threads.waitsOnAnswer(from: me.id)
+            )
         }
         .background(Tokens.surface)
         .environment(\.locale, s.locale)
+        // A card for this member opens Chat on its own, so a choice only they
+        // can make is not left in another tab (the reference's `lastCard`
+        // effect in src/PhoneApp.tsx). Only a card does this, and only one that
+        // arrives while the app is live, never one from the replay.
+        .onChange(of: threads.arrivedCard?.id) {
+            if let card = threads.arrivedCard, card.thread == me.id { tab = .agent }
+        }
     }
 
     @ViewBuilder
@@ -56,7 +69,7 @@ struct MemberShell: View {
         case .home:
             HomeScreen(me: me, others: others, s: s)
         case .agent:
-            Tokens.surface
+            ChatScreen(me: me, s: s)
         case .family:
             FamilyScreen(s: s)
         case .wallet:

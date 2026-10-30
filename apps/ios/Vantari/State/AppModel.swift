@@ -46,6 +46,8 @@ final class AppModel {
     @ObservationIgnored private(set) var stores: [any RunScopedStore] = []
     @ObservationIgnored private var listening: Task<Void, Never>?
     @ObservationIgnored private var watchingStatus: Task<Void, Never>?
+    /// A fresh replay of the whole run was asked for and has not reached its sync.
+    @ObservationIgnored private var replayingFromStart = false
 
     init(stream: LiveStream = LiveStream()) {
         self.stream = stream
@@ -82,9 +84,22 @@ final class AppModel {
             session.generation = sync.generation
             // Sent after the replay, so it overrides whatever the replay's thinking events said.
             if let running = sync.running { session.thinking = running }
-            if let known, known != sync.generation { newRun() }
+            replayingFromStart = false
+            if let known, known != sync.generation {
+                newRun()
+                replayFromStart()
+            }
         case .reset:
             session.clock = event.clock
+            // A connection's replay opens with the reset that began the current
+            // run. Before the first sync there is no older run on screen, and
+            // clearing would wipe the thread the replay is about to rebuild (the
+            // web client's src/api/live.ts does the same). The same holds for a
+            // replay asked for after a new run was found (`replayFromStart`).
+            if session.generation == nil || replayingFromStart {
+                replayingFromStart = false
+                break
+            }
             session.stage = 1
             session.thinking = false
             session.generation = (session.generation ?? 0) + 1
@@ -104,6 +119,21 @@ final class AppModel {
             break
         }
         for store in stores { store.hear(event) }
+    }
+
+    /// A phone that was away during resets learns of the new run only from
+    /// `sync`, which comes after the replay; clearing for the new run then
+    /// throws away the new run's events the replay just brought. Home reads
+    /// itself again, but the thread exists only in the stream, so the whole
+    /// run is asked for again from its start.
+    private func replayFromStart() {
+        guard listening != nil else { return }
+        replayingFromStart = true
+        let stream = stream
+        Task {
+            await stream.forgetPosition()
+            await stream.reconnectNow()
+        }
     }
 
     private func newRun() {
