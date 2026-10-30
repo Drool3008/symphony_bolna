@@ -1,3 +1,4 @@
+import { PRODUCT_NAME } from '@family-health/shared'
 import { expect, test } from '@playwright/test'
 import { arunsCardId, BACKEND, pick, playTakeToArunsCard, resetBackend, streamText } from './helpers.js'
 
@@ -40,7 +41,7 @@ test("Lakshmi's thread gets the agent's Telugu message once Arun has answered", 
     data: { message_id: await arunsCardId(), action: 'Approve' },
   })
   await expect(lakshmi.getByText(/మీ మాత్రలు ఆర్డర్ అయ్యాయి/)).toBeVisible()
-  await expect(lakshmi.getByText('మీ సహాయకుడు', { exact: false }).first()).toBeVisible()
+  await expect(lakshmi.locator('.bubble-agent .bubble-who').first()).toHaveText(`${PRODUCT_NAME} · AI`)
 })
 
 test("Arun's card answers once and locks on his screen and on a second browser on his id", async ({
