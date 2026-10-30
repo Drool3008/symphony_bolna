@@ -147,3 +147,40 @@ reference's fallback labels, marked as temporary. `src/components/cardLabels.ts`
 holds them, from the reference's `src/components/AgentChat.tsx`, with a note
 to remove them when the server sends labels. A card's own `title` and
 `buttons` win whenever they are there.
+
+## The reference look, adopted (owner's decision, 2026-10-30)
+
+The owner overrode the brief's "the reference UI is not ported" (rule 5 and
+Section 5) and the "Plain page" direction chosen at Checkpoint A, for the
+look only: the member app takes the reference simulator's visual design,
+including the shield logo mark and the brand gradient. Scope is a re-skin of
+what is built; Wallet, Profile and calls stay unbuilt until their backend
+routes exist, and nothing shows a stand-in figure. Everything else holds:
+the code is written anew (the logo, avatars, tags and icons are drawn in
+`src/components/brand.tsx` and `src/components/icons.tsx`, after the
+reference's `src/components/brand.tsx`), no data is invented, the backend is
+the source of truth. Tokens, type and shapes are in `design-tokens.md`, read
+off the reference's `tailwind.config.js` and `src/index.css`. The
+reference's colour map for its outside services is not ported.
+
+This replaces "Direction A, with two things from B" above. Of the two
+things kept from B: what waits on the member is no longer pinned at the top
+of the thread (cards stay inline, with a bar that counts them and scrolls to
+the first), and who decided is now carried by the card's band and tag (an
+AI tag on the agent's records, a Human tag on a person's decision) and the
+line "You chose … at …".
+
+## Body text is 16px, not the reference's 15
+
+The reference set body at 15px and meta at 13px. The brief asks for body
+text at least 16px, so every size moves up: body 16, meta 14, card titles 18. Telugu keeps its extra line height (1.7).
+
+## Known gap: white on the gradient's teal end
+
+White on `brand-3` (`#0EA5A4`) is 3.0:1, below AA for small text. The
+header keeps its text on the violet and indigo part of the gradient (7.1:1
+and 6.3:1) and on the translucent white chips, as the reference did; nothing
+small is set over the teal end on its own. Two smaller gaps of the same kind:
+`human` on the open card's band is about 4.3:1 (the band text is 14px bold),
+and the Human tag's text uses the reference's darker amber (`human-deep`)
+because `human` on `human-soft` is 4.2:1.

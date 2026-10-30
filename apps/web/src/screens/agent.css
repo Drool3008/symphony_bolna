@@ -12,9 +12,9 @@
 }
 
 .line-who {
-  font-size: var(--type-label);
+  font-size: var(--type-meta);
   font-weight: 600;
-  color: var(--color-ink-2);
+  color: var(--color-muted);
 }
 
 .line-text {
@@ -23,14 +23,14 @@
 }
 
 .line-agent {
-  border-left: var(--bar) solid var(--color-ink);
+  border-left: 4px solid var(--color-ink);
   padding-left: var(--space-3);
 }
 
 .line-person {
   align-self: flex-end;
   max-width: 85%;
-  background: var(--color-wash);
+  background: var(--color-secondary);
   padding: var(--space-2) var(--space-3);
 }
 
@@ -38,16 +38,16 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  background: var(--color-paper);
+  background: var(--color-card);
   padding: var(--space-4) 0 var(--space-3);
-  border-bottom: var(--rule-thin) solid var(--color-rule);
+  border-bottom: 1px solid var(--color-line);
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
 }
 
 .card {
-  border: var(--rule-thick) solid var(--color-rule);
+  border: 2px solid var(--color-line);
 }
 
 .card-in-line {
@@ -55,13 +55,13 @@
 }
 
 .card-open {
-  border-color: var(--color-accent);
+  border-color: var(--color-human);
 }
 
 .card-band {
   margin: 0;
-  background: var(--color-accent);
-  color: var(--color-on-accent);
+  background: var(--color-human);
+  color: var(--color-on-strong);
   font-size: var(--type-meta);
   font-weight: 700;
   padding: var(--space-2) var(--space-3);
@@ -76,7 +76,7 @@
 }
 
 .card-title {
-  font-size: var(--type-title);
+  font-size: var(--type-card);
   font-weight: 600;
 }
 
@@ -95,12 +95,12 @@
   justify-content: space-between;
   gap: var(--space-3);
   padding: var(--space-1) 0;
-  border-top: var(--rule-thin) solid var(--color-rule);
+  border-top: 1px solid var(--color-line);
   font-size: var(--type-meta);
 }
 
 .card-field dt {
-  color: var(--color-ink-2);
+  color: var(--color-muted);
 }
 
 .card-field dd {
@@ -112,7 +112,7 @@
 .wait {
   margin: 0;
   font-weight: 700;
-  color: var(--color-accent);
+  color: var(--color-human);
 }
 
 .line-pointer {
@@ -141,17 +141,17 @@
   padding: 0 var(--space-4);
   font-size: var(--type-meta);
   font-weight: 600;
-  background: var(--color-paper);
+  background: var(--color-card);
   color: var(--color-ink);
-  border: var(--rule-thick) solid var(--color-ink);
+  border: 2px solid var(--color-ink);
   cursor: pointer;
 }
 
 .button-primary {
   flex: 1;
-  background: var(--color-accent);
-  border-color: var(--color-accent);
-  color: var(--color-on-accent);
+  background: var(--color-human);
+  border-color: var(--color-human);
+  color: var(--color-on-strong);
 }
 
 .button:disabled {
@@ -161,7 +161,7 @@
 
 .card-timeout {
   font-size: var(--type-meta);
-  color: var(--color-ink-2);
+  color: var(--color-muted);
 }
 
 .card-refusal {
@@ -176,7 +176,7 @@
   gap: var(--space-1) var(--space-3);
   margin: 0;
   padding: var(--space-2) var(--space-3) var(--space-3);
-  border-top: var(--rule-thin) solid var(--color-rule);
+  border-top: 1px solid var(--color-line);
   font-size: var(--type-meta);
 }
 
@@ -185,21 +185,21 @@
 }
 
 .outcome-when {
-  color: var(--color-ink-2);
+  color: var(--color-muted);
 }
 
 .mark {
-  font-size: var(--type-label);
+  font-size: var(--type-meta);
   font-weight: 600;
-  border: var(--rule-thin) solid var(--color-ink);
+  border: 1px solid var(--color-ink);
   padding: 0 var(--space-2);
 }
 
 .composer {
   position: sticky;
   bottom: calc(var(--touch) + var(--space-2) + env(safe-area-inset-bottom));
-  background: var(--color-paper);
-  border-top: var(--rule-thick) solid var(--color-ink);
+  background: var(--color-card);
+  border-top: 2px solid var(--color-ink);
   padding: var(--space-3) 0;
 }
 
@@ -221,8 +221,8 @@
   /* At least 16px, so iOS does not zoom on focus. */
   font-size: max(16px, var(--type-body));
   padding: var(--space-2) var(--space-3);
-  border: var(--rule-thin) solid var(--color-ink-2);
-  background: var(--color-paper);
+  border: 1px solid var(--color-muted);
+  background: var(--color-card);
 }
 
 .composer-problem {

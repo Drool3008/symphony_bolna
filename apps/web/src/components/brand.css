@@ -1,0 +1,53 @@
+.logo-mark {
+  display: block;
+  flex-shrink: 0;
+}
+
+.agent-avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--brand-gradient);
+  color: var(--color-on-brand);
+  box-shadow:
+    0 0 0 1px var(--color-card),
+    0 0 0 3px var(--color-ai-soft);
+}
+
+.person-avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  color: #ffffff;
+  font-family: var(--font);
+  font-weight: 600;
+  line-height: 1;
+}
+
+.tag {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-1);
+  border-radius: var(--radius-pill);
+  padding: 2px var(--space-2);
+  font-family: var(--font);
+  font-size: var(--type-badge);
+  line-height: 16px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.tag-ai {
+  background: var(--color-ai-soft);
+  color: var(--color-ai-deep);
+}
+
+.tag-human {
+  background: var(--color-human-soft);
+  color: var(--color-human-deep);
+}

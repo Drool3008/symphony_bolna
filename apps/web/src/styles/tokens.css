@@ -1,50 +1,122 @@
 /*
- * Design tokens for direction A, "Plain page" (docs/design-tokens.md). The
- * iOS client defines the same names in Vantari/Design/Tokens.swift; change
- * both together.
+ * Design tokens: the reference simulator's look, adopted by the owner on
+ * 2026-10-30 (docs/design-tokens.md, docs/decisions.md). Values are read off
+ * ../super-duper-engine-reference/tailwind.config.js and src/index.css, with
+ * the type raised so body text is at least 16px. The iOS client defines the
+ * same names in Vantari/Design/Tokens.swift; change both together.
  */
 :root {
-  --color-ink: #111111;
-  --color-ink-2: #4a4a4a;
-  --color-rule: #d6d6d6;
-  --color-paper: #ffffff;
-  --color-wash: #f2f2f2;
-  /* Only "needs your answer". */
-  --color-accent: #b34700;
-  --color-on-accent: #ffffff;
+  --color-ink: #0f172a;
+  --color-muted: #536072;
+  --color-line: #e6e8ef;
+  --color-surface: #f7f7fb;
+  --color-card: #ffffff;
+  --color-secondary: #f1f2f7;
+  /* App chrome: active tab, links, send. */
+  --color-stage: #4338ca;
+  --color-stage-bg: #eef2ff;
+  /* Anything the agent says or does. */
+  --color-ai: #6d28d9;
+  --color-ai-bg: #f4efff;
+  --color-ai-soft: #e9e1ff;
+  --color-ai-deep: #4c1d95;
+  /* A person deciding. */
+  --color-human: #b45309;
+  --color-human-bg: #fff6e5;
+  --color-human-soft: #fde7c3;
+  /* Urgent, low, overdue, badges. */
+  --color-decision: #c81e1e;
+  --color-decision-bg: #fef2f2;
+  --color-ok: #15803d;
+  --color-ok-bg: #f0fdf4;
+  --color-chat-wall: #efeae2;
+  --color-chat-mine: #d9fdd3;
+  --color-on-strong: #ffffff;
+  --color-brand-1: #6d28d9;
+  --color-brand-2: #4f46e5;
+  --color-brand-3: #0ea5a4;
+  --color-on-brand: #ffffff;
 
-  --type-display: 30px;
-  --type-figure: 44px;
-  --type-title: 20px;
-  --type-body: 18px;
-  --type-meta: 16px;
-  --type-label: 14px;
+  /* Fixed values the spec gives inline, outside the shared table. */
+  --color-ok-band: #dcfce7;
+  --color-human-deep: #7c3a06;
+  --color-test: #0f766e;
+  --color-test-bg: #e6fffb;
+  --color-chat-dots: rgba(15, 23, 42, 0.06);
+  --brand-gradient: linear-gradient(
+    135deg,
+    var(--color-brand-1) 0%,
+    var(--color-brand-2) 48%,
+    var(--color-brand-3) 100%
+  );
+
+  --type-app: 26px;
+  --type-pane: 20px;
+  --type-brand: 19px;
+  --type-card: 18px;
+  --type-body: 16px;
+  --type-meta: 14px;
+  --type-badge: 12px;
   --leading: 1.45;
   --leading-telugu: 1.7;
-  --font: 'Noto Sans', 'Noto Sans Telugu', system-ui, sans-serif;
-  --font-telugu: 'Noto Sans Telugu', 'Noto Sans', system-ui, sans-serif;
+  --font: 'Inter', 'Noto Sans Telugu', system-ui, sans-serif;
+  --font-display: 'Plus Jakarta Sans', 'Inter', 'Noto Sans Telugu', system-ui, sans-serif;
+  --font-telugu: 'Noto Sans Telugu', 'Inter', system-ui, sans-serif;
 
+  --radius-card: 16px;
+  --radius-control: 12px;
+  --radius-pill: 999px;
+  --radius-tail: 6px;
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
-  --space-5: 24px;
-  --touch: 48px;
-  --rule-thin: 1px;
-  --rule-thick: 2px;
-  --bar: 4px;
+  --space-5: 20px;
+  --touch: 44px;
+
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.06), 0 4px 14px rgba(15, 23, 42, 0.06);
+  --shadow-bubble: 0 1px 1.5px rgba(15, 23, 42, 0.13);
 
   color-scheme: light dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-ink: #f2f2f2;
-    --color-ink-2: #b5b5b5;
-    --color-rule: #3a3a3a;
-    --color-paper: #111111;
-    --color-wash: #1e1e1e;
-    --color-accent: #ff9e59;
-    --color-on-accent: #111111;
+    --color-ink: #f1f5f9;
+    --color-muted: #a3aec0;
+    --color-line: #2a3142;
+    --color-surface: #0b1020;
+    --color-card: #151b2e;
+    --color-secondary: #222a3d;
+    --color-stage: #818cf8;
+    --color-stage-bg: #1e1b4b;
+    --color-ai: #c4b5fd;
+    --color-ai-bg: #2e1065;
+    --color-ai-soft: #3b1f7a;
+    --color-ai-deep: #ddd6fe;
+    --color-human: #fbbf24;
+    --color-human-bg: #3a2508;
+    --color-human-soft: #5a3a0c;
+    --color-decision: #f87171;
+    --color-decision-bg: #3b1212;
+    --color-ok: #4ade80;
+    --color-ok-bg: #0f2e1a;
+    --color-chat-wall: #12161f;
+    --color-chat-mine: #1f3b2a;
+    --color-on-strong: #0f172a;
+    --color-brand-1: #6d28d9;
+    --color-brand-2: #4f46e5;
+    --color-brand-3: #0ea5a4;
+    --color-on-brand: #ffffff;
+
+    --color-ok-band: #14532d;
+    --color-human-deep: #fde7c3;
+    --color-test: #5eead4;
+    --color-test-bg: #0f2e2b;
+    --color-chat-dots: rgba(241, 245, 249, 0.05);
+
+    /* No shadows in the dark: cards keep a `line` border instead. */
+    --shadow-card: 0 0 0 1px var(--color-line);
+    --shadow-bubble: 0 0 0 1px var(--color-line);
   }
 }

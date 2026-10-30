@@ -11,11 +11,17 @@ html {
 
 body {
   margin: 0;
-  background: var(--color-paper);
+  background: var(--color-surface);
   color: var(--color-ink);
   font-family: var(--font);
   font-size: var(--type-body);
   line-height: var(--leading);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
 }
 
 :lang(te) {
@@ -30,14 +36,19 @@ textarea {
   color: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
 :focus-visible {
-  outline: var(--rule-thick) solid var(--color-ink);
+  outline: 2px solid var(--color-stage);
   outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .screen-note {
-  color: var(--color-ink-2);
-  font-size: var(--type-meta);
+  color: var(--color-muted);
+  font-size: var(--type-body);
   margin: var(--space-5) 0;
 }
 
@@ -48,4 +59,35 @@ textarea {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
+}
+
+/* A pulse for "the agent is working"; still for anyone who asks for less motion. */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
 }
