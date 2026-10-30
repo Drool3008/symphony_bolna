@@ -44,11 +44,17 @@ function app(at: string) {
 it('sends a phone with no member to the picker, labelled as a development identity', async () => {
   app('/')
   expect(await screen.findByText('Development identity')).toBeTruthy()
-  expect((await screen.findAllByRole('button')).map((b) => b.textContent)).toEqual([
-    'Lakshmi',
-    'Arun',
-    'Kavya',
+  await screen.findByRole('button', { name: 'Lakshmi' })
+  expect(screen.getAllByRole('button').map((b) => b.id || b.getAttribute('aria-labelledby'))).toEqual([
+    'pick-patient',
+    'pick-rp',
+    'pick-member_3',
   ])
+  expect(screen.getByRole('button', { name: 'Lakshmi', description: 'Patient' })).toBeTruthy()
+  expect(
+    screen.getByRole('button', { name: 'Arun', description: 'Manages the family health and the wallet' }),
+  ).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Kavya', description: 'Family member' })).toBeTruthy()
 })
 
 it("makes the app the picked member's, in their language, and remembers it", async () => {

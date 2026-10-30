@@ -71,6 +71,11 @@ const en = {
   fact_when: 'When',
   fact_for: 'For',
   fact_payee: 'Chemist',
+  // reference wording from src/main.tsx (the phone picker); Telugu is a proposal
+  who_is_using: 'Who is using this phone?',
+  role_patient: 'Patient',
+  role_responsible: 'Manages the family health and the wallet',
+  role_family: 'Family member',
   // new
   you: 'You',
   if_no_answer: 'If you do not answer',
@@ -148,6 +153,11 @@ const te: Record<StringKey, string> = {
   fact_when: 'ఎప్పుడు',
   fact_for: 'ఎవరి కోసం',
   fact_payee: 'మందుల షాపు',
+  // proposal: Telugu for reference wording from src/main.tsx
+  who_is_using: 'ఈ ఫోన్‌ను ఎవరు వాడుతున్నారు?',
+  role_patient: 'రోగి',
+  role_responsible: 'కుటుంబ ఆరోగ్యాన్ని, వాలెట్‌ను చూసుకుంటారు',
+  role_family: 'కుటుంబ సభ్యులు',
   // proposal: new Telugu, to be reviewed
   you: 'మీరు',
   if_no_answer: 'మీరు సమాధానం ఇవ్వకపోతే',
