@@ -268,3 +268,11 @@ Before a call is parked for a person to play, its number is checked against
 every number in onboarding (members, clinics, chemists, labs, 108). An
 invented number goes back to the model as an error. The reference relied on
 the prompt alone for this.
+
+### Text files keep LF endings on every OS (Proposal)
+
+Git for Windows checks text out with CRLF by default, which stops the
+commit-msg hook from running and makes Prettier's check fail on every file.
+`.gitattributes` keeps every text file LF. The hook's own test runs it through
+`bash`, as git does, since Windows cannot start a script from its first line;
+on Windows, run the tests from Git Bash.

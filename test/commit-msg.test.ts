@@ -12,7 +12,8 @@ function check(message: string): string | null {
   const file = join(dir, 'MSG')
   writeFileSync(file, message)
   try {
-    execFileSync(HOOK, [file], { stdio: 'pipe' })
+    // Through bash, as git runs it, since Windows cannot start a script from its first line.
+    execFileSync('bash', [HOOK, file], { stdio: 'pipe' })
     return null
   } catch (err) {
     return String((err as { stderr?: Buffer }).stderr ?? err)
